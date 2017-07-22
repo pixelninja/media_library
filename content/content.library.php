@@ -17,7 +17,15 @@
 			$directories = glob(DOCROOT . '/workspace/uploads/*', GLOB_ONLYDIR);
 
 			foreach($directories as $directory) {
+				$container = new XMLElement('div', null, array('class' => 'directory-preview'));
 
+				$meta = new XMLElement('div');
+				$name = new XMLElement('p', '<strong>' . basename($directory) . '</strong>');
+
+				$meta->appendChild($name);
+
+				$container->appendChild($meta);
+				$fieldset->appendChild($container);
 			}
 
 			/*
@@ -41,11 +49,11 @@
 				$meta->appendChild($width);
 				$meta->appendChild($height);
 
-				$image = new XMLElement('img', null, array('src' => $image_src));
-				$image->setAttribute('data-width', $image_dimensions[0]);
-				$image->setAttribute('data-height', $image_dimensions[1]);
-
-				$figure->appendChild($image);
+				// $image = new XMLElement('img', null, array('src' => $image_src));
+				// $image->setAttribute('data-width', $image_dimensions[0]);
+				// $image->setAttribute('data-height', $image_dimensions[1]);
+				//
+				// $figure->appendChild($image);
 				$container->appendChild($figure);
 				$container->appendChild($meta);
 				$fieldset->appendChild($container);
