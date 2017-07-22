@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension id="media_library" status="alpha" xmlns="http://getsymphony.com/schemas/extension/1.0">
+	<name>Media Library</name>
+	<description>Display all files and directories under Uploads in a library view.</description>
+	<repo type="github">https://github.com/pixelninja/media_library</repo>
+	<types>
+		<type>Workflow</type>
+	</types>
+	<authors>
+		<author>
+			<name github="pixelninja" symphony="touchstone">Phillip Gray</name>
+			<email>phill@thebold.nz</email>
+			<website>https://thebold.nz</website>
+		</author>
+	</authors>
+	<releases>
+		<release version="0.1a" date="2017-07-22" min="2.7.x" />
+	</releases>
+</extension>
