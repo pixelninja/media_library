@@ -9,6 +9,7 @@ Current under construction! Not for production.
 
 ### To do
 
+- Upload files?
 - preview other file types (not just images)
 - delete files
 - lightbox on images
