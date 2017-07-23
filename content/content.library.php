@@ -8,16 +8,28 @@
 			$this->setTitle(__('Media Library'));
 
 			$h2 = new XMLElement('h2', __('Media Library'));
+			$this->Context->appendChild($h2);
 
 			$fieldset = new XMLElement('fieldset', null, array('class'=>'primary column'));
 
-			$this->Context->appendChild($h2);
+			$subfolder = $_GET['folder'];
+			$directory_path = DOCROOT . '/workspace/uploads/';
 
-			$files = glob(DOCROOT . '/workspace/uploads/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-			$directories = glob(DOCROOT . '/workspace/uploads/*', GLOB_ONLYDIR);
+			if (isset($subfolder) && $subfolder !== '') {
+				$directory_path = $directory_path . $subfolder . '/';
+
+				$back = new XMLElement('div', '<p>Back</p>', array('class' => 'directory-back'));
+				$fieldset->appendChild($back);
+			}
+
+			$files = glob($directory_path . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+			$directories = glob($directory_path . '*', GLOB_ONLYDIR);
+			$directory_increment = 0;
 
 			foreach($directories as $directory) {
-				$container = new XMLElement('div', null, array('class' => 'directory-preview'));
+				$container = new XMLElement('div', null, array('class' => 'directory-preview', 'data-handle' => basename($directory)));
+
+				$directory_increment++;
 
 				$meta = new XMLElement('div');
 				$name = new XMLElement('p', '<strong>' . basename($directory) . '</strong>');
@@ -26,6 +38,11 @@
 
 				$container->appendChild($meta);
 				$fieldset->appendChild($container);
+			}
+
+			if ($directory_increment > 0 || (isset($subfolder) && $subfolder !== '')) {
+				$divider = new XMLElement('div', null, array('class' => 'divider'));
+				$fieldset->appendChild($divider);
 			}
 
 			/*
@@ -49,11 +66,11 @@
 				$meta->appendChild($width);
 				$meta->appendChild($height);
 
-				// $image = new XMLElement('img', null, array('src' => $image_src));
-				// $image->setAttribute('data-width', $image_dimensions[0]);
-				// $image->setAttribute('data-height', $image_dimensions[1]);
-				//
-				// $figure->appendChild($image);
+				$image = new XMLElement('img', null, array('src' => $image_src));
+				$image->setAttribute('data-width', $image_dimensions[0]);
+				$image->setAttribute('data-height', $image_dimensions[1]);
+
+				$figure->appendChild($image);
 				$container->appendChild($figure);
 				$container->appendChild($meta);
 				$fieldset->appendChild($container);

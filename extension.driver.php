@@ -18,7 +18,6 @@
 			);
 		}
 
-
 		public function getSubscribedDelegates() {
 			return array(
 				array(
@@ -30,9 +29,19 @@
 		}
 
 		public function appendPageHead($context) {
+			$author = Symphony::Author();
 			$callback = Administration::instance()->getPageCallback();
-
 			$page = Administration::instance()->Page;
+
+			$javascript = 'var user_id = "' . $author->get('id') . '",';
+			$javascript .= ' user_type = "' . $author->get('user_type') . '",';
+			$javascript .= ' driver = "' . $callback['driver'] . '"';
+			$javascript .= (isset($_GET['folder']) && $_GET['folder'] !== '') ? ', folder_path = "' . $_GET['folder'] . '"' : ', folder_path';
+			$javascript .= ';';
+
+			$html = new XMLElement('script', $javascript, array('type'=>'text/javascript'));
+
+			$page->addElementToHead($html);
 			$page->addStylesheetToHead(URL . '/extensions/media_library/assets/media_library.backend.css', 'screen', 666);
 			$page->addScriptToHead(URL . '/extensions/media_library/assets/media_library.backend.js', 667);
 		}
