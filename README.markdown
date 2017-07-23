@@ -1,5 +1,7 @@
 # Media Library
 
+Current under construction! Not for production.
+
 ## Installation
 
 - Upload the `/media_library` folder to your Symphony `/extensions` folder.
