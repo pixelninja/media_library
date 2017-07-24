@@ -12,7 +12,7 @@ Current under construction! Not for production.
 - Upload files?
 - preview other file types (not just images)
 - delete files
-- lightbox on images
+- ~~lightbox on images~~
 - Copy URL button
 - link with JIT extension for images to copy URL with recipe
 - Use Fetch API to load pages nicely
