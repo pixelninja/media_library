@@ -84,6 +84,55 @@
 	text-transform: capitalize;
 }
 
+/* Lightbox */
+#lightbox,
+#lightbox * {
+	box-sizing: border-box;
+}
+
+#lightbox {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9001;
+}
+
+#lightbox img{
+    border: 0.3rem solid #282828;
+    opacity: 0;
+	overflow: hidden;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -60%);
+
+    transition: all 200ms ease-out;
+}
+
+#lightbox img.slide-down {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+#lightbox .close {
+	display: block;
+	width: 30px;
+	height: 30px;
+	background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgOTUgOTUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDk1IDk1OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4uc3Qwe2ZpbGw6I0ZGRkZGRjt9PC9zdHlsZT48cGF0aCBjbGFzcz0ic3QwIiBkPSJNOTUsMTAuOEw4NC4yLDBMNDcuNSwzNi43TDEwLjgsMEwwLDEwLjhsMzYuNywzNi43TDAsODQuMkwxMC44LDk1bDM2LjctMzYuN0w4NC4yLDk1TDk1LDg0LjJMNTguMyw0Ny41TDk1LDEwLjh6Ii8+PC9zdmc+') no-repeat 50% 50% / cover;
+	/*background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgOTUgOTUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDk1IDk1OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4uc3Qwe2ZpbGw6IzI4MjgyODt9PC9zdHlsZT48cGF0aCBjbGFzcz0ic3QwIiBkPSJNOTUsMTAuOEw4NC4yLDBMNDcuNSwzNi43TDEwLjgsMEwwLDEwLjhsMzYuNywzNi43TDAsODQuMkwxMC44LDk1bDM2LjctMzYuN0w4NC4yLDk1TDk1LDg0LjJMNTguMyw0Ny41TDk1LDEwLjh6Ii8+PC9zdmc+') no-repeat 50% 50% / cover;*/
+
+	position: absolute;
+	/*top: -50px;
+	right: -50px;*/
+}
+
+
 @media (min-width: 1601px) {
 
 	.image-preview {
