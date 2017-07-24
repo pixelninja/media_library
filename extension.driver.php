@@ -42,8 +42,11 @@
 			$html = new XMLElement('script', $javascript, array('type'=>'text/javascript'));
 
 			$page->addElementToHead($html);
-			$page->addStylesheetToHead(URL . '/extensions/media_library/assets/media_library.backend.css', 'screen', 666);
+			$page->addScriptToHead(URL . '/extensions/media_library/assets/imagesloaded.min.js', 667);
+			$page->addScriptToHead(URL . '/extensions/media_library/assets/featherlight.min.js', 667);
 			$page->addScriptToHead(URL . '/extensions/media_library/assets/media_library.backend.js', 667);
+			$page->addStylesheetToHead(URL . '/extensions/media_library/assets/featherlight.min.css', 'screen', 666);
+			$page->addStylesheetToHead(URL . '/extensions/media_library/assets/media_library.backend.css', 'screen', 666);
 		}
 	}
 ?>

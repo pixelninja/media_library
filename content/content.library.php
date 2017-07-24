@@ -69,6 +69,7 @@
 				$image = new XMLElement('img', null, array('src' => $image_src));
 				$image->setAttribute('data-width', $image_dimensions[0]);
 				$image->setAttribute('data-height', $image_dimensions[1]);
+				$image->setAttribute('data-featherlight', $image_src);
 
 				$figure->appendChild($image);
 				$container->appendChild($figure);

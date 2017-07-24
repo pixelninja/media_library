@@ -43,52 +43,5 @@ jQuery(window).load(function () {
 
 			window.location.href = base_url + handle;
 		});
-
-		/*
-		 *	Open the image in a lightbox
-		 */
-		 $('.image-preview img').on('click', function () {
- 			var self = $(this),
-				// Store the image data
- 				src = self.attr('src'),
-				width = self.data('width'),
-				height = self.data('height'),
-				// Add the lightbox wrapper
-				lightbox = $('body').append('<div id="lightbox" />').find('#lightbox').hide().fadeIn(200),
-				// Append the image to the lightbox
-				image = lightbox.append('<img src="' + src + '" />').find('img'),
-				close = lightbox.append('<span class="close" />').find('.close');
-
-			// Original image width is greater than 90% of window, and less than 90% of window height
-			if (width > $(window).width() * 0.8 && height <= $(window).height() * 0.8) {
-				image.css({
-					width : $(window).width() * 0.8,
-					height : 'auto'
-				});
-			}
-			// Otherwise if the image is greater than 90% window height
-			else if (height > $(window).height() * 0.8) {
-				image.css({
-					width : 'auto',
-					height : $(window).height() * 0.8
-				});
-			}
-			else {
-				image.css({
-					width : width,
-					height : height
-				});
-			}
-
-			close.css({
-				top : image.offset().top - 40,
-				left : image.offset().left + image.outerWidth()
-			})
-
-			setTimeout(function () {
-                image.addClass('slide-down');
-            }, 150);
-
- 		});
 	})(jQuery);
 });
