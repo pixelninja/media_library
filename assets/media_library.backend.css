@@ -84,7 +84,14 @@
 	text-transform: capitalize;
 }
 
-@media (min-width: 1201px) {
+@media (min-width: 1601px) {
+
+	.image-preview {
+		width: calc(16.66% - 1rem);
+	}
+}
+
+@media (min-width: 1201px) and (max-width: 1600px) {
 
 	.image-preview {
 		width: calc(20% - 1rem);
