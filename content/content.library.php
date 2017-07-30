@@ -75,18 +75,23 @@
 					case 'jpg':
 					case 'png':
 					case 'gif':
+						$this->container->setAttribute('class', 'file-preview image');
 						$this->previewImage($file, $file_info);
 
 						break;
 					case 'svg':
+						$this->container->setAttribute('class', 'file-preview svg');
 						$this->previewSVG($file, $file_info);
 
 						break;
 					case 'mp4':
+					case 'mov':
+						$this->container->setAttribute('class', 'file-preview video');
 						$this->previewVideo($file, $file_info);
 
 						break;
 					case 'pdf':
+						$this->container->setAttribute('class', 'file-preview pdf');
 						$this->previewPDF($file, $file_info);
 
 						break;
@@ -107,6 +112,9 @@
 		 * Display image preview and info
 		 */
 		public function previewImage($file, $info) {
+			// The file size in a readable format
+			$filesize = $this->formatBytes(filesize($file), 0);
+
 			// Get the image dimensions
 			$image_dimensions = getimagesize($file);
 			// And the image source
@@ -114,12 +122,13 @@
 			// And the image name
 			$image_name = str_replace('-', ' ', explode('.', basename($file))[0]);
 
+			// Add all the info to the container
 			$figure = new XMLElement('figure', null, array('data-imagesrc' => $image_src));
 
 			$meta = new XMLElement('div');
 			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
 			$name = new XMLElement('p', $image_name);
-			$dimensions = new XMLElement('p', $image_dimensions[0] . 'x' . $image_dimensions[1] . 'px');
+			$dimensions = new XMLElement('p', $filesize . ' / ' . $image_dimensions[0] . 'x' . $image_dimensions[1] . 'px');
 
 			$meta->appendChild($extension);
 			$meta->appendChild($name);
@@ -139,24 +148,112 @@
 		 * Display video preview and info
 		 */
 		public function previewVideo($file, $info) {
+			// The file size in a readable format
+			$filesize = $this->formatBytes(filesize($file), 0);
+
+			// file source
+			$pdf_src = str_replace(DOCROOT, URL, $file);
+			// file name
+			$pdf_name = str_replace('-', ' ', explode('.', basename($file))[0]);
+
+			// Add all the info to the container
+			$figure = new XMLElement('figure', null, array('data-imagesrc' => $pdf_src));
+
+			$meta = new XMLElement('div');
+			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
+			$name = new XMLElement('p', $pdf_name);
+			$size = new XMLElement('p', $filesize);
+
+			$meta->appendChild($extension);
+			$meta->appendChild($name);
+			$meta->appendChild($size);
+
+			$this->container->appendChild($figure);
+			$this->container->appendChild($meta);
 		}
 
 		/*
 		 * Display SVG preview and info
 		 */
 		public function previewSVG($file, $info) {
+			// The file size in a readable format
+			$filesize = $this->formatBytes(filesize($file), 0);
+
+			// Get the image dimensions
+			$image_dimensions = getimagesize($file);
+			// And the image source
+			$image_src = str_replace(DOCROOT, URL, $file);
+			// And the image name
+			$image_name = str_replace('-', ' ', explode('.', basename($file))[0]);
+
+			// Add all the info to the container
+			$figure = new XMLElement('figure', null, array('data-imagesrc' => $image_src));
+
+			$meta = new XMLElement('div');
+			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
+			$name = new XMLElement('p', $image_name);
+			$size = new XMLElement('p', $filesize);
+
+			$meta->appendChild($extension);
+			$meta->appendChild($name);
+			$meta->appendChild($size);
+
+			$image = new XMLElement('img', null, array('src' => $image_src));
+
+			$figure->appendChild($image);
+			$this->container->appendChild($figure);
+			$this->container->appendChild($meta);
 		}
 
 		/*
 		 * Display PDF preview and info
 		 */
 		public function previewPDF($file, $info) {
+			// The file size in a readable format
+			$filesize = $this->formatBytes(filesize($file), 0);
+
+			// file source
+			$pdf_src = str_replace(DOCROOT, URL, $file);
+			// file name
+			$pdf_name = str_replace('-', ' ', explode('.', basename($file))[0]);
+
+			// Add all the info to the container
+			$figure = new XMLElement('figure', null, array('data-imagesrc' => $pdf_src));
+
+			$meta = new XMLElement('div');
+			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
+			$name = new XMLElement('p', $pdf_name);
+			$size = new XMLElement('p', $filesize);
+
+			$meta->appendChild($extension);
+			$meta->appendChild($name);
+			$meta->appendChild($size);
+
+			$this->container->appendChild($figure);
+			$this->container->appendChild($meta);
 		}
 
 		/*
 		 * Catchall for all other file types
 		 */
 		public function previewOther($file, $info) {
+		}
+
+		/*
+		 * Convert bytes into readable format
+		 */
+		public function formatBytes($bytes, $precision = 2) {
+		    $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+		    $bytes = max($bytes, 0);
+		    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+		    $pow = min($pow, count($units) - 1);
+
+		    // Uncomment one of the following alternatives
+		    $bytes /= pow(1024, $pow);
+		    // $bytes /= (1 << (10 * $pow));
+
+		    return round($bytes, $precision) . ' ' . $units[$pow];
 		}
 
 		public function action() {
