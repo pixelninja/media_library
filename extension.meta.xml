@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension id="media_library" status="alpha" xmlns="http://getsymphony.com/schemas/extension/1.0">
+<extension id="media_library" status="experimental" xmlns="http://getsymphony.com/schemas/extension/1.0">
 	<name>Media Library</name>
 	<description>Display all files and directories under Uploads in a library view.</description>
 	<repo type="github">https://github.com/pixelninja/media_library</repo>
@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="0.1a" date="2017-07-22" min="2.7.x" />
+		<release version="0.2" date="2017-08-17" min="2.7.x">
+			- Restructured the way files are displayed
+			- Added loads of features
+		</release>
+		<release version="0.1" date="2017-07-22" min="2.7.x" />
 	</releases>
 </extension>

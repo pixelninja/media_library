@@ -1,6 +1,6 @@
 # Media Library
 
-Current under construction! Not for production.
+Currently under construction!
 
 ## Installation
 
@@ -9,12 +9,15 @@ Current under construction! Not for production.
 
 ### To do
 
+- ~~Check if uploads field exists~~
 - Upload files?
-- preview other file types (not just images)
-- delete files
-- ~~lightbox on images~~
-- Copy URL button
-- link with JIT extension for images to copy URL with recipe
-- Use Fetch API to load pages nicely
+- ~~preview other file types (not just images)~~
+- ~~delete files~~
+- Check if files are in use?
+- ~~lightbox on images and videos~~
+- ~~Copy URL button~~
+- link with JIT extension for images to copy URL with recipe?
+- Use Fetch API to load subfolders nicely
 - Use Fetch API to load in Library from any page without losing context
 - Test on production environment, permissions?
+- Pagination of files?

@@ -7,6 +7,10 @@
 		private $fieldset = null;
 
 		public function view() {
+
+			/*
+			 *	Some config
+			 */
 			$this->setTitle(__('Media Library'));
 
 			$h2 = new XMLElement('h2', __('Media Library'));
@@ -14,13 +18,42 @@
 
 			$this->fieldset = new XMLElement('fieldset', null, array('class'=>'primary column'));
 
+			/*
+			 *	Are we deleting a file?
+			 */
+			// Store the file path
+			$file_to_delete = $_GET['unlink'];
+			// Make sure the file exists
+			if (isset($file_to_delete) && file_exists($file_to_delete)) {
+				// Bye bye
+				unlink($file_to_delete);
+			}
+
+			/*
+			 *	Store any subfolder we may be in,
+			 *	and the uploads file path
+			 */
 			$subfolder = $_GET['folder'];
 			$directory_path = DOCROOT . '/workspace/uploads/';
+
+			/*
+			 *	Make sure the folder exists and is writable
+			 */
+			if (!file_exists($directory_path) || !is_writable($directory_path)) {
+				$empty = new XMLElement('div', 'The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.', array('class' => 'empty'));
+				$this->fieldset->appendChild($empty);
+
+				$this->Form->appendChild($this->fieldset);
+				$this->Form->setAttribute('class', 'media-library');
+
+				return;
+			}
 
 			/*
 			 *	Add a back button if we're within a subfolder
 			 */
 			if (isset($subfolder) && $subfolder !== '') {
+				// We're within subfolders, so update the directory path to include them
 				$directory_path = $directory_path . $subfolder . '/';
 
 				$back = new XMLElement('div', '<p>Back</p>', array('class' => 'directory-back'));
@@ -37,19 +70,17 @@
 
 			foreach($directories as $directory) {
 				// Add directory container
-				$this->container = new XMLElement('div', null, array('class' => 'directory-preview', 'data-handle' => basename($directory)));
+				$this->container = new XMLElement('div', null, array('class' => 'subdirectory', 'data-handle' => basename($directory)));
 
 				// Increment the directory counter
 				$directory_increment++;
 
 				// Add in the directory info
 				// (just the name at the moment. What else should I display? File count?)
-				$meta = new XMLElement('div');
 				$name = new XMLElement('p', '<strong>' . basename($directory) . '</strong>');
 
 				// Attach to the page
-				$meta->appendChild($name);
-				$this->container->appendChild($meta);
+				$this->container->appendChild($name);
 				$this->fieldset->appendChild($this->container);
 			}
 
@@ -62,46 +93,21 @@
 			/*
 			 *	Preview the files
 			 */
+			// A container holding all files
+			$all_files = new XMLElement('div', null, array('class' => 'files'));
+			$this->fieldset->appendChild($all_files);
+
 			// Get any file that has an extension
 			$files = glob($directory_path . '*.{*}', GLOB_BRACE);
 
 			foreach($files as $file) {
-				// Store the file info and create the main container
-				$file_info = pathinfo($file);
-				$this->container = new XMLElement('div', null, array('class' => 'file-preview'));
+				// $this->container = new XMLElement('div', null, array('class' => 'file-preview'));
+				$this->container = new XMLElement('div');
+				$this->container->setAttribute('class', 'file');
 
-				// Each file type needs to be treated differently
-				switch($file_info['extension']) {
-					case 'jpg':
-					case 'png':
-					case 'gif':
-						$this->container->setAttribute('class', 'file-preview image');
-						$this->previewImage($file, $file_info);
+				$this->showFile($file);
 
-						break;
-					case 'svg':
-						$this->container->setAttribute('class', 'file-preview svg');
-						$this->previewSVG($file, $file_info);
-
-						break;
-					case 'mp4':
-					case 'mov':
-						$this->container->setAttribute('class', 'file-preview video');
-						$this->previewVideo($file, $file_info);
-
-						break;
-					case 'pdf':
-						$this->container->setAttribute('class', 'file-preview pdf');
-						$this->previewPDF($file, $file_info);
-
-						break;
-					default:
-						$this->previewOther($file, $file_info);
-
-						break;
-				}
-
-				$this->fieldset->appendChild($this->container);
+				$all_files->appendChild($this->container);
 			}
 
 			$this->Form->appendChild($this->fieldset);
@@ -109,134 +115,58 @@
 		}
 
 		/*
-		 * Display image preview and info
+		 *
 		 */
-		public function previewImage($file, $info) {
-			// The file size in a readable format
+		public function showFile($file) {
+			// File data
+			$fileinfo = pathinfo($file);
 			$filesize = $this->formatBytes(filesize($file), 0);
+			$filename = str_replace('-', ' ', $fileinfo['filename']);
+			$fileextension = $fileinfo['extension'];
+			$filesrc = str_replace(DOCROOT, URL, $file);
 
-			// Get the image dimensions
-			$image_dimensions = getimagesize($file);
-			// And the image source
-			$image_src = str_replace(DOCROOT, URL, $file);
-			// And the image name
-			$image_name = str_replace('-', ' ', explode('.', basename($file))[0]);
+			// Add the icon container
+			$icon = new XMLElement('span', null, array('class' => 'icon-'.$fileinfo['extension']));
 
-			// Add all the info to the container
-			$figure = new XMLElement('figure', null, array('data-imagesrc' => $image_src));
+			// Add file name
+			$name = new XMLElement('p', $filename, array('class' => 'name'));
 
-			$meta = new XMLElement('div');
-			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
-			$name = new XMLElement('p', $image_name);
-			$dimensions = new XMLElement('p', $filesize . ' / ' . $image_dimensions[0] . 'x' . $image_dimensions[1] . 'px');
+			// Add file size + extension
+			$size = new XMLElement('p', $fileextension . ' / ' . $filesize, array('class' => 'size'));
 
-			$meta->appendChild($extension);
-			$meta->appendChild($name);
-			$meta->appendChild($dimensions);
+			// Add file resolution if it's an image
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp'))) {
+				$imagedimensions = getimagesize($file);
+				$dimensions = new XMLElement('p', $imagedimensions[0] . 'x' . $imagedimensions[1] . 'px', array('class' => 'size'));
+			}
 
-			$image = new XMLElement('img', null, array('src' => $image_src));
-			$image->setAttribute('data-width', $image_dimensions[0]);
-			$image->setAttribute('data-height', $image_dimensions[1]);
-			$image->setAttribute('data-featherlight', $image_src);
+			// Add a preview link to certain file types
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg'))) {
+				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'data-featherlight' => $filesrc));
+			}
 
-			$figure->appendChild($image);
-			$this->container->appendChild($figure);
-			$this->container->appendChild($meta);
-		}
+			if (in_array($fileextension, array('mp4', 'webm'))) {
+				$preview = new XMLElement('a', 'Preview', array(
+					'class' => 'preview',
+					'href' => $filesrc,
+					'data-featherlight' => 'iframe',
+					// 'data-featherlight-iframe-height' => '90%',
+					// 'data-featherlight-iframe-width' => '90%'
+				));
+			}
 
-		/*
-		 * Display video preview and info
-		 */
-		public function previewVideo($file, $info) {
-			// The file size in a readable format
-			$filesize = $this->formatBytes(filesize($file), 0);
+			// Add copy and delete options
+			$copy = new XMLElement('a', 'Copy to clipboard', array('class' => 'copy', 'data-src' => $filesrc));
+			$delete = new XMLElement('a', 'Delete', array('class' => 'delete'));
 
-			// file source
-			$pdf_src = str_replace(DOCROOT, URL, $file);
-			// file name
-			$pdf_name = str_replace('-', ' ', explode('.', basename($file))[0]);
-
-			// Add all the info to the container
-			$figure = new XMLElement('figure', null, array('data-imagesrc' => $pdf_src));
-
-			$meta = new XMLElement('div');
-			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
-			$name = new XMLElement('p', $pdf_name);
-			$size = new XMLElement('p', $filesize);
-
-			$meta->appendChild($extension);
-			$meta->appendChild($name);
-			$meta->appendChild($size);
-
-			$this->container->appendChild($figure);
-			$this->container->appendChild($meta);
-		}
-
-		/*
-		 * Display SVG preview and info
-		 */
-		public function previewSVG($file, $info) {
-			// The file size in a readable format
-			$filesize = $this->formatBytes(filesize($file), 0);
-
-			// Get the image dimensions
-			$image_dimensions = getimagesize($file);
-			// And the image source
-			$image_src = str_replace(DOCROOT, URL, $file);
-			// And the image name
-			$image_name = str_replace('-', ' ', explode('.', basename($file))[0]);
-
-			// Add all the info to the container
-			$figure = new XMLElement('figure', null, array('data-imagesrc' => $image_src));
-
-			$meta = new XMLElement('div');
-			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
-			$name = new XMLElement('p', $image_name);
-			$size = new XMLElement('p', $filesize);
-
-			$meta->appendChild($extension);
-			$meta->appendChild($name);
-			$meta->appendChild($size);
-
-			$image = new XMLElement('img', null, array('src' => $image_src));
-
-			$figure->appendChild($image);
-			$this->container->appendChild($figure);
-			$this->container->appendChild($meta);
-		}
-
-		/*
-		 * Display PDF preview and info
-		 */
-		public function previewPDF($file, $info) {
-			// The file size in a readable format
-			$filesize = $this->formatBytes(filesize($file), 0);
-
-			// file source
-			$pdf_src = str_replace(DOCROOT, URL, $file);
-			// file name
-			$pdf_name = str_replace('-', ' ', explode('.', basename($file))[0]);
-
-			// Add all the info to the container
-			$figure = new XMLElement('figure', null, array('data-imagesrc' => $pdf_src));
-
-			$meta = new XMLElement('div');
-			$extension = new XMLElement('p', '<strong>' . $info['extension'] . '</strong>');
-			$name = new XMLElement('p', $pdf_name);
-			$size = new XMLElement('p', $filesize);
-
-			$meta->appendChild($extension);
-			$meta->appendChild($name);
-			$meta->appendChild($size);
-
-			$this->container->appendChild($figure);
-			$this->container->appendChild($meta);
-		}
-
-		/*
-		 * Catchall for all other file types
-		 */
-		public function previewOther($file, $info) {
+			// Append all the data to the page
+			$this->container->appendChild($icon);
+			$this->container->appendChild($name);
+			$this->container->appendChild($size);
+			$this->container->appendChild($dimensions);
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $this->container->appendChild($preview);;
+			$this->container->appendChild($copy);
+			$this->container->appendChild($delete);
 		}
 
 		/*
@@ -244,19 +174,12 @@
 		 */
 		public function formatBytes($bytes, $precision = 2) {
 		    $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
 		    $bytes = max($bytes, 0);
 		    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-		    $pow = min($pow, count($units) - 1);
 
-		    // Uncomment one of the following alternatives
+		    $pow = min($pow, count($units) - 1);
 		    $bytes /= pow(1024, $pow);
-		    // $bytes /= (1 << (10 * $pow));
 
 		    return round($bytes, $precision) . ' ' . $units[$pow];
-		}
-
-		public function action() {
-
 		}
 	}
