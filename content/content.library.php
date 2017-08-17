@@ -40,7 +40,7 @@
 			 *	Make sure the folder exists and is writable
 			 */
 			if (!file_exists($directory_path) || !is_writable($directory_path)) {
-				$empty = new XMLElement('div', 'The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.', array('class' => 'empty'));
+				$empty = new XMLElement('div', __('The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.'), array('class' => 'empty'));
 				$this->fieldset->appendChild($empty);
 
 				$this->Form->appendChild($this->fieldset);
@@ -56,8 +56,10 @@
 				// We're within subfolders, so update the directory path to include them
 				$directory_path = $directory_path . $subfolder . '/';
 
-				$back = new XMLElement('div', '<p>Back</p>', array('class' => 'directory-back'));
-				$this->fieldset->appendChild($back);
+				$backcontainer = new XMLElement('div', null, array('class' => 'directory-back'));
+				$back = new XMLElement('p', __('Back'));
+				$backcontainer->appendChild($back);
+				$this->fieldset->appendChild($backcontainer);
 			}
 
 			/*
@@ -146,18 +148,16 @@
 			}
 
 			if (in_array($fileextension, array('mp4', 'webm'))) {
-				$preview = new XMLElement('a', 'Preview', array(
+				$preview = new XMLElement('a', __('Preview'), array(
 					'class' => 'preview',
 					'href' => $filesrc,
-					'data-featherlight' => 'iframe',
-					// 'data-featherlight-iframe-height' => '90%',
-					// 'data-featherlight-iframe-width' => '90%'
+					'data-featherlight' => 'iframe'
 				));
 			}
 
 			// Add copy and delete options
-			$copy = new XMLElement('a', 'Copy to clipboard', array('class' => 'copy', 'data-src' => $filesrc));
-			$delete = new XMLElement('a', 'Delete', array('class' => 'delete'));
+			$copy = new XMLElement('a', __('Copy to clipboard'), array('class' => 'copy', 'data-src' => $filesrc));
+			$delete = new XMLElement('a', __('Delete'), array('class' => 'delete'));
 
 			// Append all the data to the page
 			$this->container->appendChild($icon);

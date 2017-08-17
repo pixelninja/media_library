@@ -21,3 +21,4 @@ Currently under construction!
 - Use Fetch API to load in Library from any page without losing context
 - Test on production environment, permissions?
 - Pagination of files?
+- Multilingual support

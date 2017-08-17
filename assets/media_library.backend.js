@@ -10,14 +10,28 @@ jQuery(window).load(function () {
 	ml_menu_group
 		.css('cursor', 'pointer')
 		.remove()
-		.appendTo('#nav ul.content')
-		.bind('click', function() {
-			window.location.href = ml_menu_item.attr('href');
-		});
+		.appendTo('#nav ul.content');
+
+	ml_menu_group.on('click', function (e) {
+		e.preventDefault();
+
+		// console.log('trigger');
+		window.location.href = ml_menu_item.attr('href');
+
+		// jQuery('body').append('<div class="ml-lightbox"><div class="ml-progress"></div><iframe src="'+ml_menu_item.attr('href')+'" class="is-hidden" width="100%" height="100%" frameborder="0" /></div>')
+
+		return false;
+	});
 
 	(function ($) {
 		// Make sure we only execute in the Library
 		if (driver !== 'library') return false;
+
+		Symphony.Language.add({
+			'Copied!': false,
+			'Copy to clipboard': false,
+			'Are you sure you want to delete this file? This action cannot be undone.': false
+		});
 
 		/*
 		 *	Go forward or backwards a directory
@@ -51,7 +65,7 @@ jQuery(window).load(function () {
 		$('.file a.delete').on('click', function () {
 			var self = $(this),
 				src = self.prev('a').data('src');
-				check = confirm('Are you sure? This cannot be undone.');
+				check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.'));
 
 			// Only remove the files if the user is bloody well sure
 			if (check === true) {
@@ -73,10 +87,10 @@ jQuery(window).load(function () {
 		 */
 	    new Clipboard('.file a.copy', {
 	        text: function(trigger) {
-	            $(trigger).text('Copied!');
+	            $(trigger).text(Symphony.Language.get('Copied!'));
 
 	            setTimeout(function () {
-	            	$(trigger).text('Copy to clipboard');
+	            	$(trigger).text(Symphony.Language.get('Copy to clipboard'));
 	            }, 2000);
 
 	            return $(trigger).data('src');
