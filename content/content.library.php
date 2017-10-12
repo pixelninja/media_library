@@ -16,7 +16,28 @@
 			$h2 = new XMLElement('h2', __('Media Library'));
 			$this->Context->appendChild($h2);
 
-			$this->fieldset = new XMLElement('fieldset', null, array('class'=>'primary column'));
+			$this->fieldset = new XMLElement('fieldset', null, array('class' => 'primary column'));
+
+			/*
+			 *	Trigger button for uploading a file
+			 */
+			$actions = new XMLElement('div', null, array('class' => 'actions'));
+			$actions->appendChild(new XMLElement('button', __('Upload File'), array('class' => 'button trigger-upload')));
+
+			$this->Context->appendChild($actions);
+
+			// Add the form which will show/hide using above button
+			// $dragdrop = new XMLElement('div', null, array('id' => 'drop_zone', 'ondrop' => 'drop_handler(event);', 'ondragover' => 'dragover_handler(event);', 'ondragend' => 'dragend_handler(event);'));
+			// $dragdrop = new XMLElement('div', null, array('id' => 'drop_zone'));
+			// $dragdrop->appendChild(new XMLElement('p', __('Drag one or more files to this Drop Zone')));
+
+// <div id="drop_zone" ondrop="drop_handler(event);" ondragover="dragover_handler(event);" ondragend="dragend_handler(event);">
+//   <strong>Drag one or more files to this Drop Zone ...</strong>
+// </div>
+
+
+			// $this->Form->appendChild($dragdrop);
+
 
 			/*
 			 *	Are we deleting a file?
@@ -40,7 +61,7 @@
 			 *	Make sure the folder exists and is writable
 			 */
 			if (!file_exists($directory_path) || !is_writable($directory_path)) {
-				$empty = new XMLElement('div', __('The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.'), array('class' => 'empty'));
+				$empty = new XMLElement('div', __('The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.'), array('class' => 'empty-directory'));
 				$this->fieldset->appendChild($empty);
 
 				$this->Form->appendChild($this->fieldset);

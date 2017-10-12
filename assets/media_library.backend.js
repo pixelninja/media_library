@@ -87,6 +87,7 @@ jQuery(window).load(function () {
 		 */
 	    new Clipboard('.file a.copy', {
 	        text: function(trigger) {
+				// Update the text momentarily as an indicator something has happened
 	            $(trigger).text(Symphony.Language.get('Copied!'));
 
 	            setTimeout(function () {
@@ -96,6 +97,175 @@ jQuery(window).load(function () {
 	            return $(trigger).data('src');
 	        }
 	    });
+
+		/*
+		 *	Upload Files w/ drag and drop
+		 */
+
+		$('.trigger-upload').on('click', function (e) {
+			e.preventDefault();
+
+			var self = $(this),
+				upload = $('.field-multiupload');
+
+			if (self.hasClass('is-active')) {
+				self.removeClass('is-active');
+				upload.removeClass('is-active');
+				return false;
+			}
+
+			self.addClass('is-active');
+			upload.addClass('is-active');
+
+			return false;
+		});
+
+		Symphony.Language.add({
+			'Drop files': false,
+			'In queue': false,
+			'Uploading': false,
+			'Remove file': false,
+			'Upload failed': false
+		});
+
+		var Fileupload = function() {
+			var fileAPI = !!window.FileReader;
+
+		/*-------------------------------------------------------------------------
+			Functions
+		-------------------------------------------------------------------------*/
+
+			function init() {
+				var field = $('#context').after('<div class="field-multiupload"><div class="multiupload-files empty multiupload-drop"><ol data-add="Add file" data-remove="Remove file" /></div></div>').next();
+
+				if(fileAPI) createDroparea(field);
+			};
+
+			function createDroparea(field) {
+				// Append drop area
+				$('<div />', {
+					class: 'multiupload-droparea',
+					html: '<span>' + Symphony.Language.get('Drop files') + '</span>',
+					on: {
+						dragover: drag,
+						dragenter: drag,
+						dragend: dragend,
+						drop: drop
+					}
+				}).appendTo(field);
+			};
+
+			function drag(event) {
+				stop(event);
+				$(event.currentTarget).addClass('multiupload-drag');
+			};
+
+			function dragend(event) {
+				$(event.currentTarget).removeClass('multiupload-drag');
+			};
+
+			function drop(event) {
+				stop(event);
+
+				var dragarea = $(event.currentTarget).removeClass('multiupload-drag'),
+					field = dragarea.parents('.field-multiupload'),
+					files = field.find('.multiupload-files'),
+					list = field.find('ol');
+
+				if (!list.length) {
+					field.prepend('<ol />');
+					list = field.find('ol');
+				}
+
+				// Loop over files
+				$.each(event.originalEvent.dataTransfer.files, function(index, file) {
+					files.removeClass('empty');
+
+					var item = $('<li />', {
+						html: '<header><a>' + file.name + '</a><span class="multiupload-progress"></span><a class="destructor">' + Symphony.Language.get('In queue') + '</a></header>',
+						class: 'instance queued'
+					}).hide().appendTo(list).slideDown('fast');
+
+					send(field, item, file);
+				});
+			};
+
+			function stop(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			};
+
+			function send(field, item, file) {
+				var data = new FormData(),
+					location = doc_root + '/workspace/uploads/';
+
+				if (folder_path) location = location + folder_path;
+
+				// Set data
+				data.append('file', file);
+				data.append('location', location);
+
+				// Send data
+				$.ajax({
+					url: Symphony.Context.get('root') + '/extensions/media_library/lib/upload.php',
+					data: data,
+					cache: false,
+					contentType: false,
+					dataType: 'json',
+					processData: false,
+					type: 'POST',
+
+					// Catch errors
+					error: function(result){
+						item.removeClass('queued').addClass('error');
+						item.find('.destructor').text(Symphony.Language.get('Upload failed'));
+					},
+
+					// Add file
+					success: function(result) {
+						console.log('success');
+						console.log(result);
+						item.removeClass('queued');
+						item.find('.multiupload-progress').css('width', '100%');
+						item.find('.destructor').text(Symphony.Language.get('Remove file'));
+						item.find('header a:first').attr('href', result.url);
+						$('<input />', {
+							type: 'hidden',
+							val: result.url,
+							name: field.attr('data-fieldname')
+						}).appendTo(item);
+					},
+
+					// Upload progress
+					xhr: function() {
+						// get the native XmlHttpRequest object
+						var xhr = $.ajaxSettings.xhr();
+						// set the onprogress event handler
+						xhr.upload.onprogress = function(progress) {
+							item.find('.destructor').text(Symphony.Language.get('Uploading'));
+							item.find('.multiupload-progress').css('width', Math.floor(100 * progress.loaded / progress.total) + '%');
+						};
+						// return the customized object
+						return xhr;
+					}
+				});
+			};
+
+		/*-------------------------------------------------------------------------
+			API
+		-------------------------------------------------------------------------*/
+
+			return {
+				'init': init
+			};
+		}();
+
+		// $(document).on('ready.multiupload', function() {
+			Fileupload.init();
+		// });
+
+
+
 
 	})(jQuery);
 });

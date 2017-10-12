@@ -10,6 +10,9 @@
 		'Media Library' =>
 		'Medienbibliothek',
 
+		'Upload File' =>
+		'Datei hochladen',
+
 		'The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.' =>
 		'Der Upload-Ordner existiert nicht oder ist nicht beschreibbar. Bitte überprüfen Sie, ob es existiert.',
 

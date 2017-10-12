@@ -34,6 +34,7 @@
 			$page = Administration::instance()->Page;
 
 			$javascript = 'var user_id = "' . $author->get('id') . '",';
+			$javascript .= ' doc_root = "' . DOCROOT . '",';
 			$javascript .= ' user_type = "' . $author->get('user_type') . '",';
 			$javascript .= ' driver = "' . $callback['driver'] . '"';
 			$javascript .= (isset($_GET['folder']) && $_GET['folder'] !== '') ? ', folder_path = "' . $_GET['folder'] . '"' : ', folder_path';
