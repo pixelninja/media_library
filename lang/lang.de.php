@@ -34,4 +34,7 @@
 		'Are you sure you want to delete this file? This action cannot be undone.' =>
 		'Möchten Sie diese Datei wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
 
+		'Refresh page to view files' =>
+		'Seite aktualisieren, um Dateien anzuzeigen',
+
 	);

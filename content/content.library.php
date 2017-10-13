@@ -26,19 +26,6 @@
 
 			$this->Context->appendChild($actions);
 
-			// Add the form which will show/hide using above button
-			// $dragdrop = new XMLElement('div', null, array('id' => 'drop_zone', 'ondrop' => 'drop_handler(event);', 'ondragover' => 'dragover_handler(event);', 'ondragend' => 'dragend_handler(event);'));
-			// $dragdrop = new XMLElement('div', null, array('id' => 'drop_zone'));
-			// $dragdrop->appendChild(new XMLElement('p', __('Drag one or more files to this Drop Zone')));
-
-// <div id="drop_zone" ondrop="drop_handler(event);" ondragover="dragover_handler(event);" ondragend="dragend_handler(event);">
-//   <strong>Drag one or more files to this Drop Zone ...</strong>
-// </div>
-
-
-			// $this->Form->appendChild($dragdrop);
-
-
 			/*
 			 *	Are we deleting a file?
 			 */

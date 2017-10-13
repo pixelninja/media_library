@@ -1,4 +1,10 @@
 <?php
+    define('DOCROOT', rtrim(realpath(__DIR__ . '/../../../'), '/'));
+    define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/media_library/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
+
+    // Is there vendor autoloader?
+    require_once DOCROOT . '/vendor/autoload.php';
+    require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     // Check the location to save is set and writable
     if(!isset($_REQUEST['location']) || !is_writable($_REQUEST['location'])) {
@@ -6,91 +12,91 @@
         exit;
     }
 
-    // Upload the file
-    // $field = FieldManager::fetch($field_id);
-    // if(!($field instanceof FieldMultiUpload)) {
-    //     header("HTTP/1.0 400 Bad Request", true, 400);
-    //     exit;
-    // }
-    // else {
-        // $message = '';
-        // $data = $_FILES['file'];
-        // // Do upload
-        // // $result = $field->processRawFieldDataIndividual($data, $status, $message, false, $entry_id, $position);
-        //
-        // // output back to browser..
-        // if(is_array($result)) {
-        //     header("HTTP/1.0 201 Created", true, 201);
-        //     header("Content-Type: application/json");
-        //
-        //     echo json_encode(array(
-        //         'url' => str_replace(WORKSPACE, URL . '/workspace', $field->getFilePath($result['file'])),
-        //         'size' => $result['size'],
-        //         'mimetype' => $result['mimetype'],
-        //         'meta' => unserialize($result['meta'])
-        //     ));
-        // }
-        // else {
-        //     header("HTTP/1.0 400 Bad Request", true, 400);
-        //     header("Content-Type: application/json");
-        //
-        //     echo json_encode(array(
-        //         'error' => $message
-        //     ));
-        // }
-    // }
-
+    // Store the file
     $file = $_FILES['file'];
-    $name = $file['name'];
+    // the file name
+    $original_name = $file['name'];
+    // and the directory to save the file in
     $directory = $_REQUEST['location'];
-    $file_path = $directory . $name;
+    // then put them together for the final file path
+    $file_path = $directory . $original_name;
 
-    $exists = checkFileExists($file_path, $name, $directory);
+    // If the file already exists, append a string to the end and loop until the name is unique
+    if (file_exists($file_path)) {
+        $count = 1;
 
-    function checkFileExists($path, $name, $directory, $iteration = 1) {
-        if (file_exists($path)) {
-            $info = pathinfo($name);
+        do {
+            $info = pathinfo($original_name);
             $ext = $info['extension']; // get the extension of the file
-            $newname = $info['filename'] . '_' . $iteration . '.' . $ext;
+            $new_name = $info['filename'] . '_' . $count . '.' . $ext;
 
-            $path = $directory . $newname;
-        }
-        else {
-            return $path;
-        }
-
-        if (file_exists($path)) {
-            checkFileExists($path, $name, $directory, $iteration + 1);
-        }
-        else {
-            return $path;
-        }
+            $file_path = $directory . $new_name;
+            $count++;
+        } while (file_exists($file_path));
     }
 
-    var_dump($exists); exit;
-    exit;
+    // Upload the file
+    if (isset($new_name)) {
+        $uploaded = uploadFile($directory, $new_name, $file['tmp_name']);
+    }
+    else {
+        $uploaded = uploadFile($directory, $original_name, $file['tmp_name']);
+    }
 
-    // $info = pathinfo($_FILES['userFile']['name']);
-    // $ext = $info['extension']; // get the extension of the file
-    // $newname = "newname.".$ext;
-    //
-    // $target = 'images/'.$newname;
-    // move_uploaded_file( $_FILES['userFile']['tmp_name'], $target);
+    // Failed? Return 400
+    if ($uploaded === false) {
+        header("HTTP/1.0 400 Bad Request", true, 400);
+        header("Content-Type: application/json");
 
-// If a file already exists, then rename the file being uploaded by
-// adding `_1` to the filename. If `_1` already exists, the logic
-// will keep adding 1 until a filename is available (#672)
-// if (file_exists($abs_path . '/' . $data['name'])) {
-//     $extension = General::getExtension($data['name']);
-//     $new_file = substr($abs_path . '/' . $data['name'], 0, -1 - strlen($extension));
-//     $renamed_file = $new_file;
-//     $count = 1;
-//
-//     do {
-//         $renamed_file = $new_file . '_' . $count . '.' . $extension;
-//         $count++;
-//     } while (file_exists($renamed_file));
-//
-//     // Extract the name filename from `$renamed_file`.
-//     $data['name'] = str_replace($abs_path . '/', '', $renamed_file);
-// }
+        echo json_encode(array(
+            'error' => 'Upload failed'
+        ));
+    }
+    else {
+        // Success! Return 201
+        header("HTTP/1.0 200 Created", true, 200);
+        header("Content-Type: application/json");
+
+        echo json_encode(array(
+            'url' => str_replace(WORKSPACE, URL . '/workspace', $file_path),
+            'name' => (isset($new_name)) ? $new_name : $original_name
+        ));
+    }
+
+    function uploadFile($dest_path, $dest_name, $tmp_name, $perm = 0644) {
+        // Upload the file
+        if (@is_uploaded_file($tmp_name)) {
+            $dest_path = rtrim($dest_path, '/') . '/';
+            $dest = $dest_path . $dest_name;
+
+            // Check that destination is writable
+            if (!is_writable($dest_path)) {
+                return false;
+            }
+            // Try place the file in the correction location
+            if (@move_uploaded_file($tmp_name, $dest)) {
+                if (is_null($perm)) {
+                    $perm = 0644;
+                }
+                @chmod($dest, intval($perm, 8));
+                return true;
+            }
+        }
+
+        // Could not move the file
+        return false;
+    }
+
+    /*
+     * Convert bytes into readable format
+     */
+    function formatBytes($bytes, $precision = 2) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
