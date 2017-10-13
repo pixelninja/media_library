@@ -1,4 +1,5 @@
 jQuery(window).load(function () {
+
 	/*
 	 *	Having a drop down is a bit of overkill, so let's make it a single clickable item
 	 */
@@ -15,146 +16,146 @@ jQuery(window).load(function () {
 	ml_menu_group.on('click', function (e) {
 		e.preventDefault();
 
-		// console.log('trigger');
-		window.location.href = ml_menu_item.attr('href');
+		// Send data
+		$.ajax({
+			url: ml_menu_item.attr('href'),
+			type: 'GET',
+			error: function(result){
+				console.log('error', result);
+			},
+			// Add file
+			success: function(result) {
+				var doc = $(result),
+					// content = doc.find('#contents');
+					content = doc.filter('#wrapper');
 
-		// jQuery('body').append('<div class="ml-lightbox"><div class="ml-progress"></div><iframe src="'+ml_menu_item.attr('href')+'" class="is-hidden" width="100%" height="100%" frameborder="0" /></div>')
+				content.find('#header').remove();
+
+				$.featherlight(content, {
+					afterContent : function() {
+						Symphony.Extensions.MediaLibrary.init();
+					}
+				});
+			}
+		});
 
 		return false;
 	});
 
-	(function ($) {
-		// Make sure we only execute in the Library
-		if (driver !== 'library') return false;
+	Symphony.Extensions.MediaLibrary = {
+		clickEvents : function () {
+			/*
+			 *	Go forward or backwards a directory
+			 */
+			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
 
-		Symphony.Language.add({
-			'Copied!': false,
-			'Copy to clipboard': false,
-			'Are you sure you want to delete this file? This action cannot be undone.': false
-		});
+			// Backwards
+			$('.directory-back').on('click', function () {
+				var self = $(this),
+					// The handle to append, which is the full folder path minus the last folder
+					handle = folder_path.replace(folder_path.substring(folder_path.lastIndexOf('/')), '');
 
-		/*
-		 *	Go forward or backwards a directory
-		 */
-		var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
+				window.location.href = base_url + handle;
+			});
 
-		// Backwards
-		$('.directory-back').on('click', function () {
-			var self = $(this),
-				// The handle to append, which is the full folder path minus the last folder
-				handle = folder_path.replace(folder_path.substring(folder_path.lastIndexOf('/')), '');
+			// Forwards
+			$('.subdirectory').on('click', function () {
+				var self = $(this),
+					// The handle of the folder
+					handle = self.data('handle');
 
-			window.location.href = base_url + handle;
-		});
+				// If there is an existing folder path, add it to the new handle
+				if (folder_path) handle = folder_path + '/' + handle;
 
-		// Forwards
-		$('.subdirectory').on('click', function () {
-			var self = $(this),
-				// The handle of the folder
-				handle = self.data('handle');
+				window.location.href = base_url + handle;
+			});
 
-			// If there is an existing folder path, add it to the new handle
-			if (folder_path) handle = folder_path + '/' + handle;
+			/*
+			 *	Delete a file
+			 */
+			$('.file a.delete').on('click', function () {
+				var self = $(this),
+					src = self.prev('a').data('src');
+					check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.'));
 
-			window.location.href = base_url + handle;
-		});
-
-		/*
-		 *	Delete a file
-		 */
-		$('.file a.delete').on('click', function () {
-			var self = $(this),
-				src = self.prev('a').data('src');
-				check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.'));
-
-			// Only remove the files if the user is bloody well sure
-			if (check === true) {
-				if (folder_path !== '' && folder_path !== undefined) {
-					window.location.href = base_url + folder_path + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+				// Only remove the files if the user is bloody well sure
+				if (check === true) {
+					if (folder_path !== '' && folder_path !== undefined) {
+						window.location.href = base_url + folder_path + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+					}
+					else {
+						window.location.href = base_url + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+					}
 				}
+				// Do nothing
 				else {
-					window.location.href = base_url + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+
 				}
-			}
-			// Do nothing
-			else {
+			});
 
-			}
-		});
+			/*
+			 *	Copy the URL for a file
+			 */
+		    new Clipboard('.file a.copy', {
+		        text: function(trigger) {
+					// Update the text momentarily as an indicator something has happened
+		            $(trigger).text(Symphony.Language.get('Copied!'));
 
-		/*
-		 *	Copy the URL for a file
-		 */
-	    new Clipboard('.file a.copy', {
-	        text: function(trigger) {
-				// Update the text momentarily as an indicator something has happened
-	            $(trigger).text(Symphony.Language.get('Copied!'));
+		            setTimeout(function () {
+		            	$(trigger).text(Symphony.Language.get('Copy to clipboard'));
+		            }, 2000);
 
-	            setTimeout(function () {
-	            	$(trigger).text(Symphony.Language.get('Copy to clipboard'));
-	            }, 2000);
+		            return $(trigger).data('src');
+		        }
+		    });
 
-	            return $(trigger).data('src');
-	        }
-	    });
+			/*
+			 *	Expand/hide the drag/drop dropzone
+			 */
+			$('.trigger-upload').on('click', function (e) {
+				e.preventDefault();
 
-		/*
-		 *	Upload Files w/ drag and drop
-		 */
-		// Show/hide the drop zone
-		$('.trigger-upload').on('click', function (e) {
-			e.preventDefault();
+				var self = $(this),
+					upload = $('.media_library-upload');
 
-			var self = $(this),
-				upload = $('.media_library-upload');
+				// Already expanded? Reset it
+				if (self.hasClass('is-active')) {
+					self.text('Upload File');
+					self.removeClass('is-active');
+					upload.removeClass('is-active');
+					return false;
+				}
 
-			// Already expanded? Reset it
-			if (self.hasClass('is-active')) {
-				self.text('Upload File');
-				self.removeClass('is-active');
-				upload.removeClass('is-active');
+				self.text('Close');
+				self.addClass('is-active');
+				upload.addClass('is-active');
+
 				return false;
-			}
+			});
 
-			self.text('Close');
-			self.addClass('is-active');
-			upload.addClass('is-active');
+		},
+		fileUpload : {
+			/*
+			 *	Upload Files w/ drag and drop
+			 */
+			init : function () {
+		   		var fileAPI = !!window.FileReader,
+					element = '<div class="media_library-upload"><div class="media_library-files empty media_library-drop"><ol /></div></div>',
+					field = ($('.featherlight-content').length) ? $('.featherlight-content #context').after(element).next() : $('#context').after(element).next();
 
-			return false;
-		});
+				if(fileAPI) Symphony.Extensions.MediaLibrary.fileUpload.createDroparea(field);
+			},
 
-		Symphony.Language.add({
-			'Drop files': false,
-			'In queue': false,
-			'Uploading': false,
-			'Remove file': false,
-			'Upload failed': false,
-			'Refresh page to view files': false
-		});
-
-		var Fileupload = function() {
-			var fileAPI = !!window.FileReader;
-
-		/*-------------------------------------------------------------------------
-			Functions
-		-------------------------------------------------------------------------*/
-
-			function init() {
-				var field = $('#context').after('<div class="media_library-upload"><div class="media_library-files empty media_library-drop"><ol /></div></div>').next();
-
-				if(fileAPI) createDroparea(field);
-			};
-
-			function createDroparea(field) {
+			createDroparea : function (field) {
 				// Append drop area
 				$('<div />', {
 					class: 'media_library-droparea',
 					html: '<span>' + Symphony.Language.get('Drop files') + '</span>',
 					on: {
-						dragover: drag,
-						dragenter: drag,
-						dragend: dragend,
-						drop: drop
+						dragover: Symphony.Extensions.MediaLibrary.fileUpload.drag,
+						dragenter: Symphony.Extensions.MediaLibrary.fileUpload.drag,
+						dragend: Symphony.Extensions.MediaLibrary.fileUpload.dragend,
+						drop: Symphony.Extensions.MediaLibrary.fileUpload.drop
 					}
 				}).appendTo(field);
 
@@ -163,27 +164,27 @@ jQuery(window).load(function () {
 					class: 'button',
 					html: Symphony.Language.get('Refresh page to view files'),
 					on: {
-						click: refresh
+						click: Symphony.Extensions.MediaLibrary.fileUpload.refresh
 					}
 				}).appendTo(field);
-			};
+			},
 
-			function refresh(event) {
-				stop(event);
+			refresh : function (event) {
+				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
 				window.location = location.href;
-			};
+			},
 
-			function drag(event) {
-				stop(event);
+			drag : function (event) {
+				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
 				$(event.currentTarget).addClass('media_library-drag');
-			};
+			},
 
-			function dragend(event) {
+			dragend : function (event) {
 				$(event.currentTarget).removeClass('media_library-drag');
-			};
+			},
 
-			function drop(event) {
-				stop(event);
+			drop : function (event) {
+				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
 
 				var dragarea = $(event.currentTarget).removeClass('media_library-drag'),
 					field = dragarea.parents('.media_library-upload'),
@@ -204,16 +205,16 @@ jQuery(window).load(function () {
 						class: 'instance queued'
 					}).hide().appendTo(list).slideDown('fast');
 
-					send(field, item, file);
+					Symphony.Extensions.MediaLibrary.fileUpload.send(field, item, file);
 				});
-			};
+			},
 
-			function stop(event) {
+			stop : function (event) {
 				event.stopPropagation();
 				event.preventDefault();
-			};
+			},
 
-			function send(field, item, file) {
+			send : function (field, item, file) {
 				var data = new FormData(),
 					location = doc_root + '/workspace/uploads/';
 
@@ -257,17 +258,32 @@ jQuery(window).load(function () {
 						return xhr;
 					}
 				});
-			};
+			}
+		},
+		init : function () {
 
-		/*-------------------------------------------------------------------------
-			API
-		-------------------------------------------------------------------------*/
+			Symphony.Language.add({
+				'Copied!': false,
+				'Copy to clipboard': false,
+				'Are you sure you want to delete this file? This action cannot be undone.': false,
+				'Drop files': false,
+				'In queue': false,
+				'Uploading': false,
+				'Remove file': false,
+				'Upload failed': false,
+				'Refresh page to view files': false
+			});
 
-			return {
-				'init': init
-			};
-		}();
+			Symphony.Extensions.MediaLibrary.clickEvents();
+			Symphony.Extensions.MediaLibrary.fileUpload.init();
 
-		Fileupload.init();
+		}
+	};
+
+	(function ($) {
+		// Make sure we only execute in the Library
+		if (driver !== 'library') return false;
+
+		Symphony.Extensions.MediaLibrary.init();
 	})(jQuery);
 });
