@@ -36,6 +36,24 @@
 }
 
 /*
+ *	Nav item changes
+ */
+.media-library-direct {
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	margin-left: 0.5rem;
+	background: url('icons/icon-login.svg') no-repeat 50% 50% / cover;
+
+	position: relative;
+	top: 0.5rem;
+}
+
+/*#content-extension-media_-library-library .media-library-direct {
+	display: none;
+}*/
+
+/*
  *	The upload area
  */
 @font-face {

@@ -10,15 +10,23 @@ jQuery(window).load(function () {
 
 	ml_menu_group
 		.css('cursor', 'pointer')
+		.append('<span class="media-library-direct" />')
 		.remove()
 		.appendTo('#nav ul.content');
 
 	ml_menu_group.on('click', function (e) {
 		e.preventDefault();
 
+		var href = ml_menu_item.attr('href');
+
+		if ($(e.target).is('span')) {
+			window.location.href = href;
+			return false;
+		}
+
 		// Send data
 		$.ajax({
-			url: ml_menu_item.attr('href'),
+			url: href,
 			type: 'GET',
 			error: function(result){
 				console.log('error', result);
