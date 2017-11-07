@@ -22,3 +22,4 @@ Currently under construction!
 - Test on production environment, permissions?
 - Pagination of files?
 - ~~Multilingual support~~
+- TinyMCE text formatter button
