@@ -48,7 +48,7 @@
 			 *	Make sure the folder exists and is writable
 			 */
 			if (!file_exists($directory_path) || !is_writable($directory_path)) {
-				$empty = new XMLElement('div', __('The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.'), array('class' => 'empty-directory'));
+				$empty = new XMLElement('div', __('The uploads folder doesn\'t exist, or isn\'t writable. Please check it exists.'), array('class' => 'ml-empty-directory'));
 				$this->fieldset->appendChild($empty);
 
 				$this->Form->appendChild($this->fieldset);
@@ -64,7 +64,7 @@
 				// We're within subfolders, so update the directory path to include them
 				$directory_path = $directory_path . $subfolder . '/';
 
-				$backcontainer = new XMLElement('div', null, array('class' => 'directory-back'));
+				$backcontainer = new XMLElement('div', null, array('class' => 'ml-directory-back'));
 				$back = new XMLElement('p', __('Back'));
 				$backcontainer->appendChild($back);
 				$this->fieldset->appendChild($backcontainer);
@@ -80,7 +80,7 @@
 
 			foreach($directories as $directory) {
 				// Add directory container
-				$this->container = new XMLElement('div', null, array('class' => 'subdirectory', 'data-handle' => basename($directory)));
+				$this->container = new XMLElement('div', null, array('class' => 'ml-subdirectory', 'data-handle' => basename($directory)));
 
 				// Increment the directory counter
 				$directory_increment++;
@@ -96,7 +96,7 @@
 
 			// If there are directories or a back button, show a divider between the files and directories
 			if ($directory_increment > 0 || (isset($subfolder) && $subfolder !== '')) {
-				$divider = new XMLElement('div', null, array('class' => 'divider'));
+				$divider = new XMLElement('div', null, array('class' => 'ml-divider'));
 				$this->fieldset->appendChild($divider);
 			}
 
@@ -104,7 +104,7 @@
 			 *	Preview the files
 			 */
 			// A container holding all files
-			$all_files = new XMLElement('div', null, array('class' => 'files'));
+			$all_files = new XMLElement('div', null, array('class' => 'ml-files'));
 			$this->fieldset->appendChild($all_files);
 
 			// Get any file that has an extension
@@ -113,7 +113,7 @@
 			foreach($files as $file) {
 				// $this->container = new XMLElement('div', null, array('class' => 'file-preview'));
 				$this->container = new XMLElement('div');
-				$this->container->setAttribute('class', 'file');
+				$this->container->setAttribute('class', 'ml-file');
 
 				$this->showFile($file);
 

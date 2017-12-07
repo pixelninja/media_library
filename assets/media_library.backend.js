@@ -58,7 +58,7 @@ jQuery(window).load(function () {
 			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
 
 			// Backwards
-			$('.directory-back').on('click', function () {
+			$('.ml-directory-back').on('click', function () {
 				var self = $(this),
 					// The handle to append, which is the full folder path minus the last folder
 					handle = folder_path.replace(folder_path.substring(folder_path.lastIndexOf('/')), '');
@@ -67,7 +67,7 @@ jQuery(window).load(function () {
 			});
 
 			// Forwards
-			$('.subdirectory').on('click', function () {
+			$('.ml-subdirectory').on('click', function () {
 				var self = $(this),
 					// The handle of the folder
 					handle = self.data('handle');
@@ -81,7 +81,7 @@ jQuery(window).load(function () {
 			/*
 			 *	Delete a file
 			 */
-			$('.file a.delete').on('click', function () {
+			$('.ml-file a.delete').on('click', function () {
 				var self = $(this),
 					src = self.prev('a').data('src');
 					check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.'));
@@ -104,7 +104,7 @@ jQuery(window).load(function () {
 			/*
 			 *	Copy the URL for a file
 			 */
-		    new Clipboard('.file a.copy', {
+		    new Clipboard('.ml-file a.copy', {
 		        text: function(trigger) {
 					// Update the text momentarily as an indicator something has happened
 		            $(trigger).text(Symphony.Language.get('Copied!'));
