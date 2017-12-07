@@ -23,3 +23,4 @@ Currently under construction!
 - Pagination of files?
 - ~~Multilingual support~~
 - TinyMCE text formatter button
+- option to replace/overwrite an image
