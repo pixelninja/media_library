@@ -21,6 +21,11 @@
 	padding: 15px;
 }
 
+.featherlight iframe {
+	position: relative;
+	top: -84px;
+}
+
 .media-library {
 	height: calc(100vh - 200px);
 	padding: 1rem 1.8rem 0;
@@ -535,6 +540,10 @@
 
 .ml-file a.copy {
 	right: 75px;
+}
+
+.ml-file a.insert {
+	right: 85px;
 }
 
 .ml-file a.delete {

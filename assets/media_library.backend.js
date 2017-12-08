@@ -24,26 +24,13 @@ jQuery(window).load(function () {
 			return false;
 		}
 
-		// Send data
-		$.ajax({
-			url: href,
-			type: 'GET',
-			error: function(result){
-				console.log('error', result);
-			},
-			// Add file
-			success: function(result) {
-				var doc = $(result),
-					// content = doc.find('#contents');
-					content = doc.filter('#wrapper');
+		// Open the media library in a lightbox window (unless we're clicking straight through (above))
+		$.featherlight({
+			iframe: Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=',
+			afterClose : function () {
 
-				content.find('#header').remove();
+				if (localStorage.getItem('add-insert') === 'yes') localStorage.setItem('add-insert', 'no');
 
-				$.featherlight(content, {
-					afterContent : function() {
-						Symphony.Extensions.MediaLibrary.init();
-					}
-				});
 			}
 		});
 
@@ -285,6 +272,13 @@ jQuery(window).load(function () {
 			Symphony.Extensions.MediaLibrary.clickEvents();
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 
+			if (localStorage.getItem('add-insert') === 'yes') {
+				$('.media-library .copy').addClass('insert').removeClass('copy').text('Insert into text');
+
+				$('.media-library .insert').on('click', function () {
+					$('.featherlight-close').trigger('click');
+				});
+			}
 		}
 	};
 
