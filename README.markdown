@@ -24,3 +24,4 @@ Currently under construction!
 - ~~Multilingual support~~
 - TinyMCE text formatter button
 - option to replace/overwrite an image
+- create a Media Library field, which acts in place of the Upload field
