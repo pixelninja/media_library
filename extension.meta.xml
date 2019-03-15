@@ -14,6 +14,11 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="0.4" date="2019-03-15" min="2.7.x">
+			- Order files by date instead of name
+			- Hide directories by default. A button has been added for toggling their visibility
+			- Added an input for filtering files based on a keyword match
+		</release>
 		<release version="0.2" date="2017-08-17" min="2.7.x">
 			- Restructured the way files are displayed
 			- Added loads of features
