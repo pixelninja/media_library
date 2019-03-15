@@ -161,16 +161,8 @@
 			}
 
 			// Add a preview link to certain file types
-			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg'))) {
-				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'data-featherlight' => $filesrc));
-			}
-
-			if (in_array($fileextension, array('mp4', 'webm'))) {
-				$preview = new XMLElement('a', __('Preview'), array(
-					'class' => 'preview',
-					'href' => $filesrc,
-					'data-featherlight' => 'iframe'
-				));
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) {
+				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'href' => $filesrc, 'target' => '_blank'));
 			}
 
 			// Add copy and delete options

@@ -1,31 +1,3 @@
-.featherlight-content {
-	padding: 0 !important;
-}
-
-.featherlight-content #context {
-	padding: 2.5rem 1.8rem;
-}
-
-.featherlight-content #contents {
-	padding: 2rem;
-	border: none;
-	box-shadow: none;
-}
-
-.featherlight-content .media-library fieldset {
-	padding: 0;
-}
-
-.featherlight .featherlight-image {
-	margin: 0 auto;
-	padding: 15px;
-}
-
-.featherlight iframe {
-	position: relative;
-	top: -84px;
-}
-
 .media-library {
 	height: calc(100vh - 200px);
 	padding: 1rem 1.8rem 0;
