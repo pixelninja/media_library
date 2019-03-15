@@ -33,7 +33,7 @@
 			$callback = Administration::instance()->getPageCallback();
 			$page = Administration::instance()->Page;
 
-			$javascript = 'var user_id = "' . $author->get('id') . '",';
+			$javascript  = 'var user_id = "' . $author->get('id') . '",';
 			$javascript .= ' doc_root = "' . DOCROOT . '",';
 			$javascript .= ' user_type = "' . $author->get('user_type') . '",';
 			$javascript .= ' driver = "' . $callback['driver'] . '"';

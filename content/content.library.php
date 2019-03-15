@@ -94,11 +94,20 @@
 				$this->fieldset->appendChild($this->container);
 			}
 
+			// If there are directories, show a toggle button
+			if ($directory_increment > 0) {
+				$toggle_dirs = new XMLElement('div', null, array('class' => 'ml-toggle-directories ml-collapsed'));
+				$this->fieldset->appendChild($toggle_dirs);
+			}
+
 			// If there are directories or a back button, show a divider between the files and directories
 			if ($directory_increment > 0 || (isset($subfolder) && $subfolder !== '')) {
 				$divider = new XMLElement('div', null, array('class' => 'ml-divider'));
 				$this->fieldset->appendChild($divider);
 			}
+
+			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name'));
+			$this->fieldset->appendChild($filter_input);
 
 			/*
 			 *	Preview the files
@@ -109,6 +118,7 @@
 
 			// Get any file that has an extension
 			$files = glob($directory_path . '*.{*}', GLOB_BRACE);
+			usort($files, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
 
 			foreach($files as $file) {
 				// $this->container = new XMLElement('div', null, array('class' => 'file-preview'));
@@ -139,7 +149,7 @@
 			$icon = new XMLElement('span', null, array('class' => 'icon-'.$fileinfo['extension']));
 
 			// Add file name
-			$name = new XMLElement('p', $filename, array('class' => 'name'));
+			$name = new XMLElement('p', $filename, array('class' => 'name', 'data-lower' => strtolower($filename)));
 
 			// Add file size + extension
 			$size = new XMLElement('p', $fileextension . ' / ' . $filesize, array('class' => 'size'));

@@ -358,9 +358,10 @@
  *	The directory buttons
  */
 .ml-directory-back,
-.ml-subdirectory {
-	height: 30px;
-	margin: 0.5rem 0;
+.ml-subdirectory,
+.ml-toggle-directories {
+	height: 0;
+	margin: 0;
 	background-color: #f4f4f4;
 	background-position: 10px 50%;
 	background-size: 15px auto;
@@ -368,6 +369,19 @@
 	border-radius: 3px;
 	overflow: hidden;
 	cursor: pointer;
+
+	transition: all 200ms ease-out;
+}
+
+.ml-subdirectory.expanded {
+	height: 30px;
+	margin: 0.5rem 0;
+}
+
+.ml-directory-back,
+.ml-toggle-directories {
+    height: 30px;
+	margin: 0.5rem 0;
 }
 
 .ml-directory-back {
@@ -383,6 +397,23 @@
 	padding-left: 40px;
 	line-height: 30px;
 }
+
+.ml-toggle-directories {
+    width: 130px;
+
+    line-height: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.ml-toggle-directories:after {
+	display: block;
+	content: '+ Show Directories';
+}
+
+.ml-toggle-directories.expanded:after {
+	content: '- Hide Directories';
+}
 /* @end */
 
 /*
@@ -392,14 +423,28 @@
 	display: block;
 	width: 100%;
 	height: 2px;
-	margin: 2.5rem 0 2rem;
+	margin: 2.5rem 0 0.5rem;
 	background-color: #282828;
+}
+/* @end */
+
+/*
+ *	Filter input field
+ */
+.ml-filter-files {
+	float: right;
+	width: 300px;
+	margin-bottom: 1rem;
 }
 /* @end */
 
 /*
  *	The files
  */
+.ml-files{
+	clear: both;
+}
+
 .ml-file {
 	position: relative;
 	width: 100%;

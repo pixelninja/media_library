@@ -44,6 +44,32 @@ jQuery(window).load(function () {
 			 */
 			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
 
+			// Filter items
+			$('.ml-filter-files').on('keyup', function (e) {
+				var self = $(this),
+					value = self.val().toLowerCase();
+
+				if (value.length < 3) {
+					if ($('.ml-files').hasClass('filtered')) {
+						$('.ml-files').removeClass('filtered')
+						$('.ml-file').show()
+					}
+					return;
+				}
+
+				$('.ml-files').addClass('filtered')
+				$('p.name').parent().hide();
+				$('p.name[data-lower*="' + value + '"]').parent().show();
+			});
+
+			// Toggle directories
+			$('.ml-toggle-directories').on('click', function () {
+				var self = $(this);
+
+				self.prevAll('.ml-subdirectory').toggleClass('expanded');
+				self.toggleClass('expanded');
+			});
+
 			// Backwards
 			$('.ml-directory-back').on('click', function () {
 				var self = $(this),
