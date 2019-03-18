@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension id="media_library" status="experimental" xmlns="http://getsymphony.com/schemas/extension/1.0">
+<extension id="media_library" status="released" xmlns="http://getsymphony.com/schemas/extension/1.0">
 	<name>Media Library</name>
 	<description>Display all files and directories under Uploads in a library view.</description>
 	<repo type="github">https://github.com/pixelninja/media_library</repo>
@@ -14,7 +14,15 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.0.0" date="2019-03-18" min="2.7.x">
+			- Remove unused plugins and add clipboard into extension js file for fewer requests
+			- Add AJAX call for page fetching
+			- Combine this plugin with TinyMCE plugin to work within editors
+		</release>
 		<release version="0.4" date="2019-03-15" min="2.7.x">
+			- Removed Featherlite, and open previews in a new tab instead
+		</release>
+		<release version="0.3" date="2019-03-15" min="2.7.x">
 			- Order files by date instead of name
 			- Hide directories by default. A button has been added for toggling their visibility
 			- Added an input for filtering files based on a keyword match

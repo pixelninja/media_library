@@ -33,17 +33,16 @@
 			$callback = Administration::instance()->getPageCallback();
 			$page = Administration::instance()->Page;
 
-			$javascript  = 'var user_id = "' . $author->get('id') . '",';
-			$javascript .= ' doc_root = "' . DOCROOT . '",';
-			$javascript .= ' user_type = "' . $author->get('user_type') . '",';
-			$javascript .= ' driver = "' . $callback['driver'] . '"';
-			$javascript .= (isset($_GET['folder']) && $_GET['folder'] !== '') ? ', folder_path = "' . $_GET['folder'] . '"' : ', folder_path';
-			$javascript .= ';';
+			$javascript  = 'var ml_user_id = "' . $author->get('id') . '";';
+			$javascript .= 'var ml_doc_root = "' . DOCROOT . '";';
+			$javascript .= 'var ml_user_type = "' . $author->get('user_type') . '";';
+			$javascript .= 'var ml_driver = "' . $callback['driver'] . '";';
+			$javascript .= 'var ml_source_input;';
+			$javascript .= (isset($_GET['folder']) && $_GET['folder'] !== '') ? 'var ml_folder_path = "' . $_GET['folder'] . '";' : 'var ml_folder_path;';
 
 			$html = new XMLElement('script', $javascript, array('type'=>'text/javascript'));
 
 			$page->addElementToHead($html);
-			$page->addScriptToHead(URL . '/extensions/media_library/assets/clipboard.min.js', 667);
 			$page->addScriptToHead(URL . '/extensions/media_library/assets/media_library.backend.js', 667);
 			$page->addStylesheetToHead(URL . '/extensions/media_library/assets/media_library.backend.css', 'screen', 666);
 		}
