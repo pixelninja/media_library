@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.0.1" date="2019-03-19" min="2.7.x">
+			- Update so deleting works within lightbox
+			- Bug fixes
+		</release>
 		<release version="1.0.0" date="2019-03-18" min="2.7.x">
 			- Remove unused plugins and add clipboard into extension js file for fewer requests
 			- Add AJAX call for page fetching

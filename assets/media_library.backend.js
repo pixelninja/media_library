@@ -67,10 +67,10 @@ jQuery(window).load(function () {
 
 	// Function for loading in ML content into the lightbox
 	function loadMediaPage(href) {
-		var jqxhr = $.get(href, function () {
-			$('.ml-lightbox-content').addClass('show-loader');
-			$('.ml-lightbox-content').find('#contents').remove();
-		});
+		$('.ml-lightbox-content').addClass('show-loader');
+		$('.ml-lightbox-content').find('#contents').remove();
+
+		var jqxhr = $.get(href);
 
 		jqxhr.done(function(data) {
 			var parser = new DOMParser(),
@@ -82,15 +82,35 @@ jQuery(window).load(function () {
 			$('.ml-lightbox-content').find('.media_library-upload, #context').remove();
 			$('.ml-lightbox-content').prepend(header);
 
-			if (href.indexOf('?folder=') > -1) ml_folder_path = href.split('?folder=')[1];
+			if (localStorage.getItem('add-to-editor') === 'yes') {
+				$('.ml-lightbox .ml-file .copy').text('Add to editor').addClass('add-to-editor');
+			}
+
+			if (getUrlParameter('folder') !== '' || getUrlParameter('folder') !== undefined) ml_folder_path = getUrlParameter('folder');
 
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 			Symphony.Extensions.MediaLibrary.events();
 		});
 
-		jqxhr.fail(function() {
+		jqxhr.fail(function(data) {
 			alert('Something went wrong. Try again.');
+			console.log(data);
 		});
+
+		function getUrlParameter(name) {
+		    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+		    var regexS = "[\\?&]" + name + "=([^&#]*)";
+		    var regex = new RegExp(regexS);
+		    var results = regex.exec(href);
+
+		    if(results === null) {
+		        return false;
+		    }
+		    else {
+		        return decodeURIComponent(results[1].replace(/\+/g, " "));
+		    }
+		}
 	}
 
 	Symphony.Extensions.MediaLibrary = {
@@ -127,7 +147,7 @@ jQuery(window).load(function () {
 			});
 
 			// Backwards
-			$('.ml-directory-back').on('click', function () {
+			$('.ml-directory-back').on('click', function (e) {
 				var self = $(this),
 					// The handle to append, which is the full folder path minus the last folder
 					handle = ml_folder_path.replace(ml_folder_path.substring(ml_folder_path.lastIndexOf('/')), '');
@@ -138,6 +158,8 @@ jQuery(window).load(function () {
 				else {
 					window.location.href = base_url + handle;
 				}
+
+				return false;
 			});
 
 			// Forwards
@@ -155,29 +177,37 @@ jQuery(window).load(function () {
 				else {
 					window.location.href = base_url + handle;
 				}
+
+				return false;
 			});
 
 			/*
 			 *	Delete a file
 			 */
-			$('.ml-file a.delete').on('click', function () {
+			$('.ml-file a.delete').on('click', function (e) {
+				e.preventDefault();
+
 				var self = $(this),
 					src = self.prev('a').data('src');
-					check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.'));
+					check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.')),
+					unlink = '&unlink=' + src.replace(Symphony.Context.get('root') + '/', ''),
+					href = (ml_folder_path !== '' && ml_folder_path !== undefined) ? base_url + ml_folder_path + unlink : base_url + unlink;
 
 				// Only remove the files if the user is bloody well sure
 				if (check === true) {
-					if (ml_folder_path !== '' && ml_folder_path !== undefined) {
-						window.location.href = base_url + ml_folder_path + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+					if ($('.ml-lightbox').length) {
+						loadMediaPage(href);
 					}
 					else {
-						window.location.href = base_url + '&unlink=' + src.replace(Symphony.Context.get('root') + '/', '')
+						window.location.href = href;
 					}
 				}
 				// Do nothing
 				else {
 
 				}
+
+				return false;
 			});
 
 			/*
@@ -246,7 +276,7 @@ jQuery(window).load(function () {
 			});
 
 			// clicking on the lightbox area should also close the lightbox
-			$('.ml-lightbox').on('click', function (e) {
+			$('.ml-lightbox').on('click', function (e) {		        
 		        var container = $(this).find('> *');
 
 		        // if the target of the click isn't the container, or a descendant of the container
