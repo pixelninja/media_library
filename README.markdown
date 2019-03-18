@@ -1,6 +1,6 @@
 # Media Library
 
-Currently under construction, but mostly works.
+Currently under construction, but mostly works. I've yet to test this in a live/production environment.
 
 ## Installation
 
