@@ -301,15 +301,10 @@
 .ml-empty-directory {
 	width: 375px;
 	max-width: 90%;
-	margin: 0;
+	margin: 50px auto;
 	padding: 1.5rem;
 	background: #f5f5f5;
     border: .1rem solid #e6e6e5;
-
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 
 	font-size: 127%;
 	text-align: center;
