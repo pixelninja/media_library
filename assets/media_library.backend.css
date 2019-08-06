@@ -28,17 +28,6 @@ form.media-library {
 /*
  *	The upload area
  */
-@font-face {
-  font-family: 'icons';
-  src: url('fonts/icons.eot?92711752');
-  src: url('fonts/icons.eot?92711752#iefix') format('embedded-opentype'),
-       url('fonts/icons.woff?92711752') format('woff'),
-       url('fonts/icons.ttf?92711752') format('truetype'),
-       url('fonts/icons.svg?92711752#icons') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
 .media_library-upload,
 .media_library-upload * {
 	box-sizing: border-box;
@@ -266,12 +255,12 @@ form.media-library {
 }
 
 .media_library-droparea span::before {
-	font-family: icons;
-	font-size: 40px;
-	color: rgba(0, 0, 0, 0.1);
-	content: '\e800';
 	display: block;
-	line-height: 1;
+	content: '';
+	height: 30px;
+	margin-bottom: 5px;
+	background: url('icons/upload.svg') no-repeat 50% 50% / contain;
+	opacity: 0.1;
 }
 .media_library-droparea.media_library-drag span::before {
 	color: rgba(0, 0, 0, 0.25);
@@ -534,6 +523,49 @@ form.media-library {
 .ml-file a {
 	position: absolute;
 	top: 15px;
+}
+
+.ml-file a.tags {
+	right: 270px;
+}
+
+.ml-file a.tags.loading {
+	color: rgba(63, 105, 165, 0.4);
+}
+
+.ml-file a.tags.loading:after {
+	display: block;
+	content: '';
+	width: 20px;
+	height: 20px;
+	background: url('icons/loader.svg') no-repeat 50% 50% / cover;
+
+	position: absolute;
+	top: -2px;
+	right: 7px;
+}
+
+.ml-file a.tags input,
+.ml-file a.tags button {
+	margin: 0;
+	padding: 0 5px;
+	box-shadow: 0 19px 38px rgba(0,0,0, 0.30), 0 5px 12px rgba(0,0,0, 0.22);
+
+	position: absolute;
+    top: 50%;
+    right: 72px;
+
+    transform: translateY(-50%);
+}
+
+.ml-file a.tags input {
+	width: 250px;
+}
+
+.ml-file a.tags button {
+	border-radius: 0 3px 3px 0;
+
+    right: 40px;
 }
 
 .ml-file a.preview {

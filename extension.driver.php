@@ -5,13 +5,13 @@
 		public function fetchNavigation() {
 			return array(
 				array(
-					'name'		=> __('Media Library'),
-					'type'		=> 'content',
-					'children'	=> array(
+					'name' => __('Media Library'),
+					'type' => 'content',
+					'children' => array(
 						array(
-							'link'		=> '/library/',
-							'name'		=> __('Media Library'),
-							'visible'	=> 'yes'
+							'link' => '/library/',
+							'name' => __('Media Library'),
+							'visible' => 'yes'
 						),
 					)
 				)

@@ -106,7 +106,7 @@
 				$this->fieldset->appendChild($divider);
 			}
 
-			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name'));
+			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name or tags'));
 			$this->fieldset->appendChild($filter_input);
 
 			/*
@@ -160,6 +160,9 @@
 				$dimensions = new XMLElement('p', $imagedimensions[0] . 'x' . $imagedimensions[1] . 'px', array('class' => 'size'));
 			}
 
+			// Add tag icon
+			$tags = new XMLElement('a', 'Tags', array('class' => 'tags', 'href' => str_replace(URL, '', $filesrc)));
+
 			// Add a preview link to certain file types
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) {
 				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'href' => $filesrc, 'target' => '_blank'));
@@ -174,6 +177,7 @@
 			$this->container->appendChild($name);
 			$this->container->appendChild($size);
 			$this->container->appendChild($dimensions);
+			$this->container->appendChild($tags);
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $this->container->appendChild($preview);;
 			$this->container->appendChild($copy);
 			$this->container->appendChild($delete);

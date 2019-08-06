@@ -56,6 +56,7 @@ jQuery(window).load(function () {
 
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 			Symphony.Extensions.MediaLibrary.events();
+			Symphony.Extensions.MediaLibrary.getTags();
 		});
 
 		jqxhr.fail(function() {
@@ -114,11 +115,28 @@ jQuery(window).load(function () {
 	}
 
 	Symphony.Extensions.MediaLibrary = {
+		getTags : function () {
+			/*
+			 *	Add tags from JSON file to each row
+			 */
+			$.getJSON(Symphony.Context.get('root') + '/extensions/media_library/tags/tags.json', function( data ) {
+				$('.ml-file .tags').each(function () {
+					var src = $(this).attr('href');
+
+					if (data[src]) $(this).attr('data-tags', data[src]);
+				});
+			});
+		},
 		events : function () {
 			/*
 			 *	Go forward or backwards a directory
 			 */
 			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
+
+			// Make sure 'enter' doesn't fire submission
+			$('.ml-filter-files').on('keydown', function (e) {
+				if (e.keyCode === 13) return false;
+			});
 
 			// Filter items
 			$('.ml-filter-files').on('keyup', function (e) {
@@ -135,7 +153,7 @@ jQuery(window).load(function () {
 
 				$('.ml-files').addClass('filtered')
 				$('p.name').parent().hide();
-				$('p.name[data-lower*="' + value + '"]').parent().show();
+				$('p.name[data-lower*="' + value + '"], a.tags[data-tags*="' + value + '"]').parent().show();
 			});
 
 			// Toggle directories
@@ -206,6 +224,66 @@ jQuery(window).load(function () {
 				else {
 
 				}
+
+				return false;
+			});
+
+			/*
+			 *	Add tags to a file
+			 */
+			// Adds/removes the inputs necessary
+			$('.ml-file a.tags').on('click', function (e) {
+				e.preventDefault();
+
+				if ($(e.target).is('input') || $(e.target).is('button')) return false;
+
+				var self = $(this),
+					input = self.append('<input name="tags[list]" placeholder="Add comma separated tags" />').find('input'),
+					button = self.append('<button name="tags[add]">Add</button>').find('button');
+
+				if (self.hasClass('active')) {
+					self.removeClass('active');
+					input.add(button).remove();
+					return false;
+				}
+
+				if (self.data('tags')) input.val(self.data('tags'));
+
+				self.addClass('active');
+
+				return false;
+			});
+
+			$('.ml-file a.tags').on('click', 'button', function (e) {
+				e.preventDefault();
+
+				var self = $(this),
+					parent = self.parent(),
+					key = parent.attr('href'),
+					value = self.prev().val(),
+					script = Symphony.Context.get('root') + '/extensions/media_library/tags/add_tags.php';
+
+				parent.addClass('loading');
+
+				var jqxhr = $.get(script, {image: key, tags: value});
+
+				jqxhr.done(function(data) {
+					self
+						.prev()
+						.val(data);
+
+					parent
+						.removeClass('loading')
+						.attr('data-tags', data)
+						.trigger('click');
+				});
+
+				jqxhr.fail(function(data) {
+					parent.removeClass('loading');
+
+					alert('Something went wrong. Try again.');
+					console.log(data);
+				});
 
 				return false;
 			});
@@ -284,7 +362,6 @@ jQuery(window).load(function () {
 					closeLightbox();
 		        }
 			});
-
 		},
 		fileUpload : {
 			/*
@@ -434,6 +511,7 @@ jQuery(window).load(function () {
 				'Refresh page to view files': false
 			});
 
+			Symphony.Extensions.MediaLibrary.getTags();
 			Symphony.Extensions.MediaLibrary.events();
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 		}
