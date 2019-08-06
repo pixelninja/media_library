@@ -247,7 +247,7 @@ jQuery(window).load(function () {
 					return false;
 				}
 
-				if (self.data('tags')) input.val(self.data('tags'));
+				if (self.data('tags')) input.val(self.attr('data-tags'));
 
 				self.addClass('active');
 
@@ -268,10 +268,6 @@ jQuery(window).load(function () {
 				var jqxhr = $.get(script, {image: key, tags: value});
 
 				jqxhr.done(function(data) {
-					self
-						.prev()
-						.val(data);
-
 					parent
 						.removeClass('loading')
 						.attr('data-tags', data)

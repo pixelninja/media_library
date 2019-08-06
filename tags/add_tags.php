@@ -17,8 +17,8 @@
         exit;
     }
 
-    // Remove any white space and trailing commas
-    $tags = trim(str_replace(' ', '', $tags), ',');
+    // Remove any white space and trailing commas, and make lowercase
+    $tags = strtolower(trim(str_replace(' ', '', $tags), ','));
 
     // Get the json data
 	$json = file_get_contents($file);
