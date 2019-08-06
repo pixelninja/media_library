@@ -91,6 +91,7 @@ jQuery(window).load(function () {
 
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 			Symphony.Extensions.MediaLibrary.events();
+			Symphony.Extensions.MediaLibrary.getTags();
 		});
 
 		jqxhr.fail(function(data) {
