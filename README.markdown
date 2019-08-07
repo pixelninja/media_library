@@ -23,6 +23,10 @@ With this extension you can:
 - Tag files with comma separated keywords, for use in filtering products
 - Combine with the Tiny MCE editor to create a filepicker option within image/media options
 
+## Developers
+
+To use tagging, the `tags.json` file needs to be writable. Make sure the file permissions and file ownership allow this.
+
 To use the media library within the TinyMCE editor, add this snippet to your TinyMCE javascript file within the init function:
 
 `
@@ -39,6 +43,7 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 ### To do
 
 - ~~Test on production environment, permissions?~~
+- Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
 - create a Media Library field, which acts in place of the Upload field
 - (maybe) option to replace/overwrite an image
 - (maybe) Check if files are in use
@@ -54,3 +59,5 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 - ~~Use AJAX to load in Library from any page without losing context~~
 - ~~Multilingual support~~
 - ~~TinyMCE text formatter button~~
+- ~~key word Filtering~~
+- ~~Tagging for better filtering~~
