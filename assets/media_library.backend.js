@@ -376,14 +376,18 @@ jQuery(window).load(function () {
 				// Append drop area
 				$('<div />', {
 					class: 'media_library-droparea',
-					html: '<span>' + Symphony.Language.get('Drop files') + '</span>',
-					on: {
-						dragover: Symphony.Extensions.MediaLibrary.fileUpload.drag,
-						dragenter: Symphony.Extensions.MediaLibrary.fileUpload.drag,
-						dragend: Symphony.Extensions.MediaLibrary.fileUpload.dragend,
-						drop: Symphony.Extensions.MediaLibrary.fileUpload.drop
-					}
+					// html: '<span>' + Symphony.Language.get('Drop files') + '</span>',
+					html: '<input type="file" class="fireFilepond" name="filepond" />'
+					// html: '<form method="post" action="submit.php"><input type="file" class="fireFilepond" name="filepond" /><button type="submit">Submit</button></form>'
+					// on: {
+					// 	dragover: Symphony.Extensions.MediaLibrary.fileUpload.drag,
+					// 	dragenter: Symphony.Extensions.MediaLibrary.fileUpload.drag,
+					// 	dragend: Symphony.Extensions.MediaLibrary.fileUpload.dragend,
+					// 	drop: Symphony.Extensions.MediaLibrary.fileUpload.drop
+					// }
 				}).appendTo(field);
+
+				Symphony.Extensions.MediaLibrary.filePond();
 
 				// And a button that refreshes
 				$('<button />', {
@@ -439,7 +443,7 @@ jQuery(window).load(function () {
 						class: 'instance queued'
 					}).hide().appendTo(list).slideDown('fast');
 
-					Symphony.Extensions.MediaLibrary.fileUpload.send(field, item, file);
+					// Symphony.Extensions.MediaLibrary.fileUpload.send(field, item, file);
 				});
 			},
 
@@ -494,6 +498,59 @@ jQuery(window).load(function () {
 				});
 			}
 		},
+		filePond : function () {
+		    // First register any plugins
+		    // $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
+
+		    // Turn input element into a pond
+		    $('.fireFilepond').filepond();
+
+		    // Set allowMultiple property to true
+		    // $('.fireFilepond').filepond('allowMultiple', true);
+
+		    // Listen for addfile event
+		    $('.fireFilepond').on('FilePond:addfile', function(e) {
+		        console.log('file added event');
+		        console.log(e);
+		    });
+
+		    $('.fireFilepond').on('FilePond:processfilestart', function(e) {
+		        console.log('started');
+		        console.log(e);
+		    });
+
+		    $('.fireFilepond').on('FilePond:processfile', function(e) {
+		        console.log('Finished');
+		        console.log(e);
+		    });
+
+			FilePond.setOptions({
+				instantUpload : false,
+			    server: {
+			        process:(fieldName, file, metadata, load, error, progress, abort) => {
+						var field = $('.media_library-upload'),
+							list = field.find('ol'),
+			    			item = $('<li />', {
+								html: '<header><a>' + file.name + '</a><span class="media_library-progress"></span><a class="destructor">' + Symphony.Language.get('In queue') + '</a></header>',
+								class: 'instance queued'
+							}).hide().appendTo(list).slideDown('fast');
+
+			        	Symphony.Extensions.MediaLibrary.fileUpload.send(field, item, file);
+
+			            // // Should expose an abort method so the request can be cancelled
+			            // return {
+			            //     abort: () => {
+			            //         // This function is entered if the user has tapped the cancel button
+			            //         request.abort();
+
+			            //         // Let FilePond know the request has been cancelled
+			            //         abort();
+			            //     }
+			            // };
+			        }
+			    }
+			});
+		},
 		init : function () {
 
 			Symphony.Language.add({
@@ -510,6 +567,7 @@ jQuery(window).load(function () {
 
 			Symphony.Extensions.MediaLibrary.getTags();
 			Symphony.Extensions.MediaLibrary.events();
+			
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 		}
 	};
