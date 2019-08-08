@@ -529,6 +529,26 @@ form.media-library {
 	right: 270px;
 }
 
+.ml-file a.tags[data-tags]:hover:before {
+	display: block;
+	content: attr(data-tags);
+	height: 30px;
+	padding: 0 10px;
+	background-color: rgba(0,0,0, 0.5);
+	border-radius: 3px;
+	box-shadow: 0 19px 38px rgba(0,0,0, 0.30), 0 5px 12px rgba(0,0,0, 0.22);
+
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+
+	transform: translateX(-50%);
+
+	font-size: 11px;
+	line-height: 30px;
+	color: #fff;
+}
+
 .ml-file a.tags.loading {
 	color: rgba(63, 105, 165, 0.4);
 }

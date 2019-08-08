@@ -1,6 +1,6 @@
 # Media Library
 
-Currently under construction, but mostly works. I've yet to test this in a live/production environment.
+An easy way to manage your uploads.
 
 ## Installation
 
@@ -9,9 +9,25 @@ Currently under construction, but mostly works. I've yet to test this in a live/
 
 ## Usage
 
-In the main navigation, there should now be a `Media Library` item. Click the icon will take you to the physical page, while clicking anywhere else on the link will open the media library within a lightbox.
+In the main navigation, there should now be a `Media Library` item. Clicking the icon will take you to the physical page, while clicking anywhere else on the link will open the media library within a lightbox.
 
-To use the media library within the TinyMCE editor, add this snippet to your TinyMCE javascript file:
+With this extension you can:
+
+- Upload multiple files at once using drag/drop
+- See all files within the `/workspace/uploads` directory
+- Navigate through subdirectories
+- Preview files
+- Copy the file path to your clipboard
+- Delete files
+- Filter files by keyword (min 3 characters)
+- Tag files with comma separated keywords, for use in filtering products
+- Combine with the Tiny MCE editor to create a filepicker option within image/media options
+
+## Developers
+
+To use tagging, the `tags.json` file needs to be writable. Make sure the file permissions and file ownership allow this.
+
+To use the media library within the TinyMCE editor, add this snippet to your TinyMCE javascript file within the init function:
 
 `
 file_picker_types: 'image media',
@@ -26,7 +42,8 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 ### To do
 
-- Test on production environment, permissions?
+- ~~Test on production environment, permissions?~~
+- Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
 - create a Media Library field, which acts in place of the Upload field
 - (maybe) option to replace/overwrite an image
 - (maybe) Check if files are in use
@@ -42,3 +59,5 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 - ~~Use AJAX to load in Library from any page without losing context~~
 - ~~Multilingual support~~
 - ~~TinyMCE text formatter button~~
+- ~~key word Filtering~~
+- ~~Tagging for better filtering~~

@@ -122,9 +122,14 @@ jQuery(window).load(function () {
 			 */
 			$.getJSON(Symphony.Context.get('root') + '/extensions/media_library/tags/tags.json', function( data ) {
 				$('.ml-file .tags').each(function () {
-					var src = $(this).attr('href');
+					var src = $(this).attr('href'),
+						tags = data[src],
+						count = 0;
 
-					if (data[src]) $(this).attr('data-tags', data[src]);
+					if (data[src]) {
+						count = tags.split(',').length;
+						$(this).attr('data-tags', tags).text('Tags (' + count + ')');
+					}
 				});
 			});
 		},
@@ -262,16 +267,20 @@ jQuery(window).load(function () {
 					parent = self.parent(),
 					key = parent.attr('href'),
 					value = self.prev().val(),
-					script = Symphony.Context.get('root') + '/extensions/media_library/tags/add_tags.php';
+					script = Symphony.Context.get('root') + '/extensions/media_library/tags/add_tags.php',
+					count = 0;
 
 				parent.addClass('loading');
 
 				var jqxhr = $.get(script, {image: key, tags: value});
 
 				jqxhr.done(function(data) {
+					count = data.split(',').length;
+
 					parent
 						.removeClass('loading')
 						.attr('data-tags', data)
+						.text('Tags (' + count + ')')
 						.trigger('click');
 				});
 
