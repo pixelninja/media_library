@@ -45,7 +45,7 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 - ~~Test on production environment, permissions?~~
 - Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
-- ~~create a Media Library field, which acts in place of the Upload field ~~
+- ~~create a Media Library field, which acts in place of the Upload field~~
 - (maybe) option to replace/overwrite an image
 - (maybe) Check if files are in use
 - (maybe) link with JIT extension for images to copy URL with recipe
