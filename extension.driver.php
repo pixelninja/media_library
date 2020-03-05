@@ -2,6 +2,12 @@
 
 	Class extension_media_library extends Extension{
 
+		public function about() {
+			return array(
+				'name' => 'Media Library'
+			);
+		}
+
 		public function install() {
 			try {
 				Symphony::Database()->query("
