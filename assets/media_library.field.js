@@ -12,7 +12,7 @@ jQuery(document).ready(function() {
 
 		ml_source_input = this;
 		localStorage.setItem('add-to-field', 'yes');
-		$('#nav .ml-link').trigger('click');
+		$('.ml-link').trigger('click');
 	});
 
 	// Add a file preview

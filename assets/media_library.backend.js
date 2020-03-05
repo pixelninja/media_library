@@ -15,19 +15,25 @@ jQuery(window).load(function () {
 	var ml_menu_item = jQuery('#nav a[href$="/extension/media_library/library/"]'),
 		ml_menu_group = ml_menu_item.parents('li:last');
 
-	ml_menu_group.find('ul').remove();
+	// Check if the nav item actually exists, some extensions strip this out (e.g Entry Relationship FIeld)
+	if (!ml_menu_group.length) {
+		ml_menu_group = jQuery('#header').append('<div class="ml-link" data-href="' + Symphony.Context.get('symphony') + '/extension/media_library/library/" />').find('.ml-link');
+	}
+	else {
+		ml_menu_group.find('ul').remove();
 
-	ml_menu_group
-		.addClass('ml-link')
-		.css('cursor', 'pointer')
-		.append('<span class="media-library-direct" />')
-		.remove()
-		.appendTo('#nav ul.content');
+		ml_menu_group
+			.addClass('ml-link')
+			.css('cursor', 'pointer')
+			.append('<span class="media-library-direct" />')
+			.remove()
+			.appendTo('#nav ul.content');
+	}
 
 	ml_menu_group.on('click', function (e) {
 		e.preventDefault();
 
-		var href = ml_menu_item.attr('href');
+		var href = ml_menu_item.attr('href') || ml_menu_group.attr('data-href');
 
 		// Clicking the icon should take you to the actual page
 		if ($(e.target).is('span')) {
