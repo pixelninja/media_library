@@ -153,6 +153,8 @@
 
 			// Add file size + extension
 			$size = new XMLElement('p', $fileextension . ' / ' . $filesize, array('class' => 'size'));
+			// Mime attr for searching files on
+			$size->setAttribute('data-mime', $fileextension);
 
 			// Add file resolution if it's an image
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp'))) {
@@ -172,6 +174,19 @@
 			$copy = new XMLElement('a', __('Copy to clipboard'), array('class' => 'copy', 'data-src' => $filesrc));
 			$delete = new XMLElement('a', __('Delete'), array('class' => 'delete'));
 
+			// Add a hidden 'meta' paragraph for storing file data
+			$meta = new XMLElement('p', '', array('class' => 'meta', 'data-mime' => $fileextension, 'data-size' => $filesize));
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp'))) {
+				$imagedimensions = getimagesize($file);
+				$meta->setAttribute('data-dimensions', $imagedimensions[0] . 'x' . $imagedimensions[1] . 'px');
+			}
+
+			// Add file resolution if it's an image
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp'))) {
+				$imagedimensions = getimagesize($file);
+				$dimensions = new XMLElement('p', $imagedimensions[0] . 'x' . $imagedimensions[1] . 'px', array('class' => 'size'));
+			}
+
 			// Append all the data to the page
 			$this->container->appendChild($icon);
 			$this->container->appendChild($name);
@@ -181,6 +196,7 @@
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $this->container->appendChild($preview);;
 			$this->container->appendChild($copy);
 			$this->container->appendChild($delete);
+			$this->container->appendChild($meta);
 		}
 
 		/*

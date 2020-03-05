@@ -54,6 +54,10 @@ jQuery(window).load(function () {
 				lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
 			}
 
+			if (localStorage.getItem('add-to-field') === 'yes') {
+				lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
+			}
+
 			Symphony.Extensions.MediaLibrary.fileUpload.init();
 			Symphony.Extensions.MediaLibrary.events();
 			Symphony.Extensions.MediaLibrary.getTags();
@@ -85,6 +89,10 @@ jQuery(window).load(function () {
 
 			if (localStorage.getItem('add-to-editor') === 'yes') {
 				$('.ml-lightbox .ml-file .copy').text('Add to editor').addClass('add-to-editor');
+			}
+
+			if (localStorage.getItem('add-to-field') === 'yes') {
+				$('.ml-lightbox .ml-file .copy').text('Select file').addClass('select-file');
 			}
 
 			if (getUrlParameter('folder') !== '' || getUrlParameter('folder') !== undefined) ml_folder_path = getUrlParameter('folder');
@@ -137,7 +145,8 @@ jQuery(window).load(function () {
 			/*
 			 *	Go forward or backwards a directory
 			 */
-			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
+			var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=',
+				clipboard;
 
 			// Make sure 'enter' doesn't fire submission
 			$('.ml-filter-files').on('keydown', function (e) {
@@ -159,7 +168,7 @@ jQuery(window).load(function () {
 
 				$('.ml-files').addClass('filtered')
 				$('p.name').parent().hide();
-				$('p.name[data-lower*="' + value + '"], a.tags[data-tags*="' + value + '"]').parent().show();
+				$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"]').parent().show();
 			});
 
 			// Toggle directories
@@ -297,7 +306,7 @@ jQuery(window).load(function () {
 			/*
 			 *	Copy the URL for a file
 			 */
-			new Clipboard('.ml-file a.copy', {
+			clipboard = new Clipboard('.ml-file a.copy', {
 				text: function(trigger) {
 					// Update the text momentarily as an indicator something has happened
 					$(trigger).text(Symphony.Language.get('Copied!'));
@@ -307,9 +316,57 @@ jQuery(window).load(function () {
 						$(trigger).text(Symphony.Language.get('Copy to clipboard'));
 					}, 2000);
 
-					// If we are using the TinyMCE plugin as well, then add the sourse to the popup window
+					// If we are using the TinyMCE plugin as well, then add the source to the popup window
 					if ($(trigger).hasClass('add-to-editor') && typeof ml_source_input === 'function') {
-						ml_source_input($(trigger).data('src'), {alt: $(trigger).prevAll('.name').text()})
+						ml_source_input(
+							$(trigger).data('src'), {
+								alt: $(trigger).prevAll('.name').text()
+							}
+						);
+
+						closeLightbox();
+					}
+					// If we are using the media library field, then add the data to the fields
+					else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
+						var meta = $(trigger).nextAll('.meta'),
+							data = {
+								name : $(trigger).prevAll('.name').text(),
+								src : $(trigger).data('src'),
+								mime : meta.data('mime'),
+								size : meta.data('size'),
+								dimensions : meta.data('dimensions') || false
+							},
+							allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+
+						$(ml_source_input).find('input[name*="[name]"]').val(data.name);
+						$(ml_source_input).find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
+						$(ml_source_input).find('input[name*="[mime]"]').val(data.mime);
+						$(ml_source_input).find('input[name*="[size]"]').val(data.size.split(' ')[0]);
+						$(ml_source_input).find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
+						if (data.dimensions) {
+							$(ml_source_input).find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
+							$(ml_source_input).find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+						}
+						else {
+							$(ml_source_input).find('input[name*="[width]"]').val('');
+							$(ml_source_input).find('input[name*="[height]"]').val('');	
+						}
+
+						// Add or update the preview
+						if ($(ml_source_input).find('.preview').length) {
+							if (allowed_types.includes(data.mime)) {
+								$(ml_source_input).find('.preview img').attr('src', data.src);
+							}
+							else {
+								$(ml_source_input).find('.preview').remove();
+							}
+						}
+						else {
+							if (allowed_types.includes(data.mime)) {
+								$(ml_source_input).append('<div class="preview"><img src="' + data.src + '" /></div>')
+							}
+						}
+
 						closeLightbox();
 					}
 
@@ -345,7 +402,12 @@ jQuery(window).load(function () {
 			 *	Close the lightbox
 			 */
 			function closeLightbox() {
+				// End the clipboard instance
+				clipboard.destroy();
+				// Reset localstorage settings
 				localStorage.removeItem('add-to-editor');
+				localStorage.removeItem('add-to-field');
+				// Hide it
 				$('body .ml-lightbox').removeClass('is-visible');
 				setTimeout(function () {
 					$('body .ml-lightbox').remove();

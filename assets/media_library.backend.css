@@ -604,6 +604,10 @@ form.media-library {
 	right: 10px;
 	color: #e90a20;
 }
+
+.ml-file .meta {
+	display: none;
+}
 /* @end */
 
 /*

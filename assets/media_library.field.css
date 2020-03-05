@@ -1,0 +1,51 @@
+.field-medialibraryfield {
+	cursor: pointer;
+}
+
+.field-medialibraryfield:after {
+	display: block;
+	content: '';
+	clear: both;
+}
+
+.field-medialibraryfield label:after {
+	display: block;
+	content: '';
+	width: 40px;
+	height: 20px;
+	background: #f4f4f4 url('icons/folder-search.svg') no-repeat 50% 50% / auto 14px;
+
+	position: absolute;
+	bottom: 1px;
+	right: 1px;
+	z-index: 1;
+}
+
+.field-medialibraryfield input:not(:first-of-type) {
+	display: none;
+}
+
+.field-medialibraryfield .caption {
+	display: block;
+	color: #222;
+	margin: 5px 0;
+	padding: 3px 0;
+	opacity: 0.5;
+}
+
+.field-medialibraryfield .preview {
+	box-sizing: border-box;
+	width: 100%;
+	height: 150px;
+	margin-top: -1.5em;
+	padding: 10px;
+	background: #f4f4f4;
+	border-radius: 0 0 3px 3px;
+	overflow: hidden;
+}
+
+.field-medialibraryfield .preview img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}

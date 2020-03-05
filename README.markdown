@@ -22,6 +22,7 @@ With this extension you can:
 - Filter files by keyword (min 3 characters)
 - Tag files with comma separated keywords, for use in filtering products
 - Combine with the Tiny MCE editor to create a filepicker option within image/media options
+- Use the Media Library Field type in place of the upload field.
 
 ## Developers
 
@@ -44,7 +45,7 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 - ~~Test on production environment, permissions?~~
 - Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
-- create a Media Library field, which acts in place of the Upload field
+- ~~create a Media Library field, which acts in place of the Upload field ~~
 - (maybe) option to replace/overwrite an image
 - (maybe) Check if files are in use
 - (maybe) link with JIT extension for images to copy URL with recipe
