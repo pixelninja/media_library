@@ -336,7 +336,9 @@ jQuery(window).load(function () {
 								size : meta.data('size'),
 								dimensions : meta.data('dimensions') || false
 							},
-							allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+							image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
+							video_types = ['mp4', 'webm'],
+							audio_types = ['mp3'];
 
 						$(ml_source_input).find('input[name*="[name]"]').val(data.name);
 						$(ml_source_input).find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
@@ -352,19 +354,18 @@ jQuery(window).load(function () {
 							$(ml_source_input).find('input[name*="[height]"]').val('');	
 						}
 
-						// Add or update the preview
-						if ($(ml_source_input).find('.preview').length) {
-							if (allowed_types.includes(data.mime)) {
-								$(ml_source_input).find('.preview img').attr('src', data.src);
-							}
-							else {
-								$(ml_source_input).find('.preview').remove();
-							}
+						// Remove any existing previews
+						$(ml_source_input).find('.preview').remove();
+
+						// Add the new preview
+						if (image_types.includes(data.mime)) {
+							$(ml_source_input).find('.remove').before('<div class="preview"><img src="' + data.src + '" /></div>')
 						}
-						else {
-							if (allowed_types.includes(data.mime)) {
-								$(ml_source_input).append('<div class="preview"><img src="' + data.src + '" /></div>')
-							}
+						else if (video_types.includes(data.mime)) {
+							$(ml_source_input).find('.remove').before('<div class="preview"><video src="' + data.src + '" controls /></div>')
+						}
+						else if (audio_types.includes(data.mime)) {
+							$(ml_source_input).find('.remove').before('<div class="preview"><audio src="' + data.src + '" controls /></div>')
 						}
 
 						closeLightbox();

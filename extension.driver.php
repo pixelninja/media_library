@@ -8,7 +8,7 @@
 					CREATE TABLE IF NOT EXISTS `tbl_fields_medialibraryfield` (
 						`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 						`field_id` INT(11) UNSIGNED NOT NULL,
-						`file_path` TEXT DEFAULT NULL,
+						`validator` VARCHAR(255) DEFAULT NULL,
 						PRIMARY KEY (`id`),
 						UNIQUE KEY `field_id` (`field_id`)
 					) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

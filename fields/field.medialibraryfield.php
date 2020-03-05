@@ -60,6 +60,12 @@
 		Utilities:
 	-------------------------------------------------------------------------*/
 
+		public function applyValidationRules($data) {
+			$rule = $this->get('validator');
+
+			return ($rule ? General::validateString($data, $rule) : true);
+		}
+
 		public function buildField($value = null, $i = -1) {
 			$element_name = $this->get('element_name');
 
@@ -100,11 +106,22 @@
 			// Initialize field settings based on class defaults (name, placement)
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$order = $this->get('sortorder');
+
+			// Validator
+			$div = new XMLElement('div');
+			$this->buildValidationSelect(
+				$div, 
+				$this->get('validator'), 
+				"fields[{$order}][validator]",
+				'upload'
+			);
+			$wrapper->appendChild($div);
+
 			// Default options
 			$div = new XMLElement('div', null, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
-
 			$div->appendChild($label);
 			$wrapper->appendChild($div);
 		}
@@ -121,7 +138,8 @@
 			if($id === false) return false;
 
 			$fields = array(
-				'field_id' => $id
+				'field_id' => $id,
+				'validator' => $this->get('validator')
 			);
 
 			return Symphony::Database()->insert($fields, "tbl_fields_{$handle}", true);
@@ -148,8 +166,11 @@
 			}
 
 		    // Create helper caption
-		    $caption = new XMLElement('span', 'Click the file picker icon to open the Media Library. From here, you can navigate your uploads and select the desired file.');
-		    $caption->setAttribute('class', 'caption');
+		    $caption = new XMLElement(
+		    	'span',
+		    	'Click to open the Media Library. From here, navigate your uploads and select the desired file.',
+		    	array('class' => 'caption')
+		    );
 
 			$label->appendChild($caption);
 
@@ -216,6 +237,10 @@
 			else {
 				$wrapper->appendChild($label);
 			}
+
+		    // Create the remove link
+		    $remove = new XMLElement('a', 'Remove', array('class' => 'remove'));
+			$wrapper->appendChild($remove);
 		}
 
 		public function checkPostFieldData($data, &$message, $entry_id = null) {
@@ -224,6 +249,16 @@
 			if($this->get('required') == 'yes' && strlen($data['value']) == 0){
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
+			}
+
+			if (!$this->applyValidationRules($data['value'])) {
+				$message = __(
+					"File chosen in ‘%s’ does not match allowable file types for that field.", array(
+						$this->get('label')
+					)
+				);
+
+				return self::__INVALID_FIELDS__;
 			}
 
 			return self::__OK__;

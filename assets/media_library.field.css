@@ -1,4 +1,5 @@
 .field-medialibraryfield {
+	position: relative;
 	cursor: pointer;
 }
 
@@ -6,6 +7,10 @@
 	display: block;
 	content: '';
 	clear: both;
+}
+
+.field-medialibraryfield label {
+	margin-bottom: 0
 }
 
 .field-medialibraryfield label:after {
@@ -33,19 +38,45 @@
 	opacity: 0.5;
 }
 
+.field-medialibraryfield .invalid .caption {
+	opacity: 1;
+	color: rgba(255,255,255,.7);
+}
+
+.field-medialibraryfield .invalid > p {
+	margin-top: 1em;
+}
+
 .field-medialibraryfield .preview {
 	box-sizing: border-box;
 	width: 100%;
-	height: 150px;
-	margin-top: -1.5em;
 	padding: 10px;
 	background: #f4f4f4;
 	border-radius: 0 0 3px 3px;
 	overflow: hidden;
 }
 
-.field-medialibraryfield .preview img {
+.field-medialibraryfield .preview img,
+.field-medialibraryfield .preview audio,
+.field-medialibraryfield .preview video {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: 130px;
+	margin: 0 auto;
+}
+
+.primary .field-medialibraryfield .preview img,
+.primary .field-medialibraryfield .preview video {
+	height: 230px;
+}
+
+.field-medialibraryfield .preview audio {
 	width: 100%;
-	height: 100%;
-	object-fit: contain;
+	height: 50px;
+}
+
+.field-medialibraryfield .remove {
+	display: inline-block;
+	margin: 5px 0 1.5em;
 }
