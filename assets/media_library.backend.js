@@ -314,14 +314,6 @@ jQuery(window).load(function () {
 			 */
 			clipboard = new Clipboard('.ml-file a.copy', {
 				text: function(trigger) {
-					// Update the text momentarily as an indicator something has happened
-					$(trigger).text(Symphony.Language.get('Copied!'));
-
-					// Switch the text back after 2s
-					setTimeout(function () {
-						$(trigger).text(Symphony.Language.get('Copy to clipboard'));
-					}, 2000);
-
 					// If we are using the TinyMCE plugin as well, then add the source to the popup window
 					if ($(trigger).hasClass('add-to-editor') && typeof ml_source_input === 'function') {
 						ml_source_input(
@@ -331,6 +323,8 @@ jQuery(window).load(function () {
 						);
 
 						closeLightbox();
+
+						return false;
 					}
 					// If we are using the media library field, then add the data to the fields
 					else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
@@ -344,38 +338,130 @@ jQuery(window).load(function () {
 							},
 							image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
 							video_types = ['mp4', 'webm'],
-							audio_types = ['mp3'];
+							audio_types = ['mp3'],
+							fields = $(ml_source_input).find('.instance');
 
-						$(ml_source_input).find('input[name*="[name]"]').val(data.name);
-						$(ml_source_input).find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
-						$(ml_source_input).find('input[name*="[mime]"]').val(data.mime);
-						$(ml_source_input).find('input[name*="[size]"]').val(data.size.split(' ')[0]);
-						$(ml_source_input).find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
-						if (data.dimensions) {
-							$(ml_source_input).find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
-							$(ml_source_input).find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+						// If multiple is allowed, then we need to add to it rather than replace it
+						if ($(ml_source_input).data('allow-multiple') === 'yes') {
+							var length = $(ml_source_input).find('input[name*="[name]"]').length;
+
+							// There's no preview, so there is no attached item
+							if (!$(ml_source_input).find('.preview').length) {
+								// Add the preview
+								$(ml_source_input).find('.clear').before('<div class="preview" />');
+								// And update the values of the default empty inputs
+								fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
+								fields.find('input[name*="[name]"]').val(data.name);
+								fields.find('input[name*="[mime]"]').val(data.mime);
+								fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
+								fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
+
+								if (data.dimensions) {
+									fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
+									fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+								}
+							}
+							// There is a preview, so we need to add to it
+							else {
+								fields.append(`
+									<input name="fields[${fields.data('name')}][${length}][value]" value="${data.src.split(Symphony.Context.get('root'))[1]}" type="text" readonly />
+									<input name="fields[${fields.data('name')}][${length}][name]" value="${data.name}" type="text" readonly />
+									<input name="fields[${fields.data('name')}][${length}][mime]" value="${data.mime}" type="text" readonly />
+									<input name="fields[${fields.data('name')}][${length}][size]" value="${data.size.split(' ')[0]}" type="text" readonly />
+									<input name="fields[${fields.data('name')}][${length}][unit]" value="${data.size.split(' ')[1].toLowerCase()}" type="text" readonly />
+								`);
+
+								if (data.dimensions) {
+									fields.append(`
+										<input name="fields[${fields.data('name')}][${length}][width]" value="${data.dimensions.split('x')[0]}" type="text" readonly />
+										<input name="fields[${fields.data('name')}][${length}][height]" value="${data.dimensions.split('x')[1].replace('p', '')}" type="text" readonly />
+									`);
+								}
+								// else {
+								// 	fields.append(`
+								// 		<input name="fields[${fields.data('name')}][${length}][width]" type="text" readonly />
+								// 		<input name="fields[${fields.data('name')}][${length}][height]" type="text" readonly />
+								// 	`);
+								// }
+							}
+
+							// Add the new preview
+							if (image_types.includes(data.mime)) {
+								$(ml_source_input).find('.preview').append('<div class="item image"><img src="' + data.src + '" /></div>');
+							}
+							else if (video_types.includes(data.mime)) {
+								$(ml_source_input).find('.preview').append('<div class="item video"><video src="' + data.src + '" controls /></div>');
+							}
+							else if (audio_types.includes(data.mime)) {
+								$(ml_source_input).find('.preview').append('<div class="item audio"><audio src="' + data.src + '" controls /></div>');
+							}
+							else {
+								var string = data.src.split('/');
+								$(ml_source_input).find('.preview').append('<div class="item other"><p>' + string[string.length-1] + '</p></div>');
+							}
 						}
+						// Only one item is allowed
 						else {
-							$(ml_source_input).find('input[name*="[width]"]').val('');
-							$(ml_source_input).find('input[name*="[height]"]').val('');	
-						}
+							// Add the fields if they don't exist
+							if (!fields.find('input').length) {
+								fields.append(`
+									<input name="fields[${fields.data('name')}][0][value]" />
+									<input name="fields[${fields.data('name')}][0][name]" />
+									<input name="fields[${fields.data('name')}][0][mime]" />
+									<input name="fields[${fields.data('name')}][0][size]" />
+									<input name="fields[${fields.data('name')}][0][unit]" />
+									<input name="fields[${fields.data('name')}][0][width]" />
+									<input name="fields[${fields.data('name')}][0][height]" />
+								`);
+							}
 
-						// Remove any existing previews
-						$(ml_source_input).find('.preview').remove();
+							// Update the values
+							fields.find('input[name*="[name]"]').val(data.name);
+							fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
+							fields.find('input[name*="[mime]"]').val(data.mime);
+							fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
+							fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
 
-						// Add the new preview
-						if (image_types.includes(data.mime)) {
-							$(ml_source_input).find('.remove').before('<div class="preview"><img src="' + data.src + '" /></div>')
-						}
-						else if (video_types.includes(data.mime)) {
-							$(ml_source_input).find('.remove').before('<div class="preview"><video src="' + data.src + '" controls /></div>')
-						}
-						else if (audio_types.includes(data.mime)) {
-							$(ml_source_input).find('.remove').before('<div class="preview"><audio src="' + data.src + '" controls /></div>')
+							if (data.dimensions) {
+								fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
+								fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+							}
+							else {
+								fields.find('input[name*="[width]"]').val('');
+								fields.find('input[name*="[height]"]').val('');	
+							}
+
+							// Remove any existing previews
+							$(ml_source_input).find('.preview').remove();
+
+							// Add the new preview
+							if (image_types.includes(data.mime)) {
+								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item image"><img src="' + data.src + '" /></div></div>')
+							}
+							else if (video_types.includes(data.mime)) {
+								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item video"><video src="' + data.src + '" controls /></div></div>')
+							}
+							else if (audio_types.includes(data.mime)) {
+								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item audio"><audio src="' + data.src + '" controls /></div></div>')
+							}
+							else {
+								var string = data.src.split('/');
+								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item other"><p>' + string[string.length-1] + '</p></div></div>');
+							}
 						}
 
 						closeLightbox();
+
+						return false;
 					}
+
+					// Update the text momentarily as an indicator something has happened
+					$(trigger).text(Symphony.Language.get('Copied!'));
+
+					// Switch the text back after 2s
+					setTimeout(function () {
+						$(trigger).text(Symphony.Language.get('Copy to clipboard'));
+					}, 2000);
 
 					return $(trigger).data('src');
 				}

@@ -23,7 +23,6 @@
 						CREATE TABLE IF NOT EXISTS `tbl_entries_data_%d` (
 							`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 							`entry_id` INT(11) UNSIGNED NOT NULL,
-							-- `handle` VARCHAR(255) DEFAULT NULL,
 							`value` TEXT NULL,
 							`name` VARCHAR(255) NULL,
 							`mime` VARCHAR(255) NULL,
@@ -45,7 +44,7 @@
 		}
 
 		public function canFilter(){
-			return true;
+			return false;
 		}
 
 		public function prePopulate(){
@@ -53,7 +52,7 @@
 		}
 
 		public function allowDatasourceParamOutput(){
-			return true;
+			return false;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -64,32 +63,6 @@
 			$rule = $this->get('validator');
 
 			return ($rule ? General::validateString($data, $rule) : true);
-		}
-
-		public function buildField($value = null, $i = -1) {
-			$element_name = $this->get('element_name');
-
-			$li = new XMLElement('li');
-			if($i == -1) {
-				$li->setAttribute('class', 'template');
-			}
-
-			// Header
-			$header = new XMLElement('header');
-			$label = !is_null($value) ? $value : __('New Field');
-			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong>'));
-			$li->appendChild($header);
-
-			// Value
-			$label = Widget::Label();
-			$label->appendChild(
-				Widget::Input(
-					"fields[$element_name][$i][value]", General::sanitize($value), 'text', array('placeholder' => __('Value'))
-				)
-			);
-			$li->appendChild($label);
-
-			return $li;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -123,6 +96,19 @@
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$div->appendChild($label);
+
+	        // Allow selection of multiple items
+	        $label = Widget::Label();
+	        $label->setAttribute('class', 'column');
+	        $input = Widget::Input('fields['.$order.'][allow_multiple_selection]', 'yes', 'checkbox');
+
+	        if ($this->get('allow_multiple_selection') == 'yes') {
+	            $input->setAttribute('checked', 'checked');
+	        }
+
+	        $label->setValue($input->generate() . ' ' . __('Allow selection of multiple files'));
+	        $div->appendChild($label);
+
 			$wrapper->appendChild($div);
 		}
 
@@ -134,11 +120,14 @@
 
 			$id = $this->get('id');
 			$handle = $this->handle();
+			$multiple = 'no';
 
 			if($id === false) return false;
+			if($this->get('allow_multiple_selection') !== NULL) $multiple = 'yes';
 
 			$fields = array(
 				'field_id' => $id,
+				'allow_multiple_selection' => $multiple,
 				'validator' => $this->get('validator')
 			);
 
@@ -166,70 +155,97 @@
 			}
 
 		    // Create helper caption
-		    $caption = new XMLElement(
-		    	'span',
-		    	'Click to open the Media Library. From here, navigate your uploads and select the desired file.',
-		    	array('class' => 'caption')
-		    );
+			if($this->get('allow_multiple_selection') == 'yes') {
+				$wrapper->setAttribute('data-allow-multiple', 'yes');
+			    $caption = new XMLElement(
+			    	'span',
+			    	'Click to open the Media Library. From here, navigate your uploads and select the desired file. Add multiple files.',
+			    	array('class' => 'caption')
+			    );
+			}
+			else {
+			    $caption = new XMLElement(
+			    	'span',
+			    	'Click to open the Media Library. From here, navigate your uploads and select the desired file.',
+			    	array('class' => 'caption')
+			    );
+			}
 
 			$label->appendChild($caption);
 
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[value]',
-					(strlen($value) != 0 ? $value : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[name]',
-					(strlen($name) != 0 ? $name : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[mime]',
-					(strlen($mime) != 0 ? $mime : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[size]',
-					(strlen($size) != 0 ? $size : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[unit]',
-					(strlen($unit) != 0 ? $unit : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[width]',
-					(strlen($width) != 0 ? $width : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
-			$label->appendChild(
-				Widget::Input(
-					'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[height]',
-					(strlen($height) != 0 ? $height : NULL),
-					'text',
-					array('readonly' => true)
-				)
-			);
+		    $div = new XMLElement(
+		    	'div',
+		    	'',
+		    	array('class' => 'instance', 'data-name' => $this->get('element_name'))
+		    );
+
+		    // No data so set up empty fields
+		    if (empty($data)) {
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][value]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][name]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][mime]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][size]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][unit]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][width]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+				$div->appendChild(
+					Widget::Input(
+						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][height]',
+						'', 'text', array('readonly' => true)
+					)
+				);
+		    }
+		    // We have data, so we need to display it
+		    else {
+		    	// Go over each attached field type and attach the item
+		    	foreach ($data as $key => $item) {
+		    		
+		    		// Make sure it's an array
+		    		if (!is_array($item)) $item = [$item];
+
+		    		foreach ($item as $k => $field) {
+						$div->appendChild(
+							Widget::Input(
+								'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'['.$k.']['.$key.']',
+								(strlen($field) != 0 ? $field : NULL),
+								'text',
+								array('readonly' => true)
+							)
+						);
+					}
+			    }
+			}
+
+			$label->appendChild($div);
 
 			if($flagWithError != NULL) {
 				$wrapper->appendChild(Widget::Error($label, $flagWithError));
@@ -238,20 +254,20 @@
 				$wrapper->appendChild($label);
 			}
 
-		    // Create the remove link
-		    $remove = new XMLElement('a', 'Remove', array('class' => 'remove'));
-			$wrapper->appendChild($remove);
+		    // Create the clear link
+		    $clear = new XMLElement('a', 'Clear', array('class' => 'clear'));
+			$wrapper->appendChild($clear);
 		}
 
 		public function checkPostFieldData($data, &$message, $entry_id = null) {
 			$message = NULL;
 
-			if($this->get('required') == 'yes' && strlen($data['value']) == 0){
+			if($this->get('required') == 'yes' && strlen($data[0]['value']) == 0){
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
 
-			if (!$this->applyValidationRules($data['value'])) {
+			if (!$this->applyValidationRules($data[0]['value'])) {
 				$message = __(
 					"File chosen in ‘%s’ does not match allowable file types for that field.", array(
 						$this->get('label')
@@ -266,18 +282,26 @@
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
+			
+			$result = array();
 
-			if (!is_array($data)) $data = array();
+			if(is_array($data)) {
+				if (strlen($data[0]['value']) == 0) {
+					return null;
+				}
+				foreach($data as $i => $field) {
+					$result['value'][$i] = trim($field['value']);
+					$result['name'][$i] = trim($field['name']);
+					$result['mime'][$i] = trim($field['mime']);
+					$result['size'][$i] = trim($field['size']);
+					$result['unit'][$i] = trim($field['unit']);
+					$result['width'][$i] = trim($field['width']);
+					$result['height'][$i] = trim($field['height']);
+				}
+			}
 
-			$result = array(
-				'value' => trim($data['value']),
-				'name' => trim($data['name']),
-				'mime' => trim($data['mime']),
-				'size' => trim($data['size']),
-				'unit' => trim($data['unit']),
-				'width' => trim($data['width']),
-				'height' => trim($data['height'])
-			);
+			// If there's no values, return null:
+			if(empty($result)) return null;
 
 			return $result;
 		}
@@ -299,25 +323,30 @@
 
 			if(!is_array($data['value'])) {
 				$data = array(
-					'value' => $data['value'],
-					'name' => $data['name'],
-					'mime' => $data['mime'],
-					'size' => $data['size'],
-					'unit' => $data['unit'],
-					'width' => $data['width'],
-					'height' => $data['height']
+					'value' => array($data['value']),
+					'name' => array($data['name']),
+					'mime' => array($data['mime']),
+					'size' => array($data['size']),
+					'unit' => array($data['unit']),
+					'width' => array($data['width']),
+					'height' => array($data['height'])
 				);
 			}
 
-			if ($data['name'] !== null) $field->setAttribute('name', $data['name']);
-			if ($data['mime'] !== null) $field->setAttribute('mime', $data['mime']);
-			if ($data['size'] !== null) $field->setAttribute('size', $data['size']);
-			if ($data['unit'] !== null) $field->setAttribute('unit', $data['unit']);
-			if ($data['width'] !== null) $field->setAttribute('width', $data['width']);
-			if ($data['height'] !== null) $field->setAttribute('height', $data['height']);
-			$field->setValue(
-				General::sanitize($data['value'])
-			);
+			for($i = 0, $ii = count($data['value']); $i < $ii; $i++) {
+				$value = new XMLElement('item');
+				$value->setAttribute('name', $data['name'][$i]);
+				$value->setAttribute('mime', $data['mime'][$i]);
+				$value->setAttribute('size', $data['size'][$i]);
+				$value->setAttribute('unit', $data['unit'][$i]);
+				if ($data['width'][$i] !== null) $value->setAttribute('width', $data['width'][$i]);
+				if ($data['height'][$i] !== null) $value->setAttribute('height', $data['height'][$i]);
+				$value->setValue(
+					General::sanitize($data['value'][$i])
+				);
+
+				$field->appendChild($value);
+			}
 
 			$wrapper->appendChild($field);
 		}
@@ -332,228 +361,9 @@
 		public function prepareTableValue($data, XMLElement $link = null, $entry_id = null) {
 			if(is_null($data)) return __('None');
 
-			$values = is_array($data['value'])
-						? implode(', ', $data['value'])
-						: $data['value'];
+			// $values = is_array($data['value']) ? implode(', ', $data['value']) : $data['value'];
+			$values = is_array($data['value']) ? count($data['value']) . ' items' : $data['value'];
 
 			return parent::prepareTableValue(array('value' => $values), $link);
 		}
-
-	/*-------------------------------------------------------------------------
-		Filtering:
-	-------------------------------------------------------------------------*/
-
-		/**
-		 * Returns the keywords that this field supports for filtering. Note
-		 * that no filter will do a simple 'straight' match on the value.
-		 *
-		 * @since Symphony 2.6.0
-		 * @return array
-		 */
-		public function fetchFilterableOperators() {
-			return array(
-				array(
-					'title'				=> 'boolean',
-					'filter'			=> 'boolean:',
-					'help'				=> __('Find values that match the given query. Can use operators <code>and</code> and <code>not</code>.')
-				),
-				array(
-					'title'				=> 'not-boolean',
-					'filter'			=> 'not-boolean:',
-					'help'				=> __('Find values that do not match the given query. Can use operators <code>and</code> and <code>not</code>.')
-				),
-
-				array(
-					'title'				=> 'regexp',
-					'filter'			=> 'regexp:',
-					'help'				=> __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
-						'http://dev.mysql.com/doc/mysql/en/Regexp.html'
-					))
-				),
-				array(
-					'title'				=> 'not-regexp',
-					'filter'			=> 'not-regexp:',
-					'help'				=> __('Find values that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
-						'http://dev.mysql.com/doc/mysql/en/Regexp.html'
-					))
-				),
-
-				array(
-					'title'				=> 'contains',
-					'filter'			=> 'contains:',
-					'help'				=> __('Find values that contain the given string.')
-				),
-				array(
-					'title'				=> 'not-contains',
-					'filter'			=> 'not-contains:',
-					'help'				=> __('Find values that do not contain the given string.')
-				),
-
-				array(
-					'title'				=> 'starts-with',
-					'filter'			=> 'starts-with:',
-					'help'				=> __('Find values that start with the given string.')
-				),
-				array(
-					'title'				=> 'not-starts-with',
-					'filter'			=> 'not-starts-with:',
-					'help'				=> __('Find values that do not start with the given string.')
-				),
-
-				array(
-					'title'				=> 'ends-with',
-					'filter'			=> 'ends-with:',
-					'help'				=> __('Find values that end with the given string.')
-				),
-				array(
-					'title'				=> 'not-ends-with',
-					'filter'			=> 'not-ends-with:',
-					'help'				=> __('Find values that do not end with the given string.')
-				),
-
-				array(
-					'title'				=> 'handle',
-					'filter'			=> 'handle:',
-					'help'				=> __('Find values by exact match of their handle representation only.')
-				),
-				array(
-					'title'				=> 'not-handle',
-					'filter'			=> 'not-handle:',
-					'help'				=> __('Find values by exact exclusion of their handle representation only.')
-				),
-			);
-		}
-
-		private static function replaceAnds($data) {
-			if (!preg_match('/((\W)and)|(and(\W))/i', $data)) {
-				return $data;
-			}
-
-			// Negative match?
-			if (preg_match('/^not(\W)/i', $data)) {
-				$mode = '-';
-
-			} else {
-				$mode = '+';
-			}
-
-			// Replace ' and ' with ' +':
-			$data = preg_replace('/(\W)and(\W)/i', '\\1+\\2', $data);
-			$data = preg_replace('/(^)and(\W)|(\W)and($)/i', '\\2\\3', $data);
-			$data = preg_replace('/(\W)not(\W)/i', '\\1-\\2', $data);
-			$data = preg_replace('/(^)not(\W)|(\W)not($)/i', '\\2\\3', $data);
-			$data = preg_replace('/([\+\-])\s*/', '\\1', $mode . $data);
-			return $data;
-		}
-
-		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
-			$field_id = $this->get('id');
-
-			if (self::isFilterRegex($data[0])) {
-				$this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-			}
-
-			else if (preg_match('/^(not-)?boolean:\s*/', $data[0], $matches)) {
-				$data = trim(array_pop(explode(':', implode(' + ', $data), 2)));
-				$negate = ($matches[1] == '' ? '' : 'NOT');
-
-				if ($data == '') return true;
-
-				$data = self::replaceAnds($data);
-				$data = $this->cleanValue($data);
-				$this->_key++;
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND {$negate}(MATCH (t{$field_id}_{$this->_key}.value) AGAINST ('{$data}' IN BOOLEAN MODE))
-				";
-			}
-
-			else if (preg_match('/^(not-)?((starts|ends)-with|contains):\s*/', $data[0], $matches)) {
-				$data = trim(array_pop(explode(':', $data[0], 2)));
-				$negate = ($matches[1] == '' ? '' : 'NOT');
-				$data = $this->cleanValue($data);
-
-				if ($matches[2] == 'ends-with') $data = "%{$data}";
-				if ($matches[2] == 'starts-with') $data = "{$data}%";
-				if ($matches[2] == 'contains') $data = "%{$data}%";
-
-				$this->_key++;
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND {$negate}(
-						t{$field_id}_{$this->_key}.handle LIKE '{$data}'
-						OR t{$field_id}_{$this->_key}.value LIKE '{$data}'
-					)
-				";
-			}
-
-			else if (preg_match('/^(not-)?handle:\s*/', $data[0], $matches)) {
-				$data = trim(array_pop(explode(':', implode(' + ', $data), 2)));
-				$op = ($matches[1] == '' ? '=' : '!=');
-
-				if ($data == '') return true;
-
-				$data = $this->cleanValue($data);
-				$this->_key++;
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (t{$field_id}_{$this->_key}.handle {$op} '{$data}')
-				";
-			}
-
-			else if ($andOperation) {
-				foreach ($data as $value) {
-					$this->_key++;
-					$value = $this->cleanValue($value);
-					$joins .= "
-						LEFT JOIN
-							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-					";
-					$where .= "
-						AND (
-							t{$field_id}_{$this->_key}.handle = '{$value}'
-							OR t{$field_id}_{$this->_key}.value = '{$value}'
-						)
-					";
-				}
-			}
-
-			else {
-				if (!is_array($data)) $data = array($data);
-
-				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
-				}
-
-				$this->_key++;
-				$data = implode("', '", $data);
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.handle IN ('{$data}')
-						OR t{$field_id}_{$this->_key}.value IN ('{$data}')
-					)
-				";
-			}
-
-			return true;
-		}
-
 	}

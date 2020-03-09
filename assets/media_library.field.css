@@ -1,5 +1,9 @@
 .field-medialibraryfield {
 	position: relative;
+}
+
+.field-medialibraryfield,
+.field-medialibraryfield * {
 	cursor: pointer;
 }
 
@@ -18,16 +22,21 @@
 	content: '';
 	width: 40px;
 	height: 20px;
-	background: #f4f4f4 url('icons/folder-search.svg') no-repeat 50% 50% / auto 14px;
+	background: url('icons/folder-search.svg') no-repeat 50% 50% / auto 14px;
 
 	position: absolute;
-	bottom: 1px;
-	right: 1px;
+	top: -2px;
+	right: 45px;
 	z-index: 1;
 }
 
-.field-medialibraryfield input:not(:first-of-type) {
+.field-medialibraryfield.required label:after {
+	right: 0;
+}
+
+.field-medialibraryfield input {
 	display: none;
+	width: 55px;
 }
 
 .field-medialibraryfield .caption {
@@ -76,7 +85,94 @@
 	height: 50px;
 }
 
-.field-medialibraryfield .remove {
-	display: inline-block;
+.field-medialibraryfield .preview p {
+	margin: 0;
+	padding: 5px 0;
+}
+
+.field-medialibraryfield .clear {
+	display: none;
 	margin: 5px 0 1.5em;
 }
+
+.field-medialibraryfield .preview + .clear {
+	display: inline-block;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .item {
+	position: relative;
+    width: 24%;
+    height: 55px;
+    margin: 0.5%;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .item:after {
+	display: block;
+	content: '';
+	width: 100%;
+	height: 100%;
+	background: url('icons/trash.svg') no-repeat 50% 50% / auto 20px;
+	opacity: 0;
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	transition: opacity 200ms ease-out;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .item > * {
+	opacity: 1;
+	transition: opacity 200ms ease-out;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .item:hover > * {
+	opacity: 0.2;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .item:hover:after {
+	opacity: 1;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .audio,
+.field-medialibraryfield[data-allow-multiple] .preview .video {
+    width: 100%;
+    margin: 0.5% 0;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .video {
+	height: 150px;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .other {
+	width: 100%;
+	height: auto;
+	padding-top: 10px;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview .other:not(:last-child) {
+	padding-bottom: 10px;
+	border-bottom: 1px solid rgba(0,0,0,.25);
+}
+
+.primary .field-medialibraryfield[data-allow-multiple] .preview .video {
+	height: 230px;
+}
+
+.field-medialibraryfield[data-allow-multiple] .preview img,
+.field-medialibraryfield[data-allow-multiple] .preview video {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+
+
+
+
