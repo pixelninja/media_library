@@ -43,12 +43,13 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 ### To do
 
-- ~~Test on production environment, permissions?~~
 - Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
-- ~~create a Media Library field, which acts in place of the Upload field~~
+- Create a multiple image field, to attach multiple images to an entry, e.g gallery or slider
 - (maybe) option to replace/overwrite an image
 - (maybe) Check if files are in use
 - (maybe) link with JIT extension for images to copy URL with recipe
+- ~~Test on production environment, permissions?~~
+- ~~create a Media Library field, which acts in place of the Upload field~~
 - ~~Add in on-the-fly filtering by name~~
 - ~~Check if uploads field exists~~
 - ~~Upload files?~~
