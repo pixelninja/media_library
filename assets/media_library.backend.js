@@ -339,16 +339,17 @@ jQuery(window).load(function () {
 							image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
 							video_types = ['mp4', 'webm'],
 							audio_types = ['mp3'],
-							fields = $(ml_source_input).find('.instance');
+							fields = $(ml_source_input).find('.instance'),
+							preview = $(ml_source_input).find('.preview');
 
 						// If multiple is allowed, then we need to add to it rather than replace it
 						if ($(ml_source_input).data('allow-multiple') === 'yes') {
 							var length = $(ml_source_input).find('input[name*="[name]"]').length;
 
 							// There's no preview, so there is no attached item
-							if (!$(ml_source_input).find('.preview').length) {
+							if (!preview.length) {
 								// Add the preview
-								$(ml_source_input).find('.clear').before('<div class="preview" />');
+								preview = $(ml_source_input).find('.clear').before('<div class="preview" />').prev('.preview');
 								// And update the values of the default empty inputs
 								fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
 								fields.find('input[name*="[name]"]').val(data.name);
@@ -385,19 +386,19 @@ jQuery(window).load(function () {
 								// }
 							}
 
-							// Add the new preview
+							var item = preview.append(`<div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a><a class="remove">Remove</a></div>`).find('.item:last-child');
+							
 							if (image_types.includes(data.mime)) {
-								$(ml_source_input).find('.preview').append('<div class="item image"><img src="' + data.src + '" /></div>');
+								item.addClass('image').prepend(`<img src="${data.src}" />`);
 							}
 							else if (video_types.includes(data.mime)) {
-								$(ml_source_input).find('.preview').append('<div class="item video"><video src="' + data.src + '" controls /></div>');
+								item.addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
 							}
 							else if (audio_types.includes(data.mime)) {
-								$(ml_source_input).find('.preview').append('<div class="item audio"><audio src="' + data.src + '" controls /></div>');
+								item.addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
 							}
-							else {
-								var string = data.src.split('/');
-								$(ml_source_input).find('.preview').append('<div class="item other"><p>' + string[string.length-1] + '</p></div>');
+							else if (data.mime !== undefined ) {
+								item.addClass('other');
 							}
 						}
 						// Only one item is allowed
@@ -435,18 +436,19 @@ jQuery(window).load(function () {
 							$(ml_source_input).find('.preview').remove();
 
 							// Add the new preview
+							$(ml_source_input).find('.clear').before(`<div class="preview"><div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a></div></div>`);
+
 							if (image_types.includes(data.mime)) {
-								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item image"><img src="' + data.src + '" /></div></div>')
+								$(ml_source_input).find('.item').addClass('image').prepend(`<img src="${data.src}" />`);
 							}
 							else if (video_types.includes(data.mime)) {
-								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item video"><video src="' + data.src + '" controls /></div></div>')
+								$(ml_source_input).find('.item').addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
 							}
 							else if (audio_types.includes(data.mime)) {
-								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item audio"><audio src="' + data.src + '" controls /></div></div>')
+								$(ml_source_input).find('.item').addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
 							}
-							else {
-								var string = data.src.split('/');
-								$(ml_source_input).find('.clear').before('<div class="preview"><div class="item other"><p>' + string[string.length-1] + '</p></div></div>');
+							else if (data.mime !== undefined ) {
+								$(ml_source_input).find('.item').addClass('other');
 							}
 						}
 

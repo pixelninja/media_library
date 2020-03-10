@@ -2,11 +2,6 @@
 	position: relative;
 }
 
-.field-medialibraryfield,
-.field-medialibraryfield * {
-	cursor: pointer;
-}
-
 .field-medialibraryfield:after {
 	display: block;
 	content: '';
@@ -14,7 +9,8 @@
 }
 
 .field-medialibraryfield label {
-	margin-bottom: 0
+	margin-bottom: 0;
+	cursor: pointer;
 }
 
 .field-medialibraryfield label:after {
@@ -65,29 +61,73 @@
 	overflow: hidden;
 }
 
-.field-medialibraryfield .preview img,
-.field-medialibraryfield .preview audio,
-.field-medialibraryfield .preview video {
-	display: block;
-	width: auto;
-	max-width: 100%;
-	height: 130px;
-	margin: 0 auto;
-}
-
-.primary .field-medialibraryfield .preview img,
-.primary .field-medialibraryfield .preview video {
-	height: 230px;
-}
-
-.field-medialibraryfield .preview audio {
-	width: 100%;
+.field-medialibraryfield .item {
+	position: relative;
 	height: 50px;
 }
 
-.field-medialibraryfield .preview p {
+.primary .field-medialibraryfield .item {
+	height: 100px;
+}
+
+.field-medialibraryfield .item:not(:last-child) {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid rgba(0,0,0, .25);
+}
+
+.field-medialibraryfield .item img,
+.field-medialibraryfield .item audio,
+.field-medialibraryfield .item video {
+	float: left;
+	display: block;
+	width: auto;
+	max-width: 150px;
+	height: inherit;
+	margin-right: 10px;
+}
+
+.field-medialibraryfield .item audio {
+	width: 100px;
+}
+
+.primary .field-medialibraryfield .item img,
+.primary .field-medialibraryfield .item video,
+.primary .field-medialibraryfield .item audio {
+	max-width: 200px;
+}
+
+.primary .field-medialibraryfield[data-allow-multiple] .item img,
+.primary .field-medialibraryfield[data-allow-multiple] .item video,
+.primary .field-medialibraryfield[data-allow-multiple] .item audio {
+	width: 200px;
+	object-fit: contain;
+	object-position: right;
+}
+
+.field-medialibraryfield .item p {
 	margin: 0;
-	padding: 5px 0;
+	padding: 5px 60px 0 5px;
+}
+
+.field-medialibraryfield .item strong {
+	display: block;
+}
+
+.field-medialibraryfield .item .view {
+	position: absolute;
+    top: 5px;
+    right: 0;
+}
+
+.field-medialibraryfield .item .remove {
+	position: absolute;
+    bottom: 15px;
+    right: 0;
+}
+
+.field-medialibraryfield .item:last-child .remove {
+	bottom: 0;
 }
 
 .field-medialibraryfield .clear {
@@ -99,80 +139,15 @@
 	display: inline-block;
 }
 
-.field-medialibraryfield[data-allow-multiple] .preview {
-	display: flex;
-	flex-wrap: wrap;
+.field-medialibraryfield[data-allow-multiple] .item {
+	cursor: grab;
 }
 
-.field-medialibraryfield[data-allow-multiple] .preview .item {
-	position: relative;
-    width: 24%;
-    height: 55px;
-    margin: 0.5%;
+.field-medialibraryfield[data-allow-multiple] .item.sortable-chosen {
+	background-color: #f4f4f4;
+	cursor: grabbing;
 }
 
-.field-medialibraryfield[data-allow-multiple] .preview .item:after {
-	display: block;
-	content: '';
-	width: 100%;
-	height: 100%;
-	background: url('icons/trash.svg') no-repeat 50% 50% / auto 20px;
-	opacity: 0;
-
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-
-	transition: opacity 200ms ease-out;
+.field-medialibraryfield[data-allow-multiple] .item.sortable-ghost {
+	opacity: 0.5;
 }
-
-.field-medialibraryfield[data-allow-multiple] .preview .item > * {
-	opacity: 1;
-	transition: opacity 200ms ease-out;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .item:hover > * {
-	opacity: 0.2;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .item:hover:after {
-	opacity: 1;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .audio,
-.field-medialibraryfield[data-allow-multiple] .preview .video {
-    width: 100%;
-    margin: 0.5% 0;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .video {
-	height: 150px;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .other {
-	width: 100%;
-	height: auto;
-	padding-top: 10px;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview .other:not(:last-child) {
-	padding-bottom: 10px;
-	border-bottom: 1px solid rgba(0,0,0,.25);
-}
-
-.primary .field-medialibraryfield[data-allow-multiple] .preview .video {
-	height: 230px;
-}
-
-.field-medialibraryfield[data-allow-multiple] .preview img,
-.field-medialibraryfield[data-allow-multiple] .preview video {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-}
-
-
-
-
-
