@@ -66,7 +66,7 @@
 	height: 50px;
 }
 
-.primary .field-medialibraryfield .item {
+.primary .field-medialibraryfield .item:not(.other) {
 	height: 100px;
 }
 
