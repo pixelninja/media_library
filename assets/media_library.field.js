@@ -71,19 +71,21 @@ jQuery(document).ready(function() {
 			video_types = ['mp4', 'webm'],
 			audio_types = ['mp3'];
 
-		self.find('.clear').before(`<div class="preview"><div class="item"><p><strong>${file_name}</strong>${file_mime}</p><a class="view" href="${file_path}">View</a></div></div>`);
+		if (file_path !== '') {
+			self.find('.clear').before(`<div class="preview"><div class="item"><p><strong>${file_name}</strong>${file_mime}</p><a class="view" href="${file_path}">View</a></div></div>`);
 
-		if (image_types.includes(file_type)) {
-			self.find('.item').addClass('image').prepend('<img src="' + Symphony.Context.get('root') + file_path + '" />');
-		}
-		else if (video_types.includes(file_type)) {
-			self.find('.item').addClass('video').prepend('<video src="' + Symphony.Context.get('root') + file_path + '" autoplay loop muted />');
-		}
-		else if (audio_types.includes(file_type)) {
-			self.find('.item').addClass('audio').prepend('<audio src="' + Symphony.Context.get('root') + file_path + '" controls  />');
-		}
-		else if (file_type !== undefined ) {
-			self.find('.item').addClass('other');
+			if (image_types.includes(file_type)) {
+				self.find('.item').addClass('image').prepend('<img src="' + Symphony.Context.get('root') + file_path + '" />');
+			}
+			else if (video_types.includes(file_type)) {
+				self.find('.item').addClass('video').prepend('<video src="' + Symphony.Context.get('root') + file_path + '" autoplay loop muted />');
+			}
+			else if (audio_types.includes(file_type)) {
+				self.find('.item').addClass('audio').prepend('<audio src="' + Symphony.Context.get('root') + file_path + '" controls  />');
+			}
+			else if (file_type !== undefined ) {
+				self.find('.item').addClass('other');
+			}
 		}
 	});
 
