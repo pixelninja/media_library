@@ -335,7 +335,7 @@
 
 			for($i = 0, $ii = count($data['value']); $i < $ii; $i++) {
 				$value = new XMLElement('item');
-				$value->setAttribute('name', $data['name'][$i]);
+				$value->setAttribute('name', General::sanitize($data['name'][$i]));
 				$value->setAttribute('mime', $data['mime'][$i]);
 				$value->setAttribute('size', $data['size'][$i]);
 				$value->setAttribute('unit', $data['unit'][$i]);
