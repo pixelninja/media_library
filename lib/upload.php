@@ -16,19 +16,23 @@
     $file = $_FILES['file'];
     // the file name
     $original_name = $file['name'];
+    // File info
+    $info = pathinfo($original_name);
     // and the directory to save the file in
     $directory = $_REQUEST['location'];
-    // then put them together for the final file path
+    // then put them together for the final file path, while converting the filename into a handle
     $file_path = $directory . $original_name;
+    // while converting the filename into a handle
+    $original_name = General::createHandle($info['filename']) . '.' . $info['extension'];
 
     // If the file already exists, append a string to the end and loop until the name is unique
     if (file_exists($file_path)) {
         $count = 1;
 
         do {
-            $info = pathinfo($original_name);
             $ext = $info['extension']; // get the extension of the file
-            $new_name = $info['filename'] . '_' . $count . '.' . $ext;
+            // $new_name = $info['filename'] . '_' . $count . '.' . $ext;
+            $new_name = General::createHandle($info['filename']) . '_' . $count . '.' . $ext;
 
             $file_path = $directory . $new_name;
             $count++;

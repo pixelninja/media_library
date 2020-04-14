@@ -22,7 +22,8 @@ With this extension you can:
 - Filter files by keyword (min 3 characters)
 - Tag files with comma separated keywords, for use in filtering products
 - Combine with the Tiny MCE editor to create a filepicker option within image/media options
-- Use the Media Library Field type in place of the upload field.
+- Use the Media Library Field type in place of the upload field
+- Media Library field can take single files or multiple files. Multiple files can be drag/drop reordered
 
 ## Developers
 
@@ -43,11 +44,9 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 ### To do
 
-- Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond
-- Create a multiple image field, to attach multiple images to an entry, e.g gallery or slider
-- (maybe) option to replace/overwrite an image
+- Add image manipulation tool for editing on the fly, e.g https://github.com/pqina/filepond with Doka.js integration
 - (maybe) Check if files are in use
-- (maybe) link with JIT extension for images to copy URL with recipe
+- ~~Create a multiple image field, to attach multiple images to an entry, e.g gallery or slider~~
 - ~~Test on production environment, permissions?~~
 - ~~create a Media Library field, which acts in place of the Upload field~~
 - ~~Add in on-the-fly filtering by name~~
