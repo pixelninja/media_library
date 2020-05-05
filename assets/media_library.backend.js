@@ -637,7 +637,7 @@ jQuery(window).load(function () {
 				imageValidateSizeMinWidth: ml_image_settings.minWidth,
 				imageValidateSizeMaxWidth: ml_image_settings.maxWidth,
 				imageValidateSizeMinHeight: ml_image_settings.minHeight,
-				imageValidateSizeMaxHeight: ml_image_settings.minHeight,
+				imageValidateSizeMaxHeight: ml_image_settings.maxHeight,
 			    server: {
 			        process : function (fieldName, file, metadata, load, error, progress, abort) {
 						var data = new FormData(),
