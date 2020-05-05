@@ -14,6 +14,13 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.0.0" date="2020-05-05" min="2.7.x">
+			- Replace upload method with FilePond
+			- Include Doka integration, if user has a licence
+			- Add preferences pane for image editing options
+			- Some styling changes for better flow
+			- Automatically refresh list of files on completion of upload
+		</release>
 		<release version="1.3.3" date="2020-04-15" min="2.7.x">
 			- Sanitize the file name when uploading to prevent special characters causing display issues with images
 		</release>

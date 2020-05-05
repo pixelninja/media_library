@@ -14,16 +14,17 @@
 
     // Store the file
     $file = $_FILES['file'];
+
     // the file name
-    $original_name = $file['name'];
+    $name_original = $file['name'];
     // File info
-    $info = pathinfo($original_name);
+    $info = pathinfo($name_original);
     // and the directory to save the file in
     $directory = $_REQUEST['location'];
+    // convert the filename into a handle
+    $name_handle = General::createHandle($info['filename']) . '.' . $info['extension'];
     // then put them together for the final file path, while converting the filename into a handle
-    $file_path = $directory . $original_name;
-    // while converting the filename into a handle
-    $original_name = General::createHandle($info['filename']) . '.' . $info['extension'];
+    $file_path = $directory . $name_handle;
 
     // If the file already exists, append a string to the end and loop until the name is unique
     if (file_exists($file_path)) {
@@ -31,7 +32,6 @@
 
         do {
             $ext = $info['extension']; // get the extension of the file
-            // $new_name = $info['filename'] . '_' . $count . '.' . $ext;
             $new_name = General::createHandle($info['filename']) . '_' . $count . '.' . $ext;
 
             $file_path = $directory . $new_name;
@@ -44,7 +44,7 @@
         $uploaded = uploadFile($directory, $new_name, $file['tmp_name']);
     }
     else {
-        $uploaded = uploadFile($directory, $original_name, $file['tmp_name']);
+        $uploaded = uploadFile($directory, $name_handle, $file['tmp_name']);
     }
 
     // Failed? Return 400
@@ -63,7 +63,7 @@
 
         echo json_encode(array(
             'url' => str_replace(WORKSPACE, URL . '/workspace', $file_path),
-            'name' => (isset($new_name)) ? $new_name : $original_name
+            'name' => (isset($new_name)) ? $new_name : $name_handle
         ));
     }
 

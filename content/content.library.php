@@ -171,7 +171,7 @@
 			}
 
 			// Add copy and delete options
-			$copy = new XMLElement('a', __('Copy to clipboard'), array('class' => 'copy', 'data-src' => $filesrc));
+			$copy = new XMLElement('a', __('Copy file URL'), array('class' => 'copy', 'data-src' => $filesrc));
 			$delete = new XMLElement('a', __('Delete'), array('class' => 'delete'));
 
 			// Add a hidden 'meta' paragraph for storing file data

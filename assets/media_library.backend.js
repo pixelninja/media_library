@@ -253,7 +253,8 @@ jQuery(window).load(function () {
 			 *	Add tags to a file
 			 */
 			// Adds/removes the inputs necessary
-			$('.ml-file a.tags').on('click', function (e) {
+			$('body').on('click', '.ml-file a.tags', function (e) {
+			// $('.ml-file a.tags').on('click', function (e) {
 				e.preventDefault();
 
 				if ($(e.target).is('input') || $(e.target).is('button')) return false;
@@ -275,7 +276,8 @@ jQuery(window).load(function () {
 				return false;
 			});
 
-			$('.ml-file a.tags').on('click', 'button', function (e) {
+			$('body').on('click', '.ml-file a.tags button', function (e) {
+			// $('.ml-file a.tags').on('click', 'button', function (e) {
 				e.preventDefault();
 
 				var self = $(this),
@@ -378,12 +380,6 @@ jQuery(window).load(function () {
 										<input name="fields[${fields.data('name')}][${length}][height]" value="${data.dimensions.split('x')[1].replace('p', '')}" type="text" readonly />
 									`);
 								}
-								// else {
-								// 	fields.append(`
-								// 		<input name="fields[${fields.data('name')}][${length}][width]" type="text" readonly />
-								// 		<input name="fields[${fields.data('name')}][${length}][height]" type="text" readonly />
-								// 	`);
-								// }
 							}
 
 							var item = preview.append(`<div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a><a class="remove">Remove</a></div>`).find('.item:last-child');
@@ -462,7 +458,7 @@ jQuery(window).load(function () {
 
 					// Switch the text back after 2s
 					setTimeout(function () {
-						$(trigger).text(Symphony.Language.get('Copy to clipboard'));
+						$(trigger).text(Symphony.Language.get('Copy file URL'));
 					}, 2000);
 
 					return $(trigger).data('src');
@@ -517,13 +513,20 @@ jQuery(window).load(function () {
 			});
 
 			// clicking on the lightbox area should also close the lightbox
-			$('.ml-lightbox').on('click', function (e) {		        
+			$('.ml-lightbox').on('click', function (e) {
 		        var container = $(this).find('> *');
 
 		        // if the target of the click isn't the container, or a descendant of the container
 		        if (!container.is(e.target) && container.has(e.target).length === 0) {
 					closeLightbox();
 		        }
+			});
+
+			/*
+			 *	Toggle multi or single upload
+			 */
+			$('body').on('change', '#droparea_toggle', function (e) {
+				$('.media_library-droparea').toggleClass('switch-method');
 			});
 		},
 		fileUpload : {
@@ -532,146 +535,197 @@ jQuery(window).load(function () {
 			 */
 			init : function () {
 				var fileAPI = !!window.FileReader,
-					element = '<div class="media_library-upload"><div class="media_library-files empty media_library-drop"><ol /></div></div>',
+					element = '<div class="media_library-upload"></div>',
 					field = ($('body').find('.ml-lightbox').length) ? $('.ml-lightbox-content #context').after(element).next() : $('#context').after(element).next();
 
 				if(fileAPI) Symphony.Extensions.MediaLibrary.fileUpload.createDroparea(field);
 			},
 
 			createDroparea : function (field) {
-				// Append drop area
-				$('<div />', {
-					class: 'media_library-droparea',
-					html: '<span>' + Symphony.Language.get('Drop files') + '</span>',
-					on: {
-						dragover: Symphony.Extensions.MediaLibrary.fileUpload.drag,
-						dragenter: Symphony.Extensions.MediaLibrary.fileUpload.drag,
-						dragend: Symphony.Extensions.MediaLibrary.fileUpload.dragend,
-						drop: Symphony.Extensions.MediaLibrary.fileUpload.drop
-					}
-				}).appendTo(field);
+				let html;
 
-				// And a button that refreshes
-				$('<button />', {
-					class: 'button',
-					html: Symphony.Language.get('Refresh page to view files'),
-					on: {
-						click: Symphony.Extensions.MediaLibrary.fileUpload.refresh
-					}
-				}).appendTo(field);
-			},
+				if (typeof Doka === 'object') {
+					html = `
+						<div class="media_library-droparea">
+							<div class="media_library-droparea_toggle">
+								<label for="droparea_toggle">Image editor</label>
+								<input type="checkbox" id="droparea_toggle" />
+								<span />
+								<label for="droparea_toggle">Multiple upload</label>
+							</div>
 
-			refresh : function (event) {
-				var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
+							<div class="media_library-droparea_columns">
+								<div class="media_library-droparea_column">
+									<input type="file" class="fireDoka" name="doka" />
+								</div>
 
-				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
-
-				if ($('.ml-lightbox').length) {
-					loadMediaPage(base_url + ml_folder_path);
+								<div class="media_library-droparea_column">
+									<input type="file" class="fireFilepond" name="filepond" />
+								</div>
+							</div>
+						</div>
+					`;
 				}
 				else {
-					window.location = location.href;
-				}
-			},
-
-			drag : function (event) {
-				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
-				$(event.currentTarget).addClass('media_library-drag');
-			},
-
-			dragend : function (event) {
-				$(event.currentTarget).removeClass('media_library-drag');
-			},
-
-			drop : function (event) {
-				Symphony.Extensions.MediaLibrary.fileUpload.stop(event);
-
-				var dragarea = $(event.currentTarget).removeClass('media_library-drag'),
-					field = dragarea.parents('.media_library-upload'),
-					files = field.find('.media_library-files'),
-					list = field.find('ol');
-
-				if (!list.length) {
-					field.prepend('<ol />');
-					list = field.find('ol');
+					html = `
+						<div class="media_library-droparea">
+							<div class="media_library-droparea_columns">
+								<div class="media_library-droparea_column">
+									<input type="file" class="fireFilepond" name="filepond" />
+								</div>
+							</div>
+						</div>
+					`;
 				}
 
-				// Loop over files
-				$.each(event.originalEvent.dataTransfer.files, function(index, file) {
-					files.removeClass('empty');
+				field.append(html);
 
-					var item = $('<li />', {
-						html: '<header><a>' + file.name + '</a><span class="media_library-progress"></span><a class="destructor">' + Symphony.Language.get('In queue') + '</a></header>',
-						class: 'instance queued'
-					}).hide().appendTo(list).slideDown('fast');
-
-					Symphony.Extensions.MediaLibrary.fileUpload.send(field, item, file);
-				});
+				// Initiate FilePond
+				Symphony.Extensions.MediaLibrary.filePond();
 			},
 
-			stop : function (event) {
-				event.stopPropagation();
-				event.preventDefault();
-			},
-
-			send : function (field, item, file) {
-				var data = new FormData(),
-					location = ml_doc_root + '/workspace/uploads/';
-
-				if (ml_folder_path) location = location + ml_folder_path + '/';
-
-				// Set data
-				data.append('file', file);
-				data.append('location', location);
+			refresh : function () {
+				var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/',
+					url = (ml_folder_path === undefined) ? base_url : base_url + '?folder=' + ml_folder_path;
 
 				// Send data
 				$.ajax({
-					url: Symphony.Context.get('root') + '/extensions/media_library/lib/upload.php',
-					data: data,
+					url: url,
 					cache: false,
-					contentType: false,
-					dataType: 'json',
-					processData: false,
-					type: 'POST',
+					type: 'GET',
 					error: function(result){
-						item.removeClass('queued').addClass('error');
-						item.find('.destructor').text(Symphony.Language.get('Upload failed'));
+						console.log('error');
 					},
-					// Add file
 					success: function(result) {
-						item.removeClass('queued');
-						item.find('.media_library-progress').css('width', '100%');
-						item.find('.destructor').text(Symphony.Language.get('Complete'));
-						item.find('header a:first').attr('href', result.url);
-						item.find('header a:first').text(result.name);
-					},
-					// Upload progress
-					xhr: function() {
-						// get the native XmlHttpRequest object
-						var xhr = $.ajaxSettings.xhr();
-						// set the onprogress event handler
-						xhr.upload.onprogress = function(progress) {
-							item.find('.destructor').text(Symphony.Language.get('Uploading'));
-							item.find('.media_library-progress').css('width', Math.floor(100 * progress.loaded / progress.total) + '%');
-						};
-						// return the customized object
-						return xhr;
+						// Parse the new document
+						var parser = new DOMParser(),
+							doc = parser.parseFromString(result, 'text/html'),
+							new_content = $(doc).find('.ml-files');
+
+						if (localStorage.getItem('add-to-editor') === 'yes') {
+							new_content.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
+						}
+
+						if (localStorage.getItem('add-to-field') === 'yes') {
+							new_content.find('.ml-file .copy').text('Select file').addClass('select-file');
+						}
+
+						$('.ml-files').html(new_content.html());
+
+						Symphony.Extensions.MediaLibrary.getTags();
 					}
 				});
 			}
 		},
-		init : function () {
+		filePond : function () {
+			let doka;
+			let pond;
 
+		    // First register any plugins
+		    FilePond.registerPlugin(
+		        FilePondPluginImageExifOrientation,
+		        FilePondPluginImagePreview,
+		        FilePondPluginImageCrop,
+		        FilePondPluginImageResize,
+		        FilePondPluginImageTransform,
+		        FilePondPluginImageEdit,
+		        FilePondPluginImageValidateSize
+		    );
+
+			FilePond.setOptions({
+				allowImageValidateSize: true,
+				imageValidateSizeMinWidth: ml_image_settings.minWidth,
+				imageValidateSizeMaxWidth: ml_image_settings.maxWidth,
+				imageValidateSizeMinHeight: ml_image_settings.minHeight,
+				imageValidateSizeMaxHeight: ml_image_settings.minHeight,
+			    server: {
+			        process : function (fieldName, file, metadata, load, error, progress, abort) {
+						var data = new FormData(),
+							location = ml_doc_root + '/workspace/uploads/';
+
+						if (ml_folder_path) location = location + ml_folder_path + '/';
+
+						// Set data
+						data.append('file', file, file.name);
+						data.append('location', location);
+
+						// Send data
+						$.ajax({
+							url: Symphony.Context.get('root') + '/extensions/media_library/lib/upload.php',
+							data: data,
+							cache: false,
+							contentType: false,
+							dataType: 'json',
+							processData: false,
+							type: 'POST',
+							error: function(result){
+								error();
+							},
+							success: function(result) {
+								load();
+							}
+						});
+
+			            // Abort method so the request can be cancelled
+			            return {
+			                abort: () => {
+			                    // This function is entered if the user has tapped the cancel button
+			                    request.abort();
+			                    // Let FilePond know the request has been cancelled
+			                    abort();
+			                }
+			            };
+			        }
+			    }
+			});
+
+		    pond = FilePond.create(document.querySelector('.fireFilepond'), {
+		    	allowMultiple: true,
+		    	allowImagePreview: false,
+	    		onprocessfiles: function () {
+		    		Symphony.Extensions.MediaLibrary.fileUpload.refresh();
+		    	}
+		    });
+
+		    if (typeof Doka === 'object') {
+			    doka = FilePond.create(document.querySelector('.fireDoka'), {
+			        // open editor on image drop
+			        imageEditInstantEdit: true,
+			        // configure Doka
+			        imageEditEditor: Doka.create({
+			        	outputQuality : ml_image_settings.imageQuality,
+			            cropAspectRatioOptions: [
+			                {
+			                    label: 'Free',
+			                    value: null
+			                },
+			                {
+			                    label: 'Portrait',
+			                    value: 1.25
+			                },
+			                {
+			                    label: 'Square',
+			                    value: 1
+			                },
+			                {
+			                    label: 'Landscape',
+			                    value: .75
+			                }
+			            ]
+			        }),
+			    	onprocessfiles: function () {
+			    		Symphony.Extensions.MediaLibrary.fileUpload.refresh();
+			    	}
+			    });
+			}
+		},
+		init : function () {
 			Symphony.Language.add({
+				'Multi File Upload': false,
+				'Image Editor': false,
 				'Copied!': false,
-				'Copy to clipboard': false,
-				'Are you sure you want to delete this file? This action cannot be undone.': false,
-				'Drop files': false,
-				'In queue': false,
-				'Uploading': false,
-				'Remove file': false,
-				'Upload failed': false,
-				'Refresh page to view files': false
+				'Copy file URL': false,
+				'Are you sure you want to delete this file? This action cannot be undone.': false
 			});
 
 			Symphony.Extensions.MediaLibrary.getTags();
@@ -683,7 +737,7 @@ jQuery(window).load(function () {
 	(function ($) {
 		// Make sure we only execute in the Library
 		if (ml_driver !== 'library') return false;
-
+		// Initialise the extension
 		Symphony.Extensions.MediaLibrary.init();
 	})(jQuery);
 });
