@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension id="media_library" status="released" xmlns="http://getsymphony.com/schemas/extension/1.0">
 	<name>Media Library</name>
-	<description>Display all files and directories under Uploads in a library view.</description>
+	<description>Media management extension for Symphony CMS. Edit images and manage upload file.</description>
 	<repo type="github">https://github.com/pixelninja/media_library</repo>
 	<types>
 		<type>Workflow</type>

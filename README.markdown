@@ -1,6 +1,6 @@
 # Media Library
 
-An easy way to manage your uploads.
+An easy way to manage your uploads.)
 
 ## Installation
 
@@ -8,8 +8,6 @@ An easy way to manage your uploads.
 - Enable it by selecting "Media Library", choose Enable from the with-selected menu, then click Apply.
 
 ## Usage
-
-In the Preferences, there are options to update the default image options. These include min/max image width/height and image quality.
 
 In the main navigation, there should now be a `Media Library` item. Clicking the icon will take you to the physical page, while clicking anywhere else on the link will open the media library within a lightbox.
 
@@ -28,6 +26,8 @@ With this extension you can:
 - Media Library field can take single files or multiple files. Multiple files can be drag/drop reordered
 - Edit/manipulate images with [Doka](https://pqina.nl/doka/) (licence required)
 
+In the Preferences, there are options to update the default image upload options. These include min/max image width/height and image quality.
+
 ## Developers
 
 ### Tagging
@@ -38,14 +38,12 @@ To use tagging, the `tags.json` file needs to be writable. Make sure the file pe
 
 To use the media library within the TinyMCE editor, add this snippet to your TinyMCE javascript file within the init function:
 
-`
-file_picker_types: 'image media',
-file_picker_callback: function(callback, value, meta) {
-	ml_source_input = callback;
-	localStorage.setItem('add-to-editor', 'yes');
-	$('#nav .ml-link').trigger('click');
-},
-`
+`file_picker_types: 'image media',`
+`file_picker_callback: function(callback, value, meta) {`
+`	ml_source_input = callback;`
+`	localStorage.setItem('add-to-editor', 'yes');`
+`	$('#nav .ml-link').trigger('click');`
+`},`
 
 Now, when clicking the image or media icon within the editor, there will be a file icon next to the source field. Clicking this will open the media library, and instead of `copying to clipboard` being an option, it will say `add to editor`. This will add the file source and the file name to the source and alt fields.
 
