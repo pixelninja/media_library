@@ -623,6 +623,7 @@ jQuery(window).load(function () {
 
 		    // First register any plugins
 		    FilePond.registerPlugin(
+		    	FilePondPluginFileValidateSize,
 		        FilePondPluginImageExifOrientation,
 		        FilePondPluginImagePreview,
 		        FilePondPluginImageCrop,
@@ -678,8 +679,13 @@ jQuery(window).load(function () {
 			        }
 			    }
 			});
+	
+			// console.log(FilePond.getOptions());
 
 		    pond = FilePond.create(document.querySelector('.fireFilepond'), {
+				allowFileSizeValidation: true,
+				minFileSize: ml_image_settings.minFileSize,
+				maxFileSize: ml_image_settings.maxFileSize,
 		    	allowMultiple: true,
 		    	allowImagePreview: false,
 	    		onprocessfiles: function () {
@@ -689,6 +695,9 @@ jQuery(window).load(function () {
 
 		    if (typeof Doka === 'object') {
 			    doka = FilePond.create(document.querySelector('.fireDoka'), {
+					allowFileSizeValidation: true,
+					minFileSize: ml_image_settings.minImageSize,
+					maxFileSize: ml_image_settings.maxImageSize,
 			        // open editor on image drop
 			        imageEditInstantEdit: true,
 			        // configure Doka

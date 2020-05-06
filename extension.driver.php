@@ -33,6 +33,10 @@ Class extension_media_library extends Extension{
         Symphony::Configuration()->set('max_width', '1920', 'media_library');
         Symphony::Configuration()->set('min_height', '100', 'media_library');
         Symphony::Configuration()->set('max_height', '1080', 'media_library');
+        Symphony::Configuration()->set('min_file_size', '0KB', 'media_library');
+        Symphony::Configuration()->set('max_file_size', '1MB', 'media_library');
+        Symphony::Configuration()->set('min_image_size', '0KB', 'media_library');
+        Symphony::Configuration()->set('max_image_size', '500KB', 'media_library');
         Symphony::Configuration()->set('output_quality', '70', 'media_library');
 
         return Symphony::Configuration()->write();
@@ -63,6 +67,10 @@ Class extension_media_library extends Extension{
         Symphony::Configuration()->set('max_width', '1920', 'media_library');
         Symphony::Configuration()->set('min_height', '100', 'media_library');
         Symphony::Configuration()->set('max_height', '1080', 'media_library');
+        Symphony::Configuration()->set('min_file_size', '0KB', 'media_library');
+        Symphony::Configuration()->set('max_file_size', '1MB', 'media_library');
+        Symphony::Configuration()->set('min_image_size', '0KB', 'media_library');
+        Symphony::Configuration()->set('max_image_size', '500KB', 'media_library');
         Symphony::Configuration()->set('output_quality', '70', 'media_library');
 
         return Symphony::Configuration()->write();
@@ -81,6 +89,8 @@ Class extension_media_library extends Extension{
 				return false;
 			}
 		}
+
+        Symphony::Configuration()->remove('media_library');
 
 		return false;
 	}
@@ -128,7 +138,7 @@ Class extension_media_library extends Extension{
         $group->setAttribute('class', 'settings');
         $group->appendChild(new XMLElement('legend', __('Media Library')));
 
-        $p = new XMLElement('p', __('Update the Image Crop defaults.'), array('class' => 'help'));
+        $p = new XMLElement('p', __('Update the Media Library validation defaults.'), array('class' => 'help'));
 
         // append intro paragraph
         $group->appendChild($p);
@@ -136,28 +146,61 @@ Class extension_media_library extends Extension{
         $wrapper = new XMLElement('div');
         $wrapper->setAttribute('class', 'two columns');
 
+        // $group->appendChild(new XMLElement('p', __('The widths and heights in pixels, numerical only.'), array('class' => 'help')));
+
         // Image Validation: Minimum Width
         $label = Widget::Label(__('Image Validation: Minimum Width'), null, 'column');
         $label->appendChild(Widget::Input('settings[media_library][min_width]', General::sanitize(Symphony::Configuration()->get('min_width', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The minimum image width, numerical only.'), array('class' => 'help')));
         $wrapper->appendChild($label);
 
         // Image Validation: Maximum Width
         $label = Widget::Label(__('Image Validation: Maximum Width'), null, 'column');
         $label->appendChild(Widget::Input('settings[media_library][max_width]', General::sanitize(Symphony::Configuration()->get('max_width', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The maximum image width, numerical only.'), array('class' => 'help')));
         $wrapper->appendChild($label);
 
         // Image Validation: Minimum Height
         $label = Widget::Label(__('Image Validation: Minimum Height'), null, 'column');
         $label->appendChild(Widget::Input('settings[media_library][min_height]', General::sanitize(Symphony::Configuration()->get('min_height', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The minimum image height, numerical only.'), array('class' => 'help')));
         $wrapper->appendChild($label);
 
         // Image Validation: Maximum Height
         $label = Widget::Label(__('Image Validation: Maximum Height'), null, 'column');
         $label->appendChild(Widget::Input('settings[media_library][max_height]', General::sanitize(Symphony::Configuration()->get('max_height', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The maximum image height, numerical only.'), array('class' => 'help')));
         $wrapper->appendChild($label);
         $group->appendChild($wrapper);
 
-        $group->appendChild(new XMLElement('p', __('The widths and heights in pixels, numerical only.'), array('class' => 'help')));
+        $wrapper = new XMLElement('div');
+        $wrapper->setAttribute('class', 'two columns');
+
+        // File Size Validation: Minimum
+        $label = Widget::Label(__('File Size Validation: Minimum'), null, 'column');
+        $label->appendChild(Widget::Input('settings[media_library][min_file_size]', General::sanitize(Symphony::Configuration()->get('min_file_size', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The minimum size of a file, for instance 5MB or 750KB.'), array('class' => 'help')));
+        $wrapper->appendChild($label);
+
+        // File Size Validation: Maximum
+        $label = Widget::Label(__('File Size Validation: Maximum'), null, 'column');
+        $label->appendChild(Widget::Input('settings[media_library][max_file_size]', General::sanitize(Symphony::Configuration()->get('max_file_size', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The maximum size of a file, for instance 5MB or 750KB.'), array('class' => 'help')));
+        $wrapper->appendChild($label);
+
+        // Image Size Validation: Minimum
+        $label = Widget::Label(__('Image Size Validation: Minimum'), null, 'column');
+        $label->appendChild(Widget::Input('settings[media_library][min_image_size]', General::sanitize(Symphony::Configuration()->get('min_image_size', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The minimum size of an image, for instance 5MB or 750KB.'), array('class' => 'help')));
+        $wrapper->appendChild($label);
+
+        // Image Size Validation: Maximum
+        $label = Widget::Label(__('Image Size Validation: Maximum'), null, 'column');
+        $label->appendChild(Widget::Input('settings[media_library][max_image_size]', General::sanitize(Symphony::Configuration()->get('max_image_size', 'media_library'))));
+        $label->appendChild(new XMLElement('p', __('The maximum size of an image, for instance 5MB or 750KB.'), array('class' => 'help')));
+        $wrapper->appendChild($label);
+
+        $group->appendChild($wrapper);
 
         // Output Quality
         $label = Widget::Label(__('Output Quality'));
@@ -178,6 +221,10 @@ Class extension_media_library extends Extension{
 		$maxWidth = (Symphony::Configuration()->get('max_width', 'media_library')) ? Symphony::Configuration()->get('max_width', 'media_library') : 1920;
 		$minHeight = (Symphony::Configuration()->get('min_height', 'media_library')) ? Symphony::Configuration()->get('min_height', 'media_library') : 100;
 		$maxHeight = (Symphony::Configuration()->get('max_height', 'media_library')) ? Symphony::Configuration()->get('max_height', 'media_library') : 1080;
+		$minFileSize = (Symphony::Configuration()->get('min_file_size', 'media_library')) ? Symphony::Configuration()->get('min_file_size', 'media_library') : 100;
+		$maxFileSize = (Symphony::Configuration()->get('max_file_size', 'media_library')) ? Symphony::Configuration()->get('max_file_size', 'media_library') : 1080;
+		$minImageSize = (Symphony::Configuration()->get('min_image_size', 'media_library')) ? Symphony::Configuration()->get('min_image_size', 'media_library') : 100;
+		$maxImageSize = (Symphony::Configuration()->get('max_image_size', 'media_library')) ? Symphony::Configuration()->get('max_image_size', 'media_library') : 1080;
 		$outputQuality = (Symphony::Configuration()->get('output_quality', 'media_library')) ? Symphony::Configuration()->get('output_quality', 'media_library') : 70;
 
 		$javascript  = 'var ml_user_id = "' . $author->get('id') . '";';
@@ -190,6 +237,10 @@ Class extension_media_library extends Extension{
 		$javascript .= 'maxWidth: ' . $maxWidth . ',';
 		$javascript .= 'minHeight: ' . $minHeight . ',';
 		$javascript .= 'maxHeight: ' . $maxHeight . ',';
+		$javascript .= 'minFileSize: "' . $minFileSize . '",';
+		$javascript .= 'maxFileSize: "' . $maxFileSize . '",';
+		$javascript .= 'minImageSize: "' . $minImageSize . '",';
+		$javascript .= 'maxImageSize: "' . $maxImageSize . '",';
 		$javascript .= 'outputQuality: ' . $outputQuality;
 		$javascript .= '};';
 		$javascript .= (isset($_GET['folder']) && $_GET['folder'] !== '') ? 'var ml_folder_path = "' . $_GET['folder'] . '";' : 'var ml_folder_path;';
@@ -205,6 +256,7 @@ Class extension_media_library extends Extension{
 		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-resize', 665);
 		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-transform', 665);
 		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-validate-size', 665);
+		$page->addScriptToHead('https://unpkg.com/filepond-plugin-file-validate-size', 665);
 		$page->addScriptToHead('https://unpkg.com/filepond/dist/filepond.min.js', 666);
 		if (file_exists(DOCROOT . '/doka/doka.min.js')) {
 			$page->addScriptToHead(URL . '/doka/doka.min.js', 667);
