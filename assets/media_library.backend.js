@@ -226,11 +226,11 @@
 				/*
 				 *	Delete a file
 				 */
-				$('.ml-file a.delete').on('click', function (e) {
+				$('body').on('click', '.ml-file a.delete', function (e) {
 					e.preventDefault();
 
 					var self = $(this),
-						src = self.prev('a').data('src');
+						src = self.prev('a').data('src'),
 						check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.')),
 						unlink = '&unlink=' + src.replace(Symphony.Context.get('root') + '/', ''),
 						href = (ml_folder_path !== '' && ml_folder_path !== undefined) ? base_url + ml_folder_path + unlink : base_url + unlink;
