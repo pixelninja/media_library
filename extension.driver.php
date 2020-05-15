@@ -18,6 +18,8 @@ Class extension_media_library extends Extension{
 					`field_id` INT(11) UNSIGNED NOT NULL,
                 	`allow_multiple_selection` enum('yes','no') NOT NULL default 'no',
 					`validator` VARCHAR(255) DEFAULT NULL,
+					`media_ratio` VARCHAR(10) DEFAULT NULL,
+					`max_file_size` VARCHAR(10) DEFAULT NULL,
 					PRIMARY KEY (`id`),
 					UNIQUE KEY `field_id` (`field_id`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -51,9 +53,25 @@ Class extension_media_library extends Extension{
 						`field_id` INT(11) UNSIGNED NOT NULL,
 	                	`allow_multiple_selection` enum('yes','no') NOT NULL default 'no',
 						`validator` VARCHAR(255) DEFAULT NULL,
+						`media_ratio` VARCHAR(10) DEFAULT NULL,
+						`max_file_size` VARCHAR(10) DEFAULT NULL,
 						PRIMARY KEY (`id`),
 						UNIQUE KEY `field_id` (`field_id`)
 					) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+				");
+			}
+			catch (Exception $ex) {
+				$extension = $this->about();
+				Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				return false;
+			}
+		}
+		else if(version_compare($previousVersion, '2.0.6', '<')) {
+			try {
+				Symphony::Database()->query("
+					ALTER TABLE  `tbl_fields_medialibraryfield` 
+					ADD COLUMN `media_ratio` VARCHAR(10) DEFAULT NULL,
+					ADD COLUMN `max_file_size` VARCHAR(10) DEFAULT NULL
 				");
 			}
 			catch (Exception $ex) {

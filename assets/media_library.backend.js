@@ -712,16 +712,24 @@
 				                    value: null
 				                },
 				                {
-				                    label: 'Portrait',
-				                    value: 1.25
+				                    label: '3:2',
+				                    value: 1.5
 				                },
 				                {
-				                    label: 'Square',
+				                    label: '2:3',
+				                    value: 0.67
+				                },
+				                {
+				                    label: '16:9',
+				                    value: 1.778
+				                },
+				                {
+				                    label: '9:16',
+				                    value: 0.5625
+				                },
+				                {
+				                    label: '1:1',
 				                    value: 1
-				                },
-				                {
-				                    label: 'Landscape',
-				                    value: .75
 				                }
 				            ]
 				        }),

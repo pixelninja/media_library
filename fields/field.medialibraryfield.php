@@ -91,11 +91,55 @@
 			);
 			$wrapper->appendChild($div);
 
+			$columns = new XMLElement('div', null, array('class' => 'two columns'));
+
+			// Media Ratio
+			$div = new XMLElement('div', null, array('class' => 'column'));
+
+	        $rules = array('1:1', '16:9', '9:16', '3:2', '2:3');
+	        $label = Widget::Label(__('Media Ratio'));
+	        $label->appendChild(new XMLElement('i', __('Optional')));
+	        $label->appendChild(Widget::Input("fields[{$order}][media_ratio]", $this->get('media_ratio')));
+
+	        $ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
+
+	        foreach ($rules as $rule) {
+	            $ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
+	        }
+
+            $div->appendChild($label);
+            $div->appendChild($ul);
+
+	        if (isset($errors['media_ratio'])) $div->appendChild(Widget::Error($div, $errors['media_ratio']));
+
+			$columns->appendChild($div);
+
+			// Max File Size
+			$div = new XMLElement('div', null, array('class' => 'column'));
+
+	        $rules = array('300KB', '750KB', '1MB');
+	        $label = Widget::Label(__('Maximum File Size'));
+	        $label->appendChild(new XMLElement('i', __('Optional')));
+	        $label->appendChild(Widget::Input("fields[{$order}][max_file_size]", $this->get('max_file_size')));
+
+	        $ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
+
+	        foreach ($rules as $rule) {
+	            $ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
+	        }
+
+            $div->appendChild($label);
+            $div->appendChild($ul);
+
+	        if (isset($errors['max_file_size'])) $div->appendChild(Widget::Error($div, $errors['max_file_size']));
+
+			$columns->appendChild($div);
+			$wrapper->appendChild($columns);
+
 			// Default options
 			$div = new XMLElement('div', null, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
-			$div->appendChild($label);
 
 	        // Allow selection of multiple items
 	        $label = Widget::Label();
@@ -128,7 +172,9 @@
 			$fields = array(
 				'field_id' => $id,
 				'allow_multiple_selection' => $multiple,
-				'validator' => $this->get('validator')
+				'validator' => $this->get('validator'),
+				'media_ratio' => $this->get('media_ratio'),
+				'max_file_size' => $this->get('max_file_size')
 			);
 
 			return Symphony::Database()->insert($fields, "tbl_fields_{$handle}", true);
@@ -154,28 +200,36 @@
 				$label->appendChild(new XMLElement('i', __('Optional')));
 			}
 
+			// var_dump($this->get('media_ratio')); exit;
+			$caption_text = __('Click here to open the Media Library and select a file.');
+
 		    // Create helper caption
 			if($this->get('allow_multiple_selection') == 'yes') {
 				$wrapper->setAttribute('data-allow-multiple', 'yes');
-			    $caption = new XMLElement(
-			    	'span',
-			    	'Click to open the Media Library. From here, navigate your uploads and select the desired file. Add multiple files.',
-			    	array('class' => 'caption')
-			    );
+			    $caption_text = __('Click here to open the Media Library and select multiple files.');
 			}
-			else {
-			    $caption = new XMLElement(
-			    	'span',
-			    	'Click to open the Media Library. From here, navigate your uploads and select the desired file.',
-			    	array('class' => 'caption')
-			    );
+
+			// Add on the file ratio if there is one
+			if (!empty($this->get('media_ratio'))) {
+				$caption_text = $caption_text . '<br />- ' . __('Media must have a ') . $this->get('media_ratio') . __(' ratio');
 			}
+
+			// Add on the max file size if there is one
+			if (!empty($this->get('max_file_size'))) {
+				$caption_text = $caption_text . '<br />- ' . __('Media must be ') . $this->get('max_file_size') . __(' or smaller');
+			}
+
+		    $caption = new XMLElement(
+		    	'span',
+		    	$caption_text,
+		    	array('class' => 'caption')
+		    );
 
 			$label->appendChild($caption);
 
 		    $div = new XMLElement(
 		    	'div',
-		    	'',
+		    	null,
 		    	array('class' => 'instance', 'data-name' => $this->get('element_name'))
 		    );
 
@@ -261,20 +315,92 @@
 
 		public function checkPostFieldData($data, &$message, $entry_id = null) {
 			$message = NULL;
+	
+			if (!is_array($data)) $data = (array) $data;
 
-			if($this->get('required') == 'yes' && strlen($data[0]['value']) == 0){
+			// Check if the field is required
+			if ($this->get('required') == 'yes' && strlen($data[0]['value']) == 0) {
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
 
-			if (!$this->applyValidationRules($data[0]['value'])) {
-				$message = __(
-					"File chosen in ‘%s’ does not match allowable file types for that field.", array(
-						$this->get('label')
-					)
-				);
+			// Check each media file to see if it validates
+			foreach($data as $i => $field) {
+				// Check if the file format is allowed
+				if (!$this->applyValidationRules($field['value'])) {
+					$message = __("The file chosen in ‘%s’ does not match allowable file types for that field.", array(
+							$this->get('label')
+						)
+					);
 
-				return self::__INVALID_FIELDS__;
+					return self::__INVALID_FIELDS__;
+				}
+
+				// Check if the file is within ratio
+				if (!empty($this->get('media_ratio')) && !empty($field['width']) && !empty($field['height'])) {
+					$ratio = explode(':', $this->get('media_ratio'));
+					$ratio_width = (float)$ratio[0];
+					$ratio_height = (float)$ratio[1];
+					$image_width = (float)$field['width'];
+					$image_height = (float)$field['height'];
+					$max_size = $this->get('max_file_size');
+
+					if (number_format($image_width / $image_height, 2) != number_format($ratio_width / $ratio_height, 2)) {
+						$message = __("Incorrect media ratio. The file chosen in ‘%s’ should be %s.", array(
+								$this->get('label'),
+								$this->get('media_ratio')
+							)
+						);
+
+						return self::__INVALID_FIELDS__;
+					}
+				}
+
+				// Check if the file is under the required size
+				if (!empty($this->get('max_file_size')) && !empty($field['size']) && !empty($field['unit'])) {
+					$file_size = $field['size'];
+					$file_unit = $field['unit'];
+					$field_size = strtolower($this->get('max_file_size'));
+
+					// convert the size of the file into bytes
+					if (strtolower($file_unit) === 'gb') {
+						$file_size = (int) $file_size * 1073741824;
+					}
+					else if (strtolower($file_unit) === 'mb') {
+						$file_size = (int) $file_size * 1048576;
+					}
+					else if (strtolower($file_unit) === 'kb') {
+						$file_size = (int) $file_size * 1024;
+					}
+					else if (strtolower($file_unit) === 'b') {
+						$file_size = (int) $file_size;
+					}
+
+					// Convert the maximum field size into bytes
+					if (substr($field_size, -2) === 'gb') {
+						$field_size = (int)str_replace('gb', '', $field_size) * 1073741824;
+					}
+					else if (substr($field_size, -2) === 'mb') {
+						$field_size = (int)str_replace('mb', '', $field_size) * 1048576;
+					}
+					else if (substr($field_size, -2) === 'kb') {
+						$field_size = (int)str_replace('kb', '', $field_size) * 1024;
+					}
+					else if (substr($field_size, -1) === 'b') {
+						$field_size = (int)str_replace('b', '', $field_size);
+					}
+
+					// Return an error if the file is larger than allowed
+					if ($file_size > $field_size) {
+						$message = __("The file chosen in ‘%s’ is too large. It should be less than %s.", array(
+								$this->get('label'),
+								$this->get('max_file_size')
+							)
+						);
+
+						return self::__INVALID_FIELDS__;
+					}
+				}
 			}
 
 			return self::__OK__;
@@ -282,7 +408,7 @@
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
-			
+
 			$result = array();
 
 			if(is_array($data)) {
