@@ -54,6 +54,13 @@ jQuery(document).ready(function() {
 		if ($(e.target).is('label') || $(e.target).closest('label').length) {
 			ml_source_input = this;
 			localStorage.setItem('add-to-field', 'yes');
+
+			console.log(container.data('destination'))
+
+			if (container.data('destination')) {
+				ml_folder_path = container.data('destination');
+			}
+
 			$('.ml-link').trigger('click');
 		}
 

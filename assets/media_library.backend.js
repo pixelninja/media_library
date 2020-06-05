@@ -44,6 +44,8 @@
 				return false;
 			}
 
+			if (ml_folder_path) href = href + '?folder=' + ml_folder_path;
+
 			// Otherwise, let's open it in a lightbox
 			var jqxhr = $.get(href, function () {
 				var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
@@ -501,6 +503,8 @@
 					// Reset localstorage settings
 					localStorage.removeItem('add-to-editor');
 					localStorage.removeItem('add-to-field');
+					// Reset the subdirectory
+					ml_folder_path = null;
 					// Hide it
 					$('body .ml-lightbox').removeClass('is-visible');
 					setTimeout(function () {
