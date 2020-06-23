@@ -17,6 +17,7 @@ Class extension_media_library extends Extension{
 					`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 					`field_id` INT(11) UNSIGNED NOT NULL,
                 	`allow_multiple_selection` enum('yes','no') NOT NULL default 'no',
+                	`destination` varchar(255) NOT NULL,
 					`validator` VARCHAR(255) DEFAULT NULL,
 					`media_ratio` VARCHAR(10) DEFAULT NULL,
 					`max_file_size` VARCHAR(10) DEFAULT NULL,
@@ -52,6 +53,7 @@ Class extension_media_library extends Extension{
 						`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 						`field_id` INT(11) UNSIGNED NOT NULL,
 	                	`allow_multiple_selection` enum('yes','no') NOT NULL default 'no',
+	                	`destination` varchar(255) NOT NULL,
 						`validator` VARCHAR(255) DEFAULT NULL,
 						`media_ratio` VARCHAR(10) DEFAULT NULL,
 						`max_file_size` VARCHAR(10) DEFAULT NULL,
@@ -71,7 +73,21 @@ Class extension_media_library extends Extension{
 				Symphony::Database()->query("
 					ALTER TABLE  `tbl_fields_medialibraryfield` 
 					ADD COLUMN `media_ratio` VARCHAR(10) DEFAULT NULL,
-					ADD COLUMN `max_file_size` VARCHAR(10) DEFAULT NULL
+					ADD COLUMN `max_file_size` VARCHAR(10) DEFAULT NULL,
+					ADD COLUMN `destination` VARCHAR(255) NOT NULL
+				");
+			}
+			catch (Exception $ex) {
+				$extension = $this->about();
+				Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				return false;
+			}
+		}
+		else if(version_compare($previousVersion, '2.0.7', '<')) {
+			try {
+				Symphony::Database()->query("
+					ALTER TABLE  `tbl_fields_medialibraryfield` 
+					ADD COLUMN `destination` VARCHAR(255) NOT NULL
 				");
 			}
 			catch (Exception $ex) {
@@ -81,15 +97,17 @@ Class extension_media_library extends Extension{
 			}
 		}
         
-        Symphony::Configuration()->set('min_width', '200', 'media_library');
-        Symphony::Configuration()->set('max_width', '1920', 'media_library');
-        Symphony::Configuration()->set('min_height', '100', 'media_library');
-        Symphony::Configuration()->set('max_height', '1080', 'media_library');
-        Symphony::Configuration()->set('min_file_size', '0KB', 'media_library');
-        Symphony::Configuration()->set('max_file_size', '1MB', 'media_library');
-        Symphony::Configuration()->set('min_image_size', '0KB', 'media_library');
-        Symphony::Configuration()->set('max_image_size', '500KB', 'media_library');
-        Symphony::Configuration()->set('output_quality', '70', 'media_library');
+        if (version_compare($previousVersion, '2.0.6', '<')) {
+	        Symphony::Configuration()->set('min_width', '200', 'media_library');
+	        Symphony::Configuration()->set('max_width', '1920', 'media_library');
+	        Symphony::Configuration()->set('min_height', '100', 'media_library');
+	        Symphony::Configuration()->set('max_height', '1080', 'media_library');
+	        Symphony::Configuration()->set('min_file_size', '0KB', 'media_library');
+	        Symphony::Configuration()->set('max_file_size', '1MB', 'media_library');
+	        Symphony::Configuration()->set('min_image_size', '0KB', 'media_library');
+	        Symphony::Configuration()->set('max_image_size', '500KB', 'media_library');
+	        Symphony::Configuration()->set('output_quality', '70', 'media_library');
+	    }
 
         return Symphony::Configuration()->write();
 	}
@@ -163,8 +181,6 @@ Class extension_media_library extends Extension{
 
         $wrapper = new XMLElement('div');
         $wrapper->setAttribute('class', 'two columns');
-
-        // $group->appendChild(new XMLElement('p', __('The widths and heights in pixels, numerical only.'), array('class' => 'help')));
 
         // Image Validation: Minimum Width
         $label = Widget::Label(__('Image Validation: Minimum Width'), null, 'column');

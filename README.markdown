@@ -63,6 +63,7 @@ This has been designed to replace the default upload field. It allows you to add
 - Validation Rule: same as other fields. Good for forcing the file type.
 - Media Ratio: This is primarily for images, as it forces an aspect ratio. For example, 3:2 will force landscape, 2:3 will force portrait and 1:1 will force square. There are presets you can choose from or you can manually type your own. They need to be colon separated integers.
 - Maximum File Size: This will check that the file is less than or equal to a set size. For example, an avatar is normally a small resolution so the file size might not need to be larger than `50KB`, or a thumbnail might be slightly higher resolution but should be less than `100KB`. This forces authors to upload images that are not too large for the web, keeping load times down. They must be integers with a unit type of `B`, `KB`, or `MB`.
+- Destination Directory: The folder to open by default, relative to the `/workspace/uploads` folder. 
 - Allow selection of multiple files: This is useful when you need to attach multiple files to an entry, e.g in a gallery or a list of files to be downloaded. Selected files can be reordered with drag/drop.
 
 ## Image manipulation with Doka.js

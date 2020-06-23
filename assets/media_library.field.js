@@ -4,7 +4,8 @@
 jQuery(document).ready(function() {
 	// Trigger the ML modal
 	$('.field-medialibraryfield').on('click', function (e) {
-		var container = $(this);
+		var container = $(this),
+			href = Symphony.Context.get('root') + '/admin/extension/media_library/library/';
 
 		// Clear the field
 		if ($(e.target).is('.clear')) {
@@ -54,7 +55,11 @@ jQuery(document).ready(function() {
 		if ($(e.target).is('label') || $(e.target).closest('label').length) {
 			ml_source_input = this;
 			localStorage.setItem('add-to-field', 'yes');
-			Symphony.Extensions.MediaLibrary.openLibrary(Symphony.Context.get('root') + '/admin/extension/media_library/library/');
+
+			if (container.data('destination')) ml_folder_path = container.data('destination');
+			if (ml_folder_path) href = href + '?folder=' + ml_folder_path;
+
+			Symphony.Extensions.MediaLibrary.openLibrary(href);
 		}
 
 		return false;

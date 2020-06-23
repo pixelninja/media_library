@@ -44,6 +44,8 @@
 				return false;
 			}
 
+			if (ml_folder_path) href = href + '?folder=' + ml_folder_path;
+
 			Symphony.Extensions.MediaLibrary.openLibrary(href);
 
 			return false;
@@ -505,6 +507,8 @@
 					// Reset localstorage settings
 					localStorage.removeItem('add-to-editor');
 					localStorage.removeItem('add-to-field');
+					// Reset the subdirectory
+					ml_folder_path = null;
 					// Hide it
 					$('body .ml-lightbox').removeClass('is-visible');
 					setTimeout(function () {

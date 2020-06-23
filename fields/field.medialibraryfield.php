@@ -136,6 +136,48 @@
 			$columns->appendChild($div);
 			$wrapper->appendChild($columns);
 
+	        // Destination Folder
+	        // Add any directories (relative to the root) to ignore here, e.g '/workspace/uploads/protected'
+	        $ignore = array();
+
+	        // Fetch all Upload directories
+	        $directories = General::listDirStructure(WORKSPACE.'/uploads', null, true, DOCROOT, $ignore);
+
+	        $label = Widget::Label(__('Destination Directory'));
+
+	        $options = array();
+	        // Default option of base upload foldter
+	        $options[] = array('/workspace/uploads', false, '/workspace/uploads');
+
+	        // Add each subdirectory of uploads
+	        if (!empty($directories) && is_array($directories)) {
+	            foreach ($directories as $d) {
+	                $d = '/' . trim($d, '/');
+
+	                // Skip any ignored folders
+	                foreach ($ignore as $i) {
+	                	if ($i === substr($d, 0, strlen($i))) {
+	                		continue 2;
+	                	}
+	                }
+
+                    $options[] = array($d, ($this->get('destination') == $d), $d);
+	            }
+	        }
+
+	        $div = new XMLElement('div');
+
+	        $label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
+	        $label->setAttribute('class', 'column');
+
+	        if (isset($errors['destination'])) {
+	            $div->appendChild(Widget::Error($label, $errors['destination']));
+	        } else {
+	            $div->appendChild($label);
+	        }
+
+	        $wrapper->appendChild($div);
+
 			// Default options
 			$div = new XMLElement('div', null, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
@@ -174,7 +216,8 @@
 				'allow_multiple_selection' => $multiple,
 				'validator' => $this->get('validator'),
 				'media_ratio' => $this->get('media_ratio'),
-				'max_file_size' => $this->get('max_file_size')
+				'max_file_size' => $this->get('max_file_size'),
+				'destination' => $this->get('destination')
 			);
 
 			return Symphony::Database()->insert($fields, "tbl_fields_{$handle}", true);
@@ -207,6 +250,11 @@
 			if($this->get('allow_multiple_selection') == 'yes') {
 				$wrapper->setAttribute('data-allow-multiple', 'yes');
 			    $caption_text = __('Click here to open the Media Library and select multiple files.');
+			}
+
+			// Add the destination directory to the field
+			if (!empty($this->get('destination')) && $this->get('destination') !== '/workspace/uploads') {
+				$wrapper->setAttribute('data-destination', str_replace('/workspace/uploads/', '', $this->get('destination')));
 			}
 
 			// Add on the file ratio if there is one
