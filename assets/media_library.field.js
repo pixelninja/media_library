@@ -54,7 +54,7 @@ jQuery(document).ready(function() {
 		if ($(e.target).is('label') || $(e.target).closest('label').length) {
 			ml_source_input = this;
 			localStorage.setItem('add-to-field', 'yes');
-			$('.ml-link').trigger('click');
+			Symphony.Extensions.MediaLibrary.openLibrary(Symphony.Context.get('root') + '/admin/extension/media_library/library/');
 		}
 
 		return false;

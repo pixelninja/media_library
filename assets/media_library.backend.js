@@ -44,37 +44,7 @@
 				return false;
 			}
 
-			// Otherwise, let's open it in a lightbox
-			var jqxhr = $.get(href, function () {
-				var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
-				setTimeout(function() {
-					lightbox.addClass('is-visible');
-				}, 10);
-			});
-
-			jqxhr.done(function(data) {
-				var parser = new DOMParser(),
-					doc = parser.parseFromString(data, "text/html"),
-					lightbox = $('body').find('.ml-lightbox-content');
-
-				lightbox.append($(doc).find('#context, #contents'));
-
-				if (localStorage.getItem('add-to-editor') === 'yes') {
-					lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
-				}
-
-				if (localStorage.getItem('add-to-field') === 'yes') {
-					lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
-				}
-
-				Symphony.Extensions.MediaLibrary.fileUpload.init();
-				Symphony.Extensions.MediaLibrary.events();
-				Symphony.Extensions.MediaLibrary.getTags();
-			});
-
-			jqxhr.fail(function() {
-				alert('Something went wrong. Try again.');
-			});
+			Symphony.Extensions.MediaLibrary.openLibrary(href);
 
 			return false;
 		});
@@ -133,6 +103,40 @@
 		}
 
 		Symphony.Extensions.MediaLibrary = {
+			openLibrary : function (href) {
+
+				var jqxhr = $.get(href, function () {
+					var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
+					setTimeout(function() {
+						lightbox.addClass('is-visible');
+					}, 10);
+				});
+
+				jqxhr.done(function(data) {
+					var parser = new DOMParser(),
+						doc = parser.parseFromString(data, "text/html"),
+						lightbox = $('body').find('.ml-lightbox-content');
+
+					lightbox.append($(doc).find('#context, #contents'));
+
+					if (localStorage.getItem('add-to-editor') === 'yes') {
+						lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
+					}
+
+					if (localStorage.getItem('add-to-field') === 'yes') {
+						lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
+					}
+
+					Symphony.Extensions.MediaLibrary.fileUpload.init();
+					Symphony.Extensions.MediaLibrary.events();
+					Symphony.Extensions.MediaLibrary.getTags();
+				});
+
+				jqxhr.fail(function() {
+					alert('Something went wrong. Try again.');
+				});
+
+			},
 			getTags : function () {
 				/*
 				 *	Add tags from JSON file to each row
