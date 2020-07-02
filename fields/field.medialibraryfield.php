@@ -253,7 +253,7 @@
 			}
 
 			// Add the destination directory to the field
-			if (!empty($this->get('destination'))) {
+			if (!empty($this->get('destination')) && $this->get('destination') !== '/workspace/uploads') {
 				$wrapper->setAttribute('data-destination', str_replace('/workspace/uploads/', '', $this->get('destination')));
 			}
 

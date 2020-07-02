@@ -635,6 +635,12 @@ form.media-library {
 	right: 75px;
 }
 
+.ml-file a.copy + input {
+    position: absolute;
+    top: 17px;
+    right: 140px;
+}
+
 .ml-file a.insert {
 	right: 85px;
 }
@@ -711,6 +717,10 @@ form.media-library {
 	.ml-file a:after {
 		display: inline-block;
 		content: ', ';
+	}
+
+	.ml-file a.copy + input {
+	    display: none;
 	}
 }
 /* @end */

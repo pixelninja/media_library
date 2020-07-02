@@ -54,8 +54,7 @@ jQuery(document).ready(function() {
 		if ($(e.target).is('label') || $(e.target).closest('label').length) {
 			ml_source_input = this;
 			localStorage.setItem('add-to-field', 'yes');
-
-			console.log(container.data('destination'))
+			if ($(ml_source_input).data('allow-multiple') === 'yes') localStorage.setItem('allow-multiple', 'yes');
 
 			if (container.data('destination')) {
 				ml_folder_path = container.data('destination');

@@ -66,7 +66,13 @@
 				}
 
 				if (localStorage.getItem('add-to-field') === 'yes') {
-					lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
+					lightbox.find('.ml-file .copy').addClass('select-file');
+					if (localStorage.getItem('allow-multiple') === 'yes') {
+						lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
+					}
+					else {
+						lightbox.find('.ml-file .copy').text('Select file');
+					}
 				}
 
 				Symphony.Extensions.MediaLibrary.fileUpload.init();
@@ -103,7 +109,15 @@
 				}
 
 				if (localStorage.getItem('add-to-field') === 'yes') {
-					$('.ml-lightbox .ml-file .copy').text('Select file').addClass('select-file');
+					$('.ml-lightbox .ml-file .copy').addClass('select-file');
+
+					if (localStorage.getItem('allow-multiple') === 'yes') {
+						$('.ml-lightbox .ml-file .copy').text('Select file(s)').after('<input type="checkbox" />')
+
+					}
+					else {
+						$('.ml-lightbox .ml-file .copy').text('Select file');
+					}
 				}
 
 				if (getUrlParameter('folder') !== '' || getUrlParameter('folder') !== undefined) ml_folder_path = getUrlParameter('folder');
@@ -153,6 +167,11 @@
 				});
 			},
 			events : function () {
+				// Array of valid mime types used later
+				var image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
+					video_types = ['mp4', 'webm'],
+					audio_types = ['mp3'];
+
 				/*
 				 *	Go forward or backwards a directory
 				 */
@@ -259,7 +278,6 @@
 				 */
 				// Adds/removes the inputs necessary
 				$('body').on('click', '.ml-file a.tags', function (e) {
-				// $('.ml-file a.tags').on('click', function (e) {
 					e.preventDefault();
 
 					if ($(e.target).is('input') || $(e.target).is('button')) return false;
@@ -282,7 +300,6 @@
 				});
 
 				$('body').on('click', '.ml-file a.tags button', function (e) {
-				// $('.ml-file a.tags').on('click', 'button', function (e) {
 					e.preventDefault();
 
 					var self = $(this),
@@ -331,7 +348,8 @@
 
 							closeLightbox();
 
-							return false;
+							return $(trigger).data('src');
+							// return false;
 						}
 						// If we are using the media library field, then add the data to the fields
 						else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
@@ -342,64 +360,32 @@
 									mime : meta.data('mime'),
 									size : meta.data('size'),
 									dimensions : meta.data('dimensions') || false
-								},
-								image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
-								video_types = ['mp4', 'webm'],
-								audio_types = ['mp3'],
-								fields = $(ml_source_input).find('.instance'),
-								preview = $(ml_source_input).find('.preview');
+								};
+
 
 							// If multiple is allowed, then we need to add to it rather than replace it
 							if ($(ml_source_input).data('allow-multiple') === 'yes') {
-								var length = $(ml_source_input).find('input[name*="[name]"]').length;
+								// If multiple have been selected then we need to loop over them and add all files
+								if ($(trigger).closest('.ml-files').find('input[name="select-files"]:checked').length) {
+									var inputs = $(trigger).closest('.ml-files').find('input[name="select-files"]:checked');
 
-								// There's no preview, so there is no attached item
-								if (!preview.length) {
-									// Add the preview
-									preview = $(ml_source_input).find('.clear').before('<div class="preview" />').prev('.preview');
-									// And update the values of the default empty inputs
-									fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
-									fields.find('input[name*="[name]"]').val(data.name);
-									fields.find('input[name*="[mime]"]').val(data.mime);
-									fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
-									fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
+									inputs.each(function (i, e) {
+										var this_data = {
+											name : $(e).prevAll('.name').text(),
+											src : $(e).prev('.select-file').data('src'),
+											mime : $(e).nextAll('.meta').data('mime'),
+											size : $(e).nextAll('.meta').data('size'),
+											dimensions : $(e).nextAll('.meta').data('dimensions') || false
+										};
 
-									if (data.dimensions) {
-										fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
-										fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
-									}
+										setTimeout(function() {
+								            addFieldItem(this_data);
+								        }, 100 * i);
+									});
 								}
-								// There is a preview, so we need to add to it
+								// Otherwise just add the one
 								else {
-									fields.append(`
-										<input name="fields[${fields.data('name')}][${length}][value]" value="${data.src.split(Symphony.Context.get('root'))[1]}" type="text" readonly />
-										<input name="fields[${fields.data('name')}][${length}][name]" value="${data.name}" type="text" readonly />
-										<input name="fields[${fields.data('name')}][${length}][mime]" value="${data.mime}" type="text" readonly />
-										<input name="fields[${fields.data('name')}][${length}][size]" value="${data.size.split(' ')[0]}" type="text" readonly />
-										<input name="fields[${fields.data('name')}][${length}][unit]" value="${data.size.split(' ')[1].toLowerCase()}" type="text" readonly />
-									`);
-
-									if (data.dimensions) {
-										fields.append(`
-											<input name="fields[${fields.data('name')}][${length}][width]" value="${data.dimensions.split('x')[0]}" type="text" readonly />
-											<input name="fields[${fields.data('name')}][${length}][height]" value="${data.dimensions.split('x')[1].replace('p', '')}" type="text" readonly />
-										`);
-									}
-								}
-
-								var item = preview.append(`<div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a><a class="remove">Remove</a></div>`).find('.item:last-child');
-								
-								if (image_types.includes(data.mime)) {
-									item.addClass('image').prepend(`<img src="${data.src}" />`);
-								}
-								else if (video_types.includes(data.mime)) {
-									item.addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
-								}
-								else if (audio_types.includes(data.mime)) {
-									item.addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
-								}
-								else if (data.mime !== undefined ) {
-									item.addClass('other');
+									addFieldItem(data)
 								}
 							}
 							// Only one item is allowed
@@ -470,6 +456,68 @@
 					}
 				});
 
+				function addFieldItem(data,) {
+					var item_length = $(ml_source_input).find('input[name*="[name]"]').length,
+						fields = $(ml_source_input).find('.instance'),
+						preview = $(ml_source_input).find('.preview');
+
+					// There's no preview, so there is no attached item
+					if (!preview.length) {
+						// Add the preview
+						preview = $(ml_source_input).find('.clear').before('<div class="preview" />').prev('.preview');
+						// And update the values of the default empty inputs
+						fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
+						fields.find('input[name*="[name]"]').val(data.name);
+						fields.find('input[name*="[mime]"]').val(data.mime);
+						fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
+						fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
+
+						if (data.dimensions) {
+							fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
+							fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+						}
+					}
+					// There is a preview, so we need to add to it
+					else {
+						fields.append(`
+							<input name="fields[${fields.data('name')}][${item_length}][value]" value="${data.src.split(Symphony.Context.get('root'))[1]}" type="text" readonly />
+							<input name="fields[${fields.data('name')}][${item_length}][name]" value="${data.name}" type="text" readonly />
+							<input name="fields[${fields.data('name')}][${item_length}][mime]" value="${data.mime}" type="text" readonly />
+							<input name="fields[${fields.data('name')}][${item_length}][size]" value="${data.size.split(' ')[0]}" type="text" readonly />
+							<input name="fields[${fields.data('name')}][${item_length}][unit]" value="${data.size.split(' ')[1].toLowerCase()}" type="text" readonly />
+						`);
+
+						if (data.dimensions) {
+							fields.append(`
+								<input name="fields[${fields.data('name')}][${item_length}][width]" value="${data.dimensions.split('x')[0]}" type="text" readonly />
+								<input name="fields[${fields.data('name')}][${item_length}][height]" value="${data.dimensions.split('x')[1].replace('p', '')}" type="text" readonly />
+							`);
+						}
+					}
+
+					var item = preview.append(`<div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a><a class="remove">Remove</a></div>`).find('.item:last-child');
+					
+					if (image_types.includes(data.mime)) {
+						item.addClass('image').prepend(`<img src="${data.src}" />`);
+					}
+					else if (video_types.includes(data.mime)) {
+						item.addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
+					}
+					else if (audio_types.includes(data.mime)) {
+						item.addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
+					}
+					else if (data.mime !== undefined ) {
+						item.addClass('other');
+					}
+				}
+
+				/*
+				 *	Expand/hide the drag/drop dropzone
+				 */
+				// $('body').on('change', '.ml-file input', function (e) {
+				// 	console.log('sdf')
+				// });
+
 				/*
 				 *	Expand/hide the drag/drop dropzone
 				 */
@@ -503,6 +551,7 @@
 					// Reset localstorage settings
 					localStorage.removeItem('add-to-editor');
 					localStorage.removeItem('add-to-field');
+					localStorage.removeItem('allow-multiple');
 					// Reset the subdirectory
 					ml_folder_path = null;
 					// Hide it
@@ -614,7 +663,13 @@
 							}
 
 							if (localStorage.getItem('add-to-field') === 'yes') {
-								new_content.find('.ml-file .copy').text('Select file').addClass('select-file');
+								new_content.find('.ml-file .copy').addClass('select-file');
+								if (localStorage.getItem('allow-multiple') === 'yes') {
+									new_content.find('.ml-file .copy').text('Select file').after('<input type="checkbox" />')
+								}
+								else {
+									new_content.find('.ml-file .copy').text('Select file(s)');
+								}
 							}
 
 							$('.ml-files').html(new_content.html());

@@ -70,7 +70,7 @@ This has been designed to replace the default upload field. It allows you to add
 
 To use [Doka](https://pqina.nl/doka/), you must [purchase a licence](https://pqina.nl/doka/pricing/) and upload the files to a folder called `doka` in the root. I.e `/doka/doka.min.js` and `/doka/doka.min.css`. The extension looks for this file path to confirm Doka integration.
 
-This is plugin is great, as it gives authors the ability to upload an image and manipulate it to suit the needs. For example, they may upload an image for a hero image. Then they may upload the same image and crop it to use as a thumbnail. This means they don't need to use expensive or complicated editing software to make web ready imagery.
+This plugin is great, as it gives authors the ability to upload an image and manipulate it to suit the needs. For example, they may upload an image for a hero image. Then they may upload the same image and crop it to use as a thumbnail. This means they don't need to use expensive or complicated editing software to make web ready imagery.
 
 Read the [documentation](https://pqina.nl/doka/docs/) if you wish to modify settings and options. 
 
