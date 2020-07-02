@@ -76,8 +76,7 @@
 					$('.ml-lightbox .ml-file .copy').addClass('select-file');
 
 					if (localStorage.getItem('allow-multiple') === 'yes') {
-						$('.ml-lightbox .ml-file .copy').text('Select file(s)').after('<input type="checkbox" />')
-
+						$('.ml-lightbox .ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
 					}
 					else {
 						$('.ml-lightbox .ml-file .copy').text('Select file');
@@ -134,7 +133,14 @@
 					}
 
 					if (localStorage.getItem('add-to-field') === 'yes') {
-						lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
+						lightbox.find('.ml-file .copy').addClass('select-file');
+
+						if (localStorage.getItem('allow-multiple') === 'yes') {
+							lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
+						}
+						else {
+							lightbox.find('.ml-file .copy').text('Select file');
+						}
 					}
 
 					Symphony.Extensions.MediaLibrary.fileUpload.init();
@@ -145,7 +151,6 @@
 				jqxhr.fail(function() {
 					alert('Something went wrong. Try again.');
 				});
-
 			},
 			getTags : function () {
 				/*
@@ -360,7 +365,6 @@
 									dimensions : meta.data('dimensions') || false
 								};
 
-
 							// If multiple is allowed, then we need to add to it rather than replace it
 							if ($(ml_source_input).data('allow-multiple') === 'yes') {
 								// If multiple have been selected then we need to loop over them and add all files
@@ -383,11 +387,14 @@
 								}
 								// Otherwise just add the one
 								else {
-									addFieldItem(data)
+									addFieldItem(data);
 								}
 							}
 							// Only one item is allowed
 							else {
+								var fields = $(ml_source_input).find('.instance'),
+									preview = $(ml_source_input).find('.preview');
+
 								// Add the fields if they don't exist
 								if (!fields.find('input').length) {
 									fields.append(`
@@ -662,11 +669,12 @@
 
 							if (localStorage.getItem('add-to-field') === 'yes') {
 								new_content.find('.ml-file .copy').addClass('select-file');
+
 								if (localStorage.getItem('allow-multiple') === 'yes') {
-									new_content.find('.ml-file .copy').text('Select file').after('<input type="checkbox" />')
+									new_content.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
 								}
 								else {
-									new_content.find('.ml-file .copy').text('Select file(s)');
+									new_content.find('.ml-file .copy').text('Select file');
 								}
 							}
 

@@ -5,7 +5,7 @@ jQuery(document).ready(function() {
 	// Trigger the ML modal
 	$('.field-medialibraryfield').on('click', function (e) {
 		var container = $(this),
-			href = Symphony.Context.get('root') + '/admin/extension/media_library/library/';
+			href = Symphony.Context.get('symphony') + '/extension/media_library/library/';
 
 		// Clear the field
 		if ($(e.target).is('.clear')) {
