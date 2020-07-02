@@ -46,43 +46,7 @@
 
 			if (ml_folder_path) href = href + '?folder=' + ml_folder_path;
 
-			// Otherwise, let's open it in a lightbox
-			var jqxhr = $.get(href, function () {
-				var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
-				setTimeout(function() {
-					lightbox.addClass('is-visible');
-				}, 10);
-			});
-
-			jqxhr.done(function(data) {
-				var parser = new DOMParser(),
-					doc = parser.parseFromString(data, "text/html"),
-					lightbox = $('body').find('.ml-lightbox-content');
-
-				lightbox.append($(doc).find('#context, #contents'));
-
-				if (localStorage.getItem('add-to-editor') === 'yes') {
-					lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
-				}
-
-				if (localStorage.getItem('add-to-field') === 'yes') {
-					lightbox.find('.ml-file .copy').addClass('select-file');
-					if (localStorage.getItem('allow-multiple') === 'yes') {
-						lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
-					}
-					else {
-						lightbox.find('.ml-file .copy').text('Select file');
-					}
-				}
-
-				Symphony.Extensions.MediaLibrary.fileUpload.init();
-				Symphony.Extensions.MediaLibrary.events();
-				Symphony.Extensions.MediaLibrary.getTags();
-			});
-
-			jqxhr.fail(function() {
-				alert('Something went wrong. Try again.');
-			});
+			Symphony.Extensions.MediaLibrary.openLibrary(href);
 
 			return false;
 		});
@@ -149,6 +113,40 @@
 		}
 
 		Symphony.Extensions.MediaLibrary = {
+			openLibrary : function (href) {
+
+				var jqxhr = $.get(href, function () {
+					var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
+					setTimeout(function() {
+						lightbox.addClass('is-visible');
+					}, 10);
+				});
+
+				jqxhr.done(function(data) {
+					var parser = new DOMParser(),
+						doc = parser.parseFromString(data, "text/html"),
+						lightbox = $('body').find('.ml-lightbox-content');
+
+					lightbox.append($(doc).find('#context, #contents'));
+
+					if (localStorage.getItem('add-to-editor') === 'yes') {
+						lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
+					}
+
+					if (localStorage.getItem('add-to-field') === 'yes') {
+						lightbox.find('.ml-file .copy').text('Select file').addClass('select-file');
+					}
+
+					Symphony.Extensions.MediaLibrary.fileUpload.init();
+					Symphony.Extensions.MediaLibrary.events();
+					Symphony.Extensions.MediaLibrary.getTags();
+				});
+
+				jqxhr.fail(function() {
+					alert('Something went wrong. Try again.');
+				});
+
+			},
 			getTags : function () {
 				/*
 				 *	Add tags from JSON file to each row
@@ -750,6 +748,44 @@
 					maxFileSize: ml_image_settings.maxFileSize,
 			    	allowMultiple: true,
 			    	allowImagePreview: false,
+			    	imageTransformImageFilter: (file) => new Promise(resolve => {
+				        // no gif mimetype, do transform
+				        if (!/image\/gif/.test(file.type)) return resolve(true);
+
+				        const reader = new FileReader();
+				        reader.onload = () => {
+
+				            var arr = new Uint8Array(reader.result),
+				            i, len, length = arr.length, frames = 0;
+
+				            // make sure it's a gif (GIF8)
+				            if (arr[0] !== 0x47 || arr[1] !== 0x49 || 
+				                arr[2] !== 0x46 || arr[3] !== 0x38) {
+				                // it's not a gif, we can safely transform it
+				                resolve(true);
+				                return;
+				            }
+
+				            for (i=0, len = length - 9; i < len, frames < 2; ++i) {
+				                if (arr[i] === 0x00 && arr[i+1] === 0x21 &&
+				                    arr[i+2] === 0xF9 && arr[i+3] === 0x04 &&
+				                    arr[i+8] === 0x00 && 
+				                    (arr[i+9] === 0x2C || arr[i+9] === 0x21)) {
+				                    frames++;
+				                }
+				            }
+
+				            // if frame count > 1, it's animated, don't transform
+				            if (frames > 1) {
+				                return resolve(false);
+				            }
+
+				            // do transform
+				            resolve(true);
+				        }
+				        reader.readAsArrayBuffer(file);
+
+				    }),
 		    		onprocessfiles: function () {
 			    		Symphony.Extensions.MediaLibrary.fileUpload.refresh();
 			    	}
