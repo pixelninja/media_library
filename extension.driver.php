@@ -283,15 +283,15 @@ Class extension_media_library extends Extension{
 
 		$page->addElementToHead($html);
 
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-edit', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-preview', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-exif-orientation', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-crop', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-resize', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-transform', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-image-validate-size', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond-plugin-file-validate-size', 665);
-		$page->addScriptToHead('https://unpkg.com/filepond/dist/filepond.min.js', 666);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-edit.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-preview.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-exif-orientation.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-crop.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-resize.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-transform.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-validate-size.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-file-validate-size.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond.min.js', 666);
 		if (file_exists(DOCROOT . '/doka/doka.min.js')) {
 			$page->addScriptToHead(URL . '/doka/doka.min.js', 667);
 		}
@@ -302,9 +302,9 @@ Class extension_media_library extends Extension{
 		if (file_exists(DOCROOT . '/doka/doka.min.css')) {
 			$page->addStylesheetToHead(URL . '/doka/doka.min.css', 'screen', 666);
 		}
-		$page->addStylesheetToHead('https://unpkg.com/filepond/dist/filepond.css', 'screen', 665);
-		$page->addStylesheetToHead('https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.css', 'screen', 666);
-		$page->addStylesheetToHead('https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css', 'screen', 666);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond.css', 'screen', 665);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-edit.css', 'screen', 666);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-preview.css', 'screen', 666);
 	}
 
 	/*-------------------------------------------------------------------------

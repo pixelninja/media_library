@@ -28,7 +28,6 @@
 			ml_menu_group
 				.addClass('ml-link')
 				.css('cursor', 'pointer')
-				.append('<span class="media-library-direct" />')
 				.remove()
 				.appendTo('#nav ul.content');
 		}
@@ -37,12 +36,6 @@
 			e.preventDefault();
 
 			var href = ml_menu_item.attr('href') || ml_menu_group.attr('data-href');
-
-			// Clicking the icon should take you to the actual page
-			if ($(e.target).is('span')) {
-				window.location.href = href;
-				return false;
-			}
 
 			if (ml_folder_path) href = href + '?folder=' + ml_folder_path;
 

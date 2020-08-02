@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.0.11" date="2020-08-03" min="2.7.x">
+			- Remove icon from navigation
+			- Add scripts/styles from local source instead of calling them from unpkg.com as it's often slow to load
+		</release>
 		<release version="2.0.10" date="2020-07-02" min="2.7.x">
 			- Allow multiple files to be selected at once when field allows it
 		</release>
