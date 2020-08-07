@@ -244,12 +244,12 @@
 			}
 
 			// var_dump($this->get('media_ratio')); exit;
-			$caption_text = __('Click here to open the Media Library and select a file.');
+			$caption_text = __('<a href="#">Click here</a> to open the Media Library and select a file.');
 
 		    // Create helper caption
 			if($this->get('allow_multiple_selection') == 'yes') {
 				$wrapper->setAttribute('data-allow-multiple', 'yes');
-			    $caption_text = __('Click here to open the Media Library and select multiple files.');
+			    $caption_text = __('<a href="#">Click here</a> to open the Media Library and select multiple files.');
 			}
 
 			// Add the destination directory to the field

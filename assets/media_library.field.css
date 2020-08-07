@@ -13,19 +13,6 @@
 	cursor: pointer;
 }
 
-.field-medialibraryfield label:after {
-	display: block;
-	content: '';
-	width: 40px;
-	height: 20px;
-	background: url('icons/folder-search.svg') no-repeat 50% 50% / auto 14px;
-
-	position: absolute;
-	top: -2px;
-	right: 45px;
-	z-index: 1;
-}
-
 .field-medialibraryfield.required label:after {
 	right: 0;
 }
@@ -40,7 +27,6 @@
 	color: #222;
 	margin: 5px 0;
 	padding: 3px 0;
-	opacity: 0.5;
 }
 
 .field-medialibraryfield .invalid .caption {
