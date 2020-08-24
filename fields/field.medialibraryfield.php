@@ -96,7 +96,7 @@
 			// Media Ratio
 			$div = new XMLElement('div', null, array('class' => 'column'));
 
-	        $rules = array('1:1', '16:9', '9:16', '3:2', '2:3');
+	        $rules = array('1:1', '16:9', '9:16', '3:2', '2:3', 'landscape', 'portrait');
 	        $label = Widget::Label(__('Media Ratio'));
 	        $label->appendChild(new XMLElement('i', __('Optional')));
 	        $label->appendChild(Widget::Input("fields[{$order}][media_ratio]", $this->get('media_ratio')));
@@ -386,21 +386,46 @@
 
 				// Check if the file is within ratio
 				if (!empty($this->get('media_ratio')) && !empty($field['width']) && !empty($field['height'])) {
-					$ratio = explode(':', $this->get('media_ratio'));
-					$ratio_width = (float)$ratio[0];
-					$ratio_height = (float)$ratio[1];
 					$image_width = (float)$field['width'];
 					$image_height = (float)$field['height'];
 					$max_size = $this->get('max_file_size');
 
-					if (number_format($image_width / $image_height, 2) != number_format($ratio_width / $ratio_height, 2)) {
-						$message = __("Incorrect media ratio. The file chosen in ‘%s’ should be %s.", array(
-								$this->get('label'),
-								$this->get('media_ratio')
-							)
-						);
+					if ($this->get('media_ratio') === 'landscape') {
+						if ($image_width <= $image_height) {
+							$message = __("Incorrect media ratio. The file chosen in ‘%s’ should be %s.", array(
+									$this->get('label'),
+									$this->get('media_ratio')
+								)
+							);
 
-						return self::__INVALID_FIELDS__;
+							return self::__INVALID_FIELDS__;
+						}
+					}
+					else if ($this->get('media_ratio') === 'portrait') {
+						if ($image_width >= $image_height) {
+							$message = __("Incorrect media ratio. The file chosen in ‘%s’ should be %s.", array(
+									$this->get('label'),
+									$this->get('media_ratio')
+								)
+							);
+
+							return self::__INVALID_FIELDS__;
+						}
+					}
+					else {
+						$ratio = explode(':', $this->get('media_ratio'));
+						$ratio_width = (float)$ratio[0];
+						$ratio_height = (float)$ratio[1];
+
+						if (number_format($image_width / $image_height, 2) != number_format($ratio_width / $ratio_height, 2)) {
+							$message = __("Incorrect media ratio. The file chosen in ‘%s’ should be %s.", array(
+									$this->get('label'),
+									$this->get('media_ratio')
+								)
+							);
+
+							return self::__INVALID_FIELDS__;
+						}
 					}
 				}
 

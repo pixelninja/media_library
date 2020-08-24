@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.0.12" date="2020-08-03" min="2.7.x">
+			- Consistent styling for fields within the Primary column
+			- Add a landscape and portrait ratio with relevant validation
+		</release>
 		<release version="2.0.11" date="2020-08-03" min="2.7.x">
 			- Remove icon from navigation
 			- Add scripts/styles from local source instead of calling them from unpkg.com as it's often slow to load

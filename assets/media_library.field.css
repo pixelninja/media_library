@@ -52,10 +52,6 @@
 	height: 50px;
 }
 
-.primary .field-medialibraryfield .item:not(.other) {
-	height: 100px;
-}
-
 .field-medialibraryfield .item:not(:last-child) {
 	margin-bottom: 10px;
 	padding-bottom: 10px;
@@ -77,16 +73,10 @@
 	width: 100px;
 }
 
-.primary .field-medialibraryfield .item img,
-.primary .field-medialibraryfield .item video,
-.primary .field-medialibraryfield .item audio {
-	max-width: 200px;
-}
-
 .primary .field-medialibraryfield[data-allow-multiple] .item img,
 .primary .field-medialibraryfield[data-allow-multiple] .item video,
 .primary .field-medialibraryfield[data-allow-multiple] .item audio {
-	width: 200px;
+	width: 100px;
 	object-fit: contain;
 	object-position: right;
 }
