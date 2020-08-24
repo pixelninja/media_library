@@ -264,10 +264,28 @@ form.media-library {
     padding: 0 5px;
 }
 
+.media_library-droparea_toggle p {
+	width: calc(50% - 18px);
+}
+
+.media_library-droparea_toggle p:first-child {
+	padding-right: 15px;
+}
+
+.media_library-droparea_toggle p:last-child {
+	padding-left: 15px;
+	text-align: right;
+}
+
+.media_library-droparea_toggle p i {
+	display: block;
+}
+
 .media_library-droparea_toggle label {
-	font-weight: bold;
+	margin-bottom: 5px;
 	cursor: pointer;
 
+	font-weight: bold;
 	line-height: 20px;
 }
 

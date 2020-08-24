@@ -658,13 +658,39 @@
 					let html;
 
 					if (typeof Doka === 'object') {
+						// html = `
+						// 	<div class="media_library-droparea">
+						// 		<div class="media_library-droparea_toggle">
+						// 			<label for="droparea_toggle">Image editor</label>
+						// 			<input type="checkbox" id="droparea_toggle" />
+						// 			<span />
+						// 			<label for="droparea_toggle">Multiple upload</label>
+						// 		</div>
+
+						// 		<div class="media_library-droparea_columns">
+						// 			<div class="media_library-droparea_column">
+						// 				<input type="file" class="fireDoka" name="doka" />
+						// 			</div>
+
+						// 			<div class="media_library-droparea_column">
+						// 				<input type="file" class="fireFilepond" name="filepond" />
+						// 			</div>
+						// 		</div>
+						// 	</div>
+						// `;
 						html = `
 							<div class="media_library-droparea">
 								<div class="media_library-droparea_toggle">
-									<label for="droparea_toggle">Image editor</label>
+									<p>
+										<label for="droparea_toggle">Single Image</label>
+										<i>Inspect, manipulate and upload a single image</i>
+									</p>
 									<input type="checkbox" id="droparea_toggle" />
 									<span />
-									<label for="droparea_toggle">Multiple upload</label>
+									<p>
+										<label for="droparea_toggle">Multi file</label>
+										<i>Upload multiple files at a time</i>
+									</p>
 								</div>
 
 								<div class="media_library-droparea_columns">
@@ -810,12 +836,12 @@
 			    	allowMultiple: true,
 			    	allowImagePreview: false,
 			    	imageTransformImageFilter: (file) => new Promise(resolve => {
+			    		/* Stop animated GIFs being converted into PNGs */
 				        // no gif mimetype, do transform
 				        if (!/image\/gif/.test(file.type)) return resolve(true);
 
 				        const reader = new FileReader();
 				        reader.onload = () => {
-
 				            var arr = new Uint8Array(reader.result),
 				            i, len, length = arr.length, frames = 0;
 
@@ -844,6 +870,7 @@
 				            // do transform
 				            resolve(true);
 				        }
+
 				        reader.readAsArrayBuffer(file);
 
 				    }),
@@ -857,6 +884,7 @@
 						allowFileSizeValidation: true,
 						minFileSize: ml_image_settings.minImageSize,
 						maxFileSize: ml_image_settings.maxImageSize,
+						labelIdle: 'Drag & Drop your image or <span class="filepond--label-action">Browse</span>',
 				        // open editor on image drop
 				        imageEditInstantEdit: true,
 				        // configure Doka
