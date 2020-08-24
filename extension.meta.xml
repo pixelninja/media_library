@@ -14,7 +14,10 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="2.0.12" date="2020-08-03" min="2.7.x">
+		<release version="2.1.0" date="2020-08-24" min="2.7.x">
+			- Bug fix: prevent events being called multiple times
+		</release>
+		<release version="2.0.12" date="2020-08-24" min="2.7.x">
 			- Consistent styling for fields within the Primary column
 			- Add a landscape and portrait ratio with relevant validation
 		</release>

@@ -12,6 +12,8 @@
 	$(window).load(function () {
 		localStorage.removeItem('add-to-editor');
 
+		var clipboard;
+
 		/*
 		 *	Having a drop down is a bit of overkill, so let's make it a single clickable item
 		 */
@@ -107,19 +109,25 @@
 		Symphony.Extensions.MediaLibrary = {
 			openLibrary : function (href) {
 
-				var jqxhr = $.get(href, function () {
-					var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content" /></div>').find('.ml-lightbox');
-					setTimeout(function() {
-						lightbox.addClass('is-visible');
-					}, 10);
-				});
+				// var jqxhr = $.get(href);
 
-				jqxhr.done(function(data) {
+				var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content show-loader" /></div>').find('.ml-lightbox');
+				setTimeout(function() {
+					lightbox.addClass('is-visible');
+				}, 100);
+
+				var req = fetch(href).then(function (response) {
+					// The API call was successful!
+					return response.text();
+				})
+				.then(function (data) {
+					// This is the HTML from our response as a text string
+					// console.log(data);
 					var parser = new DOMParser(),
 						doc = parser.parseFromString(data, "text/html"),
 						lightbox = $('body').find('.ml-lightbox-content');
 
-					lightbox.append($(doc).find('#context, #contents'));
+					lightbox.addClass('loaded').append($(doc).find('#context, #contents'));
 
 					if (localStorage.getItem('add-to-editor') === 'yes') {
 						lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
@@ -136,14 +144,50 @@
 						}
 					}
 
+					lightbox.removeClass('show-loader');
+
 					Symphony.Extensions.MediaLibrary.fileUpload.init();
 					Symphony.Extensions.MediaLibrary.events();
 					Symphony.Extensions.MediaLibrary.getTags();
-				});
-
-				jqxhr.fail(function() {
+				})
+				.catch(function (err) {
+					// There was an error
+					console.warn('Something went wrong.', err);
 					alert('Something went wrong. Try again.');
 				});
+
+				// jqxhr.done(function(data) {
+				// 	var parser = new DOMParser(),
+				// 		doc = parser.parseFromString(data, "text/html"),
+				// 		lightbox = $('body').find('.ml-lightbox-content');
+
+				// 	lightbox.addClass('loaded').append($(doc).find('#context, #contents'));
+
+				// 	if (localStorage.getItem('add-to-editor') === 'yes') {
+				// 		lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
+				// 	}
+
+				// 	if (localStorage.getItem('add-to-field') === 'yes') {
+				// 		lightbox.find('.ml-file .copy').addClass('select-file');
+
+				// 		if (localStorage.getItem('allow-multiple') === 'yes') {
+				// 			lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
+				// 		}
+				// 		else {
+				// 			lightbox.find('.ml-file .copy').text('Select file');
+				// 		}
+				// 	}
+
+				// 	lightbox.removeClass('show-loader');
+
+				// 	Symphony.Extensions.MediaLibrary.fileUpload.init();
+				// 	// Symphony.Extensions.MediaLibrary.events();
+				// 	Symphony.Extensions.MediaLibrary.getTags();
+				// });
+
+				// jqxhr.fail(function() {
+				// 	alert('Something went wrong. Try again.');
+				// });
 			},
 			getTags : function () {
 				/*
@@ -171,15 +215,16 @@
 				/*
 				 *	Go forward or backwards a directory
 				 */
-				var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=',
-					clipboard;
+				var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
 
 				// Make sure 'enter' doesn't fire submission
+				$('.ml-filter-files').off('keydown');
 				$('.ml-filter-files').on('keydown', function (e) {
 					if (e.keyCode === 13) return false;
 				});
 
 				// Filter items
+				$('.ml-filter-files').off('keyup');
 				$('.ml-filter-files').on('keyup', function (e) {
 					var self = $(this),
 						value = self.val().toLowerCase();
@@ -198,6 +243,7 @@
 				});
 
 				// Toggle directories
+				$('.ml-toggle-directories').off('click');
 				$('.ml-toggle-directories').on('click', function () {
 					var self = $(this);
 
@@ -212,6 +258,7 @@
 						handle = ml_folder_path.replace(ml_folder_path.substring(ml_folder_path.lastIndexOf('/')), '');
 
 					if ($('.ml-lightbox').length) {
+						// clipboard.destroy();
 						loadMediaPage(base_url + handle);
 					}
 					else {
@@ -231,6 +278,7 @@
 					if (ml_folder_path) handle = ml_folder_path + '/' + handle;
 
 					if ($('.ml-lightbox').length) {
+						// clipboard.destroy();
 						loadMediaPage(base_url + handle);
 					}
 					else {
@@ -243,11 +291,13 @@
 				/*
 				 *	Delete a file
 				 */
-				$('body').on('click', '.ml-file a.delete', function (e) {
+				$('.ml-file a.delete').off('click');
+				$('.ml-file a.delete').on('click', function (e) {
+				// $('body').on('click', '.ml-file a.delete', function (e) {
 					e.preventDefault();
 
 					var self = $(this),
-						src = self.prev('a').data('src'),
+						src = self.siblings('.copy').data('src'),
 						check = confirm(Symphony.Language.get('Are you sure you want to delete this file? This action cannot be undone.')),
 						unlink = '&unlink=' + src.replace(Symphony.Context.get('root') + '/', ''),
 						href = (ml_folder_path !== '' && ml_folder_path !== undefined) ? base_url + ml_folder_path + unlink : base_url + unlink;
@@ -255,6 +305,7 @@
 					// Only remove the files if the user is bloody well sure
 					if (check === true) {
 						if ($('.ml-lightbox').length) {
+							// clipboard.destroy();
 							loadMediaPage(href);
 						}
 						else {
@@ -273,7 +324,9 @@
 				 *	Add tags to a file
 				 */
 				// Adds/removes the inputs necessary
-				$('body').on('click', '.ml-file a.tags', function (e) {
+				$('.ml-file a.tags').off('click');
+				$('.ml-file a.tags').on('click', function (e) {
+				// $('body').on('click', '.ml-file a.tags', function (e) {
 					e.preventDefault();
 
 					if ($(e.target).is('input') || $(e.target).is('button')) return false;
@@ -292,38 +345,38 @@
 
 					self.addClass('active');
 
-					return false;
-				});
+					button.on('click', function (e) {
+						e.preventDefault();
 
-				$('body').on('click', '.ml-file a.tags button', function (e) {
-					e.preventDefault();
+						var self = $(this),
+							parent = self.parent(),
+							key = parent.attr('href'),
+							value = self.prev().val(),
+							script = Symphony.Context.get('root') + '/extensions/media_library/tags/add_tags.php',
+							count = 0;
 
-					var self = $(this),
-						parent = self.parent(),
-						key = parent.attr('href'),
-						value = self.prev().val(),
-						script = Symphony.Context.get('root') + '/extensions/media_library/tags/add_tags.php',
-						count = 0;
+						parent.addClass('loading');
 
-					parent.addClass('loading');
+						var jqxhr = $.get(script, {image: key, tags: value});
 
-					var jqxhr = $.get(script, {image: key, tags: value});
+						jqxhr.done(function(data) {
+							count = data.split(',').length;
 
-					jqxhr.done(function(data) {
-						count = data.split(',').length;
+							parent
+								.removeClass('loading')
+								.attr('data-tags', data)
+								.text('Tags (' + count + ')')
+								.trigger('click');
+						});
 
-						parent
-							.removeClass('loading')
-							.attr('data-tags', data)
-							.text('Tags (' + count + ')')
-							.trigger('click');
-					});
+						jqxhr.fail(function(data) {
+							parent.removeClass('loading');
 
-					jqxhr.fail(function(data) {
-						parent.removeClass('loading');
+							alert('Something went wrong. Try again.');
+							console.log(data);
+						});
 
-						alert('Something went wrong. Try again.');
-						console.log(data);
+						return false;
 					});
 
 					return false;
@@ -332,6 +385,7 @@
 				/*
 				 *	Copy the URL for a file
 				 */
+				if (typeof clipboard === 'object') clipboard.destroy();
 				clipboard = new Clipboard('.ml-file a.copy', {
 					text: function(trigger) {
 						// If we are using the TinyMCE plugin as well, then add the source to the popup window
@@ -454,7 +508,7 @@
 					}
 				});
 
-				function addFieldItem(data,) {
+				function addFieldItem(data) {
 					var item_length = $(ml_source_input).find('input[name*="[name]"]').length,
 						fields = $(ml_source_input).find('.instance'),
 						preview = $(ml_source_input).find('.preview');
@@ -519,6 +573,7 @@
 				/*
 				 *	Expand/hide the drag/drop dropzone
 				 */
+				$('.trigger-upload').off('click');
 				$('.trigger-upload').on('click', function (e) {
 					e.preventDefault();
 
@@ -560,6 +615,7 @@
 				}
 
 				// pressing ESC should close the lightbox
+				$(window).off('keyup');
 				$(window).on('keyup', function (e) {
 					if (e.keyCode === 27 && $('.ml-lightbox').length) {
 						closeLightbox();
@@ -567,6 +623,7 @@
 				});
 
 				// clicking on the lightbox area should also close the lightbox
+				$('.ml-lightbox').off('click');
 				$('.ml-lightbox').on('click', function (e) {
 			        var container = $(this).find('> *');
 
@@ -579,7 +636,9 @@
 				/*
 				 *	Toggle multi or single upload
 				 */
-				$('body').on('change', '#droparea_toggle', function (e) {
+				$('#droparea_toggle').off('change');
+				$('#droparea_toggle').on('change', function (e) {
+				// $('body').on('change', '#droparea_toggle', function (e) {
 					$('.media_library-droparea').toggleClass('switch-method');
 				});
 			},
@@ -674,6 +733,7 @@
 							$('.ml-files').html(new_content.html());
 
 							Symphony.Extensions.MediaLibrary.getTags();
+							Symphony.Extensions.MediaLibrary.events();
 						}
 					});
 				}
