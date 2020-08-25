@@ -683,13 +683,13 @@
 								<div class="media_library-droparea_toggle">
 									<p>
 										<label for="droparea_toggle">Single Image</label>
-										<i>Inspect, manipulate and upload a single image</i>
+										<i>Manipulate and upload a single image</i>
 									</p>
 									<input type="checkbox" id="droparea_toggle" />
 									<span />
 									<p>
 										<label for="droparea_toggle">Multi file</label>
-										<i>Upload multiple files at a time</i>
+										<i>Upload multiple files of any format at a time</i>
 									</p>
 								</div>
 
