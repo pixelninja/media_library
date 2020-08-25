@@ -64,18 +64,19 @@
 	float: left;
 	display: block;
 	width: auto;
-	max-width: 150px;
+	max-width: 75px;
 	height: inherit;
 	margin-right: 10px;
 }
 
 .field-medialibraryfield .item audio {
-	width: 100px;
+	width: 50%;
+	max-width: 100%;
+	outline: none;
 }
 
-.primary .field-medialibraryfield[data-allow-multiple] .item img,
-.primary .field-medialibraryfield[data-allow-multiple] .item video,
-.primary .field-medialibraryfield[data-allow-multiple] .item audio {
+.field-medialibraryfield[data-allow-multiple] .item img,
+.field-medialibraryfield[data-allow-multiple] .item video {
 	width: 100px;
 	object-fit: contain;
 	object-position: right;
