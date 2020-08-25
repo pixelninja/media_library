@@ -658,26 +658,6 @@
 					let html;
 
 					if (typeof Doka === 'object') {
-						// html = `
-						// 	<div class="media_library-droparea">
-						// 		<div class="media_library-droparea_toggle">
-						// 			<label for="droparea_toggle">Image editor</label>
-						// 			<input type="checkbox" id="droparea_toggle" />
-						// 			<span />
-						// 			<label for="droparea_toggle">Multiple upload</label>
-						// 		</div>
-
-						// 		<div class="media_library-droparea_columns">
-						// 			<div class="media_library-droparea_column">
-						// 				<input type="file" class="fireDoka" name="doka" />
-						// 			</div>
-
-						// 			<div class="media_library-droparea_column">
-						// 				<input type="file" class="fireFilepond" name="filepond" />
-						// 			</div>
-						// 		</div>
-						// 	</div>
-						// `;
 						html = `
 							<div class="media_library-droparea">
 								<div class="media_library-droparea_toggle">
