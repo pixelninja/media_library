@@ -93,5 +93,6 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 ## Wishlist
 
-- select more than one file at a time on files that allow multiple files. At the moment, it is one at a time.
+- Edit and update an existing image
+- Add minimum/maximum file validation to multi mode
 - Check if a file is in use before permanently deleting it.
