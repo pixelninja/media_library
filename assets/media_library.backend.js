@@ -252,6 +252,7 @@
 				});
 
 				// Backwards
+				$('.ml-directory-back').off('click');
 				$('.ml-directory-back').on('click', function (e) {
 					var self = $(this),
 						// The handle to append, which is the full folder path minus the last folder
@@ -269,6 +270,7 @@
 				});
 
 				// Forwards
+				$('.ml-subdirectory').off('click');
 				$('.ml-subdirectory').on('click', function () {
 					var self = $(this),
 						// The handle of the folder
@@ -705,7 +707,8 @@
 
 				refresh : function () {
 					var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/',
-						url = (ml_folder_path === undefined) ? base_url : base_url + '?folder=' + ml_folder_path;
+						// url = (ml_folder_path === undefined) ? base_url : base_url + '?folder=' + ml_folder_path;
+						url = (!ml_folder_path) ? base_url : base_url + '?folder=' + ml_folder_path;
 
 					// Send data
 					$.ajax({

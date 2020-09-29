@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.1.1" date="2020-09-30" min="2.7.x">
+			- Bug fix: remove event handlers on back/forwards directory click events on re-init of main function to prevent stacking of click events
+			- Bug fix: better fasly declaration on undefined/null folder path
+		</release>
 		<release version="2.1.0" date="2020-08-24" min="2.7.x">
 			- Bug fix: prevent events being called multiple times
 		</release>
