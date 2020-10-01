@@ -95,5 +95,6 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 ## Wishlist
 
 - Edit and update an existing image
+- Add alt attribute value to images
 - Add minimum/maximum file validation to multi mode
 - Check if a file is in use before permanently deleting it.
