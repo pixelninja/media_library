@@ -11,7 +11,9 @@ This also comes packaged with a field to replace the default upload field, where
 
 `/workspace/uploads` must exist. This is the directory within which this extension looks for files and subdirectories.
 
-The `tags/tags.json` file needs to be writable in order to attach tags to files. These are used for filtering within the Media Library.
+The `json/tags.json` file needs to be writable in order to attach tags to files. These are used for filtering within the Media Library.
+
+The `json/alts.json` file needs to be writable in order to attach alt attributes to files. 
 
 ## How to use
 
