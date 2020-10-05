@@ -283,6 +283,8 @@ Class extension_media_library extends Extension{
 
 		$page->addElementToHead($html);
 
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/clipboard.min.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/sortable.min.js', 665);
 		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-edit.js', 665);
 		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-preview.js', 665);
 		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-exif-orientation.js', 665);
