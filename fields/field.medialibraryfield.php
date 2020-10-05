@@ -96,104 +96,104 @@
 			// Media Ratio
 			$div = new XMLElement('div', null, array('class' => 'column'));
 
-	        $rules = array('1:1', '16:9', '9:16', '3:2', '2:3', 'landscape', 'portrait');
-	        $label = Widget::Label(__('Media Ratio'));
-	        $label->appendChild(new XMLElement('i', __('Optional')));
-	        $label->appendChild(Widget::Input("fields[{$order}][media_ratio]", $this->get('media_ratio')));
+			$rules = array('1:1', '16:9', '9:16', '3:2', '2:3', 'landscape', 'portrait');
+			$label = Widget::Label(__('Media Ratio'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Widget::Input("fields[{$order}][media_ratio]", $this->get('media_ratio')));
 
-	        $ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
+			$ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
 
-	        foreach ($rules as $rule) {
-	            $ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
-	        }
+			foreach ($rules as $rule) {
+				$ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
+			}
 
-            $div->appendChild($label);
-            $div->appendChild($ul);
+			$div->appendChild($label);
+			$div->appendChild($ul);
 
-	        if (isset($errors['media_ratio'])) $div->appendChild(Widget::Error($div, $errors['media_ratio']));
+			if (isset($errors['media_ratio'])) $div->appendChild(Widget::Error($div, $errors['media_ratio']));
 
 			$columns->appendChild($div);
 
 			// Max File Size
 			$div = new XMLElement('div', null, array('class' => 'column'));
 
-	        $rules = array('300KB', '750KB', '1MB');
-	        $label = Widget::Label(__('Maximum File Size'));
-	        $label->appendChild(new XMLElement('i', __('Optional')));
-	        $label->appendChild(Widget::Input("fields[{$order}][max_file_size]", $this->get('max_file_size')));
+			$rules = array('300KB', '750KB', '1MB');
+			$label = Widget::Label(__('Maximum File Size'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Widget::Input("fields[{$order}][max_file_size]", $this->get('max_file_size')));
 
-	        $ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
+			$ul = new XMLElement('ul', null, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
 
-	        foreach ($rules as $rule) {
-	            $ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
-	        }
+			foreach ($rules as $rule) {
+				$ul->appendChild(new XMLElement('li', $rule, array('class' => $rule)));
+			}
 
-            $div->appendChild($label);
-            $div->appendChild($ul);
+			$div->appendChild($label);
+			$div->appendChild($ul);
 
-	        if (isset($errors['max_file_size'])) $div->appendChild(Widget::Error($div, $errors['max_file_size']));
+			if (isset($errors['max_file_size'])) $div->appendChild(Widget::Error($div, $errors['max_file_size']));
 
 			$columns->appendChild($div);
 			$wrapper->appendChild($columns);
 
-	        // Destination Folder
-	        // Add any directories (relative to the root) to ignore here, e.g '/workspace/uploads/protected'
-	        $ignore = array();
+			// Destination Folder
+			// Add any directories (relative to the root) to ignore here, e.g '/workspace/uploads/protected'
+			$ignore = array();
 
-	        // Fetch all Upload directories
-	        $directories = General::listDirStructure(WORKSPACE.'/uploads', null, true, DOCROOT, $ignore);
+			// Fetch all Upload directories
+			$directories = General::listDirStructure(WORKSPACE.'/uploads', null, true, DOCROOT, $ignore);
 
-	        $label = Widget::Label(__('Destination Directory'));
+			$label = Widget::Label(__('Destination Directory'));
 
-	        $options = array();
-	        // Default option of base upload foldter
-	        $options[] = array('/workspace/uploads', false, '/workspace/uploads');
+			$options = array();
+			// Default option of base upload foldter
+			$options[] = array('/workspace/uploads', false, '/workspace/uploads');
 
-	        // Add each subdirectory of uploads
-	        if (!empty($directories) && is_array($directories)) {
-	            foreach ($directories as $d) {
-	                $d = '/' . trim($d, '/');
+			// Add each subdirectory of uploads
+			if (!empty($directories) && is_array($directories)) {
+				foreach ($directories as $d) {
+					$d = '/' . trim($d, '/');
 
-	                // Skip any ignored folders
-	                foreach ($ignore as $i) {
-	                	if ($i === substr($d, 0, strlen($i))) {
-	                		continue 2;
-	                	}
-	                }
+					// Skip any ignored folders
+					foreach ($ignore as $i) {
+						if ($i === substr($d, 0, strlen($i))) {
+							continue 2;
+						}
+					}
 
-                    $options[] = array($d, ($this->get('destination') == $d), $d);
-	            }
-	        }
+					$options[] = array($d, ($this->get('destination') == $d), $d);
+				}
+			}
 
-	        $div = new XMLElement('div');
+			$div = new XMLElement('div');
 
-	        $label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
-	        $label->setAttribute('class', 'column');
+			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
+			$label->setAttribute('class', 'column');
 
-	        if (isset($errors['destination'])) {
-	            $div->appendChild(Widget::Error($label, $errors['destination']));
-	        } else {
-	            $div->appendChild($label);
-	        }
+			if (isset($errors['destination'])) {
+				$div->appendChild(Widget::Error($label, $errors['destination']));
+			} else {
+				$div->appendChild($label);
+			}
 
-	        $wrapper->appendChild($div);
+			$wrapper->appendChild($div);
 
 			// Default options
 			$div = new XMLElement('div', null, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 
-	        // Allow selection of multiple items
-	        $label = Widget::Label();
-	        $label->setAttribute('class', 'column');
-	        $input = Widget::Input('fields['.$order.'][allow_multiple_selection]', 'yes', 'checkbox');
+			// Allow selection of multiple items
+			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
+			$input = Widget::Input('fields['.$order.'][allow_multiple_selection]', 'yes', 'checkbox');
 
-	        if ($this->get('allow_multiple_selection') == 'yes') {
-	            $input->setAttribute('checked', 'checked');
-	        }
+			if ($this->get('allow_multiple_selection') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
 
-	        $label->setValue($input->generate() . ' ' . __('Allow selection of multiple files'));
-	        $div->appendChild($label);
+			$label->setValue($input->generate() . ' ' . __('Allow selection of multiple files'));
+			$div->appendChild($label);
 
 			$wrapper->appendChild($div);
 		}
@@ -246,10 +246,10 @@
 			// var_dump($this->get('media_ratio')); exit;
 			$caption_text = __('<a href="#">Click here</a> to open the Media Library and select a file.');
 
-		    // Create helper caption
+			// Create helper caption
 			if($this->get('allow_multiple_selection') == 'yes') {
 				$wrapper->setAttribute('data-allow-multiple', 'yes');
-			    $caption_text = __('<a href="#">Click here</a> to open the Media Library and select multiple files.');
+				$caption_text = __('<a href="#">Click here</a> to open the Media Library and select multiple files.');
 			}
 
 			// Add the destination directory to the field
@@ -267,22 +267,22 @@
 				$caption_text = $caption_text . '<br />- ' . __('Media must be ') . $this->get('max_file_size') . __(' or smaller');
 			}
 
-		    $caption = new XMLElement(
-		    	'span',
-		    	$caption_text,
-		    	array('class' => 'caption')
-		    );
+			$caption = new XMLElement(
+				'span',
+				$caption_text,
+				array('class' => 'caption')
+			);
 
 			$label->appendChild($caption);
 
-		    $div = new XMLElement(
-		    	'div',
-		    	null,
-		    	array('class' => 'instance', 'data-name' => $this->get('element_name'))
-		    );
+			$div = new XMLElement(
+				'div',
+				null,
+				array('class' => 'instance', 'data-name' => $this->get('element_name'))
+			);
 
-		    // No data so set up empty fields
-		    if (empty($data)) {
+			// No data so set up empty fields
+			if (empty($data)) {
 				$div->appendChild(
 					Widget::Input(
 						'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'[0][value]',
@@ -325,16 +325,16 @@
 						'', 'text', array('readonly' => true)
 					)
 				);
-		    }
-		    // We have data, so we need to display it
-		    else {
-		    	// Go over each attached field type and attach the item
-		    	foreach ($data as $key => $item) {
-		    		
-		    		// Make sure it's an array
-		    		if (!is_array($item)) $item = [$item];
+			}
+			// We have data, so we need to display it
+			else {
+				// Go over each attached field type and attach the item
+				foreach ($data as $key => $item) {
+					
+					// Make sure it's an array
+					if (!is_array($item)) $item = [$item];
 
-		    		foreach ($item as $k => $field) {
+					foreach ($item as $k => $field) {
 						$div->appendChild(
 							Widget::Input(
 								'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix.'['.$k.']['.$key.']',
@@ -344,7 +344,7 @@
 							)
 						);
 					}
-			    }
+				}
 			}
 
 			$label->appendChild($div);
@@ -356,8 +356,8 @@
 				$wrapper->appendChild($label);
 			}
 
-		    // Create the clear link
-		    $clear = new XMLElement('a', 'Clear', array('class' => 'clear'));
+			// Create the clear link
+			$clear = new XMLElement('a', 'Clear', array('class' => 'clear'));
 			$wrapper->appendChild($clear);
 		}
 
@@ -518,6 +518,26 @@
 		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if(!is_array($data) || empty($data)) return;
 
+			// Tag file location
+			$tag_file = DOCROOT . '/extensions/media_library/tags/tags.json';
+			$tag_json = false;
+
+			// If file exists, get the contents
+			if (file_exists($tag_file)) {
+				$tags = file_get_contents($tag_file);
+				$tag_json = json_decode($tags, true);
+			}
+
+			// Alt file location
+			$alts_file = DOCROOT . '/extensions/media_library/alts/alts.json';
+			$alts_json = false;
+
+			// If file exists, get the contents
+			if (file_exists($alts_file)) {
+				$alts = file_get_contents($alts_file);
+				$alts_json = json_decode($alts, true);
+			}
+
 			$field = new XMLElement($this->get('element_name'));
 
 			if(!is_array($data['value'])) {
@@ -540,6 +560,17 @@
 				$value->setAttribute('unit', $data['unit'][$i]);
 				if ($data['width'][$i] !== null) $value->setAttribute('width', $data['width'][$i]);
 				if ($data['height'][$i] !== null) $value->setAttribute('height', $data['height'][$i]);
+
+				// If content's of tag has been retrieved, and there is a match to this image, add a tags attribute
+				if ($tag_json && !empty($tag_json[$data['value'][$i]])) {
+					$value->setAttribute('tags', $tag_json[$data['value'][$i]]);
+				}
+
+				// If content's of alt has been retrieved, and there is a match to this image, add a alt attribute
+				if ($alts_json && !empty($alts_json[$data['value'][$i]])) {
+					$value->setAttribute('alt', $alts_json[$data['value'][$i]]);
+				}
+
 				$value->setValue(
 					General::sanitize($data['value'][$i])
 				);
