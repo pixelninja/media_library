@@ -558,13 +558,14 @@ form.media-library {
 	white-space: nowrap;
 
 	line-height: 30px;
-	text-transform: capitalize;
 	text-overflow: ellipsis;
 }
 
 .ml-file .name {
 	width: calc(50% - 60px);
+
 	font-weight: bold;
+	text-transform: capitalize;
 }
 
 .ml-file .name span {
