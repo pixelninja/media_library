@@ -519,7 +519,7 @@
 			if(!is_array($data) || empty($data)) return;
 
 			// Tag file location
-			$tag_file = DOCROOT . '/extensions/media_library/tags/tags.json';
+			$tag_file = DOCROOT . '/extensions/media_library/json/tags.json';
 			$tag_json = false;
 
 			// If file exists, get the contents
@@ -529,7 +529,7 @@
 			}
 
 			// Alt file location
-			$alts_file = DOCROOT . '/extensions/media_library/alts/alts.json';
+			$alts_file = DOCROOT . '/extensions/media_library/json/alts.json';
 			$alts_json = false;
 
 			// If file exists, get the contents
