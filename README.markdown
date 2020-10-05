@@ -47,7 +47,9 @@ Files are displayed in a list format. The name of the file is on the left, and a
 
 Files are ordered chronologically, with the latest to be uploaded at the top.
 
-Clicking `tags` will present an input box. Comma separated tags can be entered here, which become searchable using the filter input above the list of files. 
+Clicking `tags` will present an input box. Comma separated tags can be entered here, which become searchable using the filter input above the list of files. This will be output with the image path.
+
+Clicking `alt` will present an input box. Type the alt text you wish to use for this image. This will be output with the image path.
 
 `Preview` opens the file in a new tab.
 
@@ -95,6 +97,5 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 ## Wishlist
 
 - Edit and update an existing image
-- Add alt attribute value to images
 - Add minimum/maximum file validation to multi mode
 - Check if a file is in use before permanently deleting it.

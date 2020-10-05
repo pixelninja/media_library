@@ -165,6 +165,9 @@
 			// Add tag icon
 			$tags = new XMLElement('a', 'Tags', array('class' => 'tags', 'href' => str_replace(URL, '', $filesrc)));
 
+			// Add alt icon
+			$alts = new XMLElement('a', 'Alt', array('class' => 'alts', 'href' => str_replace(URL, '', $filesrc)));
+
 			// Add a preview link to certain file types
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) {
 				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'href' => $filesrc, 'target' => '_blank'));
@@ -193,6 +196,7 @@
 			$this->container->appendChild($size);
 			$this->container->appendChild($dimensions);
 			$this->container->appendChild($tags);
+			$this->container->appendChild($alts);
 			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $this->container->appendChild($preview);;
 			$this->container->appendChild($copy);
 			$this->container->appendChild($delete);
