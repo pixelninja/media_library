@@ -582,10 +582,19 @@ form.media-library {
 	top: 15px;
 }
 
+.ml-file a.active {
+	z-index: 2;
+}
+
+.ml-file a.alts {
+	right: 320px;
+}
+
 .ml-file a.tags {
 	right: 255px;
 }
 
+.ml-file a.alts[data-alts]:hover:before,
 .ml-file a.tags[data-tags]:hover:before {
 	display: block;
 	content: attr(data-tags);
@@ -594,6 +603,7 @@ form.media-library {
 	background-color: rgba(0,0,0, 0.5);
 	border-radius: 3px;
 	box-shadow: 0 19px 38px rgba(0,0,0, 0.30), 0 5px 12px rgba(0,0,0, 0.22);
+	white-space: nowrap;
 
 	position: absolute;
 	bottom: 100%;
@@ -606,10 +616,16 @@ form.media-library {
 	color: #fff;
 }
 
+.ml-file a.alts[data-alts]:hover:before {
+	content: attr(data-alts);
+}
+
+.ml-file a.alts.loading,
 .ml-file a.tags.loading {
 	color: rgba(63, 105, 165, 0.4);
 }
 
+.ml-file a.alts.loading:after,
 .ml-file a.tags.loading:after {
 	display: block;
 	content: '';
@@ -622,6 +638,8 @@ form.media-library {
 	right: 7px;
 }
 
+.ml-file a.alts input,
+.ml-file a.alts button,
 .ml-file a.tags input,
 .ml-file a.tags button {
 	margin: 0;
@@ -635,10 +653,12 @@ form.media-library {
     transform: translateY(-50%);
 }
 
+.ml-file a.alts input,
 .ml-file a.tags input {
 	width: 250px;
 }
 
+.ml-file a.alts button,
 .ml-file a.tags button {
 	border-radius: 0 3px 3px 0;
 

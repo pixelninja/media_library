@@ -83,6 +83,7 @@
 				Symphony.Extensions.MediaLibrary.fileUpload.init();
 				Symphony.Extensions.MediaLibrary.events();
 				Symphony.Extensions.MediaLibrary.getTags();
+				Symphony.Extensions.MediaLibrary.getAlts();
 			});
 
 			jqxhr.fail(function(data) {
@@ -108,10 +109,8 @@
 
 		Symphony.Extensions.MediaLibrary = {
 			openLibrary : function (href) {
-
-				// var jqxhr = $.get(href);
-
 				var lightbox = $('body').append('<div class="ml-lightbox"><div class="ml-lightbox-content show-loader" /></div>').find('.ml-lightbox');
+
 				setTimeout(function() {
 					lightbox.addClass('is-visible');
 				}, 100);
@@ -149,45 +148,13 @@
 					Symphony.Extensions.MediaLibrary.fileUpload.init();
 					Symphony.Extensions.MediaLibrary.events();
 					Symphony.Extensions.MediaLibrary.getTags();
+					Symphony.Extensions.MediaLibrary.getAlts();
 				})
 				.catch(function (err) {
 					// There was an error
 					console.warn('Something went wrong.', err);
 					alert('Something went wrong. Try again.');
 				});
-
-				// jqxhr.done(function(data) {
-				// 	var parser = new DOMParser(),
-				// 		doc = parser.parseFromString(data, "text/html"),
-				// 		lightbox = $('body').find('.ml-lightbox-content');
-
-				// 	lightbox.addClass('loaded').append($(doc).find('#context, #contents'));
-
-				// 	if (localStorage.getItem('add-to-editor') === 'yes') {
-				// 		lightbox.find('.ml-file .copy').text('Add to editor').addClass('add-to-editor');
-				// 	}
-
-				// 	if (localStorage.getItem('add-to-field') === 'yes') {
-				// 		lightbox.find('.ml-file .copy').addClass('select-file');
-
-				// 		if (localStorage.getItem('allow-multiple') === 'yes') {
-				// 			lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
-				// 		}
-				// 		else {
-				// 			lightbox.find('.ml-file .copy').text('Select file');
-				// 		}
-				// 	}
-
-				// 	lightbox.removeClass('show-loader');
-
-				// 	Symphony.Extensions.MediaLibrary.fileUpload.init();
-				// 	// Symphony.Extensions.MediaLibrary.events();
-				// 	Symphony.Extensions.MediaLibrary.getTags();
-				// });
-
-				// jqxhr.fail(function() {
-				// 	alert('Something went wrong. Try again.');
-				// });
 			},
 			getTags : function () {
 				/*
@@ -202,6 +169,23 @@
 						if (data[src]) {
 							count = tags.split(',').length;
 							$(this).attr('data-tags', tags).text('Tags (' + count + ')');
+						}
+					});
+				});
+			},
+			getAlts : function () {
+				/*
+				 *	Add alt values from JSON file to each row
+				 */
+				$.getJSON(Symphony.Context.get('root') + '/extensions/media_library/alts/alts.json', function( data ) {
+					$('.ml-file .alts').each(function () {
+						var src = $(this).attr('href'),
+							alts = data[src],
+							count = 0;
+
+						if (data[src]) {
+							count = alts.split(',').length;
+							$(this).attr('data-alts', alts).text('Alt (' + count + ')');
 						}
 					});
 				});
@@ -239,7 +223,7 @@
 
 					$('.ml-files').addClass('filtered')
 					$('p.name').parent().hide();
-					$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"]').parent().show();
+					$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"], a.alts[data-alt*="' + value + '"]').parent().show();
 				});
 
 				// Toggle directories
@@ -295,7 +279,6 @@
 				 */
 				$('.ml-file a.delete').off('click');
 				$('.ml-file a.delete').on('click', function (e) {
-				// $('body').on('click', '.ml-file a.delete', function (e) {
 					e.preventDefault();
 
 					var self = $(this),
@@ -368,6 +351,67 @@
 								.removeClass('loading')
 								.attr('data-tags', data)
 								.text('Tags (' + count + ')')
+								.trigger('click');
+						});
+
+						jqxhr.fail(function(data) {
+							parent.removeClass('loading');
+
+							alert('Something went wrong. Try again.');
+							console.log(data);
+						});
+
+						return false;
+					});
+
+					return false;
+				});
+
+				/*
+				 *	Add alt attributes to a file
+				 */
+				// Adds/removes the inputs necessary
+				$('.ml-file a.alts').off('click');
+				$('.ml-file a.alts').on('click', function (e) {
+					e.preventDefault();
+
+					if ($(e.target).is('input') || $(e.target).is('button')) return false;
+
+					var self = $(this),
+						input = self.append('<input name="alts[list]" placeholder="Alternative text" />').find('input'),
+						button = self.append('<button name="alts[add]">Add</button>').find('button');
+
+					if (self.hasClass('active')) {
+						self.removeClass('active');
+						input.add(button).remove();
+						return false;
+					}
+
+					if (self.data('alts')) input.val(self.attr('data-alts'));
+
+					self.addClass('active');
+
+					button.on('click', function (e) {
+						e.preventDefault();
+
+						var self = $(this),
+							parent = self.parent(),
+							key = parent.attr('href'),
+							value = self.prev().val(),
+							script = Symphony.Context.get('root') + '/extensions/media_library/alts/add_alts.php',
+							count = 0;
+
+						parent.addClass('loading');
+
+						var jqxhr = $.get(script, {image: key, alts: value});
+
+						jqxhr.done(function(data) {
+							count = data.split(',').length;
+
+							parent
+								.removeClass('loading')
+								.attr('data-alts', data)
+								.text('Alt (' + count + ')')
 								.trigger('click');
 						});
 
@@ -742,6 +786,7 @@
 							$('.ml-files').html(new_content.html());
 
 							Symphony.Extensions.MediaLibrary.getTags();
+							Symphony.Extensions.MediaLibrary.getAlts();
 							Symphony.Extensions.MediaLibrary.events();
 						}
 					});
@@ -916,6 +961,7 @@
 				});
 
 				Symphony.Extensions.MediaLibrary.getTags();
+				Symphony.Extensions.MediaLibrary.getAlts();
 				Symphony.Extensions.MediaLibrary.events();
 				Symphony.Extensions.MediaLibrary.fileUpload.init();
 			}
