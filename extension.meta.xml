@@ -14,6 +14,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.1.5" date="2020-10-15" min="2.7.x">
+			- Add ability to edit and replace/rename an existing file (must have Doka files loaded in)
+			- Restructure file rows for better alignment/spacing
+		</release>
 		<release version="2.1.4" date="2020-10-06" min="2.7.x">
 			- Bug fix: incorrect file path for JSON files in XML output
 		</release>

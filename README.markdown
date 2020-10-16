@@ -15,6 +15,10 @@ The `json/tags.json` file needs to be writable in order to attach tags to files.
 
 The `json/alts.json` file needs to be writable in order to attach alt attributes to files. 
 
+**Note that any extension updates will most likely clear the JSON files of any data. Always back these up first.**
+
+It is recommended then that this extension not be added as a submodule, and when you need to update replace all files/folders except the json folder.
+
 ## How to use
 
 Firstly, set up the upload defaults in the preferences. These include items like image dimensions and file sizes.
@@ -52,6 +56,8 @@ Files are ordered chronologically, with the latest to be uploaded at the top.
 Clicking `tags` will present an input box. Comma separated tags can be entered here, which become searchable using the filter input above the list of files. This will be output with the image path.
 
 Clicking `alt` will present an input box. Type the alt text you wish to use for this image. This will be output with the image path.
+
+`Edit` will open an instance of Doka allowing you to edit an existing image, and choose to rename it or overwrite it. This option won't appear if Doka isn't enabled.
 
 `Preview` opens the file in a new tab.
 
@@ -98,6 +104,5 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 ## Wishlist
 
-- Edit and update an existing image
 - Add minimum/maximum file validation to multi mode
 - Check if a file is in use before permanently deleting it.

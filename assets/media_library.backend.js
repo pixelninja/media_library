@@ -70,6 +70,10 @@
 					}
 				}
 
+				if (typeof Doka === 'undefined') {
+					$('.ml-lightbox .ml-file .edit').remove();
+				}
+
 				if (getUrlParameter('folder') !== '' || getUrlParameter('folder') !== undefined) ml_folder_path = getUrlParameter('folder');
 
 				Symphony.Extensions.MediaLibrary.fileUpload.init();
@@ -113,7 +117,6 @@
 				})
 				.then(function (data) {
 					// This is the HTML from our response as a text string
-					// console.log(data);
 					var parser = new DOMParser(),
 						doc = parser.parseFromString(data, "text/html"),
 						lightbox = $('body').find('.ml-lightbox-content');
@@ -133,6 +136,10 @@
 						else {
 							lightbox.find('.ml-file .copy').text('Select file');
 						}
+					}
+
+					if (typeof Doka === 'undefined') {
+						$('.ml-file .edit').remove();
 					}
 
 					lightbox.removeClass('show-loader');
@@ -302,7 +309,6 @@
 				// Adds/removes the inputs necessary
 				$('.ml-file a.tags').off('click');
 				$('.ml-file a.tags').on('click', function (e) {
-				// $('body').on('click', '.ml-file a.tags', function (e) {
 					e.preventDefault();
 
 					if ($(e.target).is('input') || $(e.target).is('button')) return false;
@@ -603,13 +609,6 @@
 				/*
 				 *	Expand/hide the drag/drop dropzone
 				 */
-				// $('body').on('change', '.ml-file input', function (e) {
-				// 	console.log('sdf')
-				// });
-
-				/*
-				 *	Expand/hide the drag/drop dropzone
-				 */
 				$('.trigger-upload').off('click');
 				$('.trigger-upload').on('click', function (e) {
 					e.preventDefault();
@@ -678,6 +677,94 @@
 				// $('body').on('change', '#droparea_toggle', function (e) {
 					$('.media_library-droparea').toggleClass('switch-method');
 				});
+
+				// Edit an image and add option to rename file
+				if (typeof Doka === 'object') {
+					$('.ml-file .edit').off('click');
+					$('.ml-file .edit').on('click', function (e) {
+						e.preventDefault();
+
+						let edit_image = Doka.create({
+							outputQuality : ml_image_settings.outputQuality,
+							cropAspectRatioOptions: [
+								{
+									label: 'Free',
+									value: null
+								},
+								{
+									label: '3:2',
+									value: 1.5
+								},
+								{
+									label: '2:3',
+									value: 0.67
+								},
+								{
+									label: '16:9',
+									value: 1.778
+								},
+								{
+									label: '9:16',
+									value: 0.5625
+								},
+								{
+									label: '1:1',
+									value: 1
+								}
+							]
+						});
+
+						edit_image
+							.edit($(this).attr('href'))
+					    .then(output => {
+
+								let data = new FormData();
+								let location = ml_doc_root + '/workspace/uploads/';
+								let src = $(this).attr('href');
+								let custom_name, name, extension;
+
+								if (ml_folder_path) location = location + ml_folder_path + '/';
+
+								name = src.split('/');
+								name = name[name.length - 1];
+								extension = name.split('.');
+								extension = extension[extension.length - 1];
+
+								// Confirm the existing name or type a new one
+								custom_name = prompt('Confirm the file name (existing files will be overwritten):', name.replace('.' + extension, ''));
+							  if (custom_name !== null || custom_name !== "") {
+							    name = custom_name + '.' + extension;
+							  }
+
+								// Set data
+								data.append('file', output.file, name);
+								data.append('location', location);
+								data.append('overwrite', 'yes'); // Override existing file instead of adding a new one
+
+								// Send data
+								$.ajax({
+									url: Symphony.Context.get('root') + '/extensions/media_library/lib/upload.php',
+									data: data,
+									cache: false,
+									contentType: false,
+									dataType: 'json',
+									processData: false,
+									type: 'POST',
+									error: function(result){
+										console.log(result)
+										alert('There was an error uploading this file. Please try again or contact your support team.');
+									},
+									success: function(result) {
+										console.log(result);
+										Symphony.Extensions.MediaLibrary.fileUpload.refresh();
+									}
+								});
+
+					    });
+
+						return false;
+					});
+				}
 			},
 			fileUpload : {
 				/*
@@ -772,6 +859,10 @@
 								else {
 									new_content.find('.ml-file .copy').text('Select file');
 								}
+							}
+
+							if (typeof Doka === 'undefined') {
+								$('.ml-files .edit').remove();
 							}
 
 							$('.ml-files').html(new_content.html());
@@ -891,7 +982,6 @@
 						}
 
 						reader.readAsArrayBuffer(file);
-
 					}),
 					onprocessfiles: function () {
 						Symphony.Extensions.MediaLibrary.fileUpload.refresh();
@@ -908,7 +998,7 @@
 						imageEditInstantEdit: true,
 						// configure Doka
 						imageEditEditor: Doka.create({
-							outputQuality : ml_image_settings.imageQuality,
+							outputQuality : ml_image_settings.outputQuality,
 							cropAspectRatioOptions: [
 								{
 									label: 'Free',

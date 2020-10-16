@@ -173,6 +173,11 @@
 				$preview = new XMLElement('a', 'Preview', array('class' => 'preview', 'href' => $filesrc, 'target' => '_blank'));
 			}
 
+			// Add an edit link to certain file types
+			if (in_array($fileextension, array('png', 'jpg', 'gif'))) {
+				$edit = new XMLElement('a', 'Edit', array('class' => 'edit', 'href' => $filesrc));
+			}
+
 			// Add copy and delete options
 			$copy = new XMLElement('a', __('Copy file URL'), array('class' => 'copy', 'data-src' => $filesrc));
 			$delete = new XMLElement('a', __('Delete'), array('class' => 'delete'));
@@ -191,16 +196,21 @@
 			}
 
 			// Append all the data to the page
-			$this->container->appendChild($icon);
-			$this->container->appendChild($name);
-			$this->container->appendChild($size);
-			$this->container->appendChild($dimensions);
-			$this->container->appendChild($tags);
-			$this->container->appendChild($alts);
-			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $this->container->appendChild($preview);;
-			$this->container->appendChild($copy);
-			$this->container->appendChild($delete);
-			$this->container->appendChild($meta);
+			$div = new XMLElement('div');
+			$div->appendChild($icon);
+			$div->appendChild($name);
+			$div->appendChild($size);
+			$div->appendChild($dimensions);
+			$this->container->appendChild($div);
+			$div = new XMLElement('div');
+			$div->appendChild($tags);
+			$div->appendChild($alts);
+			if (in_array($fileextension, array('png', 'jpg', 'gif'))) $div->appendChild($edit);
+			if (in_array($fileextension, array('png', 'jpg', 'gif', 'bmp', 'svg', 'mp4', 'webm'))) $div->appendChild($preview);
+			$div->appendChild($copy);
+			$div->appendChild($delete);
+			$div->appendChild($meta);
+			$this->container->appendChild($div);
 		}
 
 		/*

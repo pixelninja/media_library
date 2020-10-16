@@ -40,8 +40,8 @@ form.media-library {
 
 .media_library-upload {
 	height: 0;
-    margin: 0 auto;
-    padding: 0;
+	margin: 0 auto;
+	padding: 0;
 	overflow: auto;
 
 	transition: all 300ms ease-out;
@@ -233,10 +233,10 @@ form.media-library {
 /* Drop area */
 .media_library-droparea {
 	position: relative;
-    width: 90%;
-    max-width: 400px;
-    margin: 0 auto;
-    overflow: hidden;
+	width: 90%;
+	max-width: 400px;
+	margin: 0 auto;
+	overflow: hidden;
 }
 
 .media_library-droparea.switch-method .media_library-droparea_column {
@@ -245,23 +245,23 @@ form.media-library {
 
 .media_library-droparea_columns {
 	display: flex;
-    width: 200%;
+	width: 200%;
 }
 
 .media_library-droparea_column {
 	width: 50%;
-    padding: 0 5px;
+	padding: 0 5px;
 
-    transform: translateX(0%);
+	transform: translateX(0%);
 
 	transition: transform 250ms ease-out;
 }
 
 .media_library-droparea_toggle {
 	position: relative;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 5px;
+	display: flex;
+	justify-content: space-between;
+	padding: 0 5px;
 }
 
 .media_library-droparea_toggle p {
@@ -302,17 +302,17 @@ form.media-library {
 }
 
 .media_library-droparea_toggle input {
-    width: 35px;
-    height: 20px;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
-    cursor: pointer;
+	width: 35px;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	opacity: 0;
+	cursor: pointer;
 
-    -webkit-appearance: button;
-    appearance: button;
+	-webkit-appearance: button;
+	appearance: button;
 
-    z-index: 2;
+	z-index: 2;
 }
 
 .media_library-droparea_toggle span {
@@ -351,7 +351,7 @@ form.media-library {
 	margin: 50px auto;
 	padding: 1.5rem;
 	background: #f5f5f5;
-    border: .1rem solid #e6e6e5;
+	border: .1rem solid #e6e6e5;
 
 	font-size: 127%;
 	text-align: center;
@@ -384,7 +384,7 @@ form.media-library {
 
 .ml-directory-back,
 .ml-toggle-directories {
-    height: 30px;
+	height: 30px;
 	margin: 0.5rem 0;
 }
 
@@ -403,11 +403,11 @@ form.media-library {
 }
 
 .ml-toggle-directories {
-    width: 130px;
+	width: 130px;
 
-    line-height: 30px;
-    font-weight: bold;
-    text-align: center;
+	line-height: 30px;
+	font-weight: bold;
+	text-align: center;
 }
 
 .ml-toggle-directories:after {
@@ -451,12 +451,15 @@ form.media-library {
 
 .ml-file {
 	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	width: 100%;
 	background-color: #f5f5f5;
 	padding: .8rem 1.9rem .8rem 0;
-    border: .1rem solid #e6e6e5;
-    border-width: .1rem 0;
-    background-color: #f5f5f5;
+	border: .1rem solid #e6e6e5;
+	border-width: .1rem 0;
+	background-color: #f5f5f5;
 }
 
 .ml-file:nth-child(even) {
@@ -464,7 +467,11 @@ form.media-library {
 }
 
 .ml-file:hover {
-    background-color: #ececec;
+	background-color: #ececec;
+}
+
+.ml-file > div:first-child {
+	width: calc(100% - 343px);
 }
 
 /* Icons */
@@ -473,8 +480,8 @@ form.media-library {
 	vertical-align: middle;
 	width: 30px;
 	height: 30px;
-	margin-right: 1.5rem;
-	margin-left: 1rem;
+	margin-right: 15px;
+	margin-left: 10px;
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 }
@@ -549,7 +556,6 @@ form.media-library {
 	background-image: url('icons/icon-zip.svg');
 }
 /* Icons end */
-
 .ml-file p {
 	display: inline-block;
 	vertical-align: middle;
@@ -562,7 +568,7 @@ form.media-library {
 }
 
 .ml-file .name {
-	width: calc(50% - 60px);
+	width: calc(100% - 305px);
 
 	font-weight: bold;
 	text-transform: capitalize;
@@ -574,25 +580,16 @@ form.media-library {
 }
 
 .ml-file .size {
-	width: 150px;
+	width: 115px;
 	padding-left: 15px;
+
+	text-align: right;
 }
 
 .ml-file a {
-	position: absolute;
-	top: 15px;
-}
-
-.ml-file a.active {
-	z-index: 2;
-}
-
-.ml-file a.alts {
-	right: 320px;
-}
-
-.ml-file a.tags {
-	right: 255px;
+	position: relative;
+	display: inline-block;
+	margin-left: 15px;
 }
 
 .ml-file a.alts[data-alts]:hover:before,
@@ -648,10 +645,10 @@ form.media-library {
 	box-shadow: 0 19px 38px rgba(0,0,0, 0.30), 0 5px 12px rgba(0,0,0, 0.22);
 
 	position: absolute;
-    top: 50%;
-    right: 72px;
+	top: 50%;
+	right: 40px;
 
-    transform: translateY(-50%);
+	transform: translateY(-50%);
 }
 
 .ml-file a.alts input,
@@ -662,30 +659,16 @@ form.media-library {
 .ml-file a.alts button,
 .ml-file a.tags button {
 	border-radius: 0 3px 3px 0;
-
-    right: 40px;
-}
-
-.ml-file a.preview {
-	right: 180px;
-}
-
-.ml-file a.copy {
-	right: 75px;
 }
 
 .ml-file a.copy + input {
-    position: absolute;
-    top: 17px;
-    right: 140px;
-}
-
-.ml-file a.insert {
-	right: 85px;
+	position: relative;
+	top: 3px;
+	margin-right: 0;
+	margin-left: 5px;
 }
 
 .ml-file a.delete {
-	right: 10px;
 	color: #e90a20;
 }
 
@@ -693,38 +676,20 @@ form.media-library {
 	display: none;
 }
 
-@media (max-width: 1230px) {
-
-	.ml-file .name {
-		width: calc(40% - 60px);
-	}
-}
-
 @media (max-width: 1024px) {
 
-	.ml-file [class*='icon-'] {
-		height: 20px;
+	.ml-file {
+		display: block;
 	}
 
-	.ml-file .name {
-		width: calc(100% - 60px);
+	.ml-file > div:first-child {
+		width: 100%;
 	}
 
-	.ml-file .size {
-		width: auto;
-	}
-
-	.ml-file .name + .size {
-		padding-left: 60px;
-	}
-
-	.ml-file .name + .size:after {
-		content: ', '
-	}
-
-	.ml-file a {
-		top: inherit;
-		bottom: 15px;
+	.ml-file > div:last-child {
+		width: 100%;
+		padding: 10px;
+		text-align: right;
 	}
 }
 
@@ -734,32 +699,12 @@ form.media-library {
 
 	}
 
-	.ml-file p {
-		line-height: 20px;
+	.ml-file .name {
+		width: calc(100% - 60px);
 	}
 
-	.ml-file p:not(.name) {
-		display: block;
-		padding-left: 60px;
-	}
-
-	.ml-file a:first-of-type {
-		margin-left: 60px;
-	}
-
-	.ml-file a {
-		position: static;
-		display: inline-block;
-		margin-top: 10px;
-	}
-
-	.ml-file a:after {
-		display: inline-block;
-		content: ', ';
-	}
-
-	.ml-file a.copy + input {
-	    display: none;
+	.ml-file .size {
+		display: none;
 	}
 }
 /* @end */
