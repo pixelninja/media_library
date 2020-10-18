@@ -686,6 +686,7 @@
 
 						let edit_image = Doka.create({
 							outputQuality : ml_image_settings.outputQuality,
+							utils : ['crop', 'filter','resize'],
 							cropAspectRatioOptions: [
 								{
 									label: 'Free',
@@ -717,6 +718,7 @@
 						edit_image
 							.edit($(this).attr('href'))
 					    .then(output => {
+								if(!output) return false;
 
 								let data = new FormData();
 								let location = ml_doc_root + '/workspace/uploads/';
@@ -999,6 +1001,7 @@
 						// configure Doka
 						imageEditEditor: Doka.create({
 							outputQuality : ml_image_settings.outputQuality,
+							utils : ['crop', 'filter','resize'],
 							cropAspectRatioOptions: [
 								{
 									label: 'Free',
