@@ -471,7 +471,12 @@ form.media-library {
 }
 
 .ml-file > div:first-child {
-	width: calc(100% - 343px);
+	width: 100%;
+}
+
+.ml-file > div:last-child {
+	display: flex;
+	align-items: center;
 }
 
 /* Icons */
@@ -588,8 +593,9 @@ form.media-library {
 
 .ml-file a {
 	position: relative;
-	display: inline-block;
+	display: block;
 	margin-left: 15px;
+	white-space: nowrap;
 }
 
 .ml-file a.alts[data-alts]:hover:before,
@@ -682,9 +688,9 @@ form.media-library {
 		display: block;
 	}
 
-	.ml-file > div:first-child {
+	/*.ml-file > div:first-child {
 		width: 100%;
-	}
+	}*/
 
 	.ml-file > div:last-child {
 		width: 100%;
