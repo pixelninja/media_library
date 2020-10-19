@@ -44,7 +44,13 @@ jQuery(document).ready(function($) {
 
 		// View the file
 		if ($(e.target).hasClass('view')) {
-			window.open(Symphony.Context.get('root') + $(e.target).attr('href'))
+			if ($(e.target).attr('href').includes(Symphony.Context.get('root'))) {
+				window.open($(e.target).attr('href'))
+			}
+			else {
+				window.open(Symphony.Context.get('root') + $(e.target).attr('href'))
+			}
+
 			return false;
 		}
 
