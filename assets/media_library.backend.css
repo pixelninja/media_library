@@ -648,7 +648,6 @@ form.media-library {
 .ml-file a.tags button {
 	margin: 0;
 	padding: 0 5px;
-	box-shadow: 0 19px 38px rgba(0,0,0, 0.30), 0 5px 12px rgba(0,0,0, 0.22);
 
 	position: absolute;
 	top: 50%;
@@ -660,11 +659,14 @@ form.media-library {
 .ml-file a.alts input,
 .ml-file a.tags input {
 	width: 250px;
+	right: 72px;
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 .ml-file a.alts button,
 .ml-file a.tags button {
 	border-radius: 0 3px 3px 0;
+	box-shadow: 3px 3px 6px rgba(0,0,0,0.16), 3px 3px 6px rgba(0,0,0,0.23);
 }
 
 .ml-file a.copy + input {
