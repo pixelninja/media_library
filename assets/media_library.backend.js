@@ -220,8 +220,8 @@
 					}
 
 					$('.ml-files').addClass('filtered')
-					$('p.name').parent().hide();
-					$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"], a.alts[data-alt*="' + value + '"]').parent().show();
+					$('.ml-file').hide();
+					$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"], a.alts[data-alts*="' + value + '"]').closest('.ml-file').show();
 				});
 
 				// Toggle directories
