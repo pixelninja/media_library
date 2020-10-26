@@ -73,13 +73,13 @@ jQuery(document).ready(function($) {
 	// Add a file preview
 	$('.field-medialibraryfield[data-allow-multiple!="yes"]').each(function () {
 		var self = $(this),
-			file_path = self.find('input:first-of-type').val(),
-			file_type = file_path.split('.')[1],
-			file_name = self.find('input[name*="[name]"]').val(),
-			file_mime = self.find('input[name*="[mime]"]').val(),
-			image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
-			video_types = ['mp4', 'webm'],
-			audio_types = ['mp3'];
+				file_path = self.find('input:first-of-type').val(),
+				file_type = file_path.split('.')[1],
+				file_name = self.find('input[name*="[name]"]').val(),
+				file_mime = self.find('input[name*="[mime]"]').val(),
+				image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
+				video_types = ['mp4', 'webm'],
+				audio_types = ['mp3'];
 
 		if (file_path !== '') {
 			self.find('.clear').before(`<div class="preview"><div class="item"><p><strong>${file_name}</strong>${file_mime}</p><a class="view" href="${file_path}">View</a></div></div>`);

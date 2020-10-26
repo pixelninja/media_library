@@ -435,7 +435,7 @@
 						if ($(trigger).hasClass('add-to-editor') && typeof ml_source_input === 'function') {
 							ml_source_input(
 								$(trigger).data('src'), {
-									alt: $(trigger).prevAll('.name').text()
+									alt: $(trigger).closest('.ml-file').find('.name').text()
 								}
 							);
 
@@ -447,13 +447,13 @@
 						// If we are using the media library field, then add the data to the fields
 						else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
 							var meta = $(trigger).nextAll('.meta'),
-								data = {
-									name : $(trigger).prevAll('.name').text(),
-									src : $(trigger).data('src'),
-									mime : meta.data('mime'),
-									size : meta.data('size'),
-									dimensions : meta.data('dimensions') || false
-								};
+									data = {
+										name : $(trigger).closest('.ml-file').find('.name').text(),
+										src : $(trigger).data('src'),
+										mime : meta.data('mime'),
+										size : meta.data('size'),
+										dimensions : meta.data('dimensions') || false
+									};
 
 							// If multiple is allowed, then we need to add to it rather than replace it
 							if ($(ml_source_input).data('allow-multiple') === 'yes') {
@@ -463,7 +463,7 @@
 
 									inputs.each(function (i, e) {
 										var this_data = {
-											name : $(e).prevAll('.name').text(),
+											name : $(e).closest('.ml-file').find('.name').text(),
 											src : $(e).prev('.select-file').data('src'),
 											mime : $(e).nextAll('.meta').data('mime'),
 											size : $(e).nextAll('.meta').data('size'),
@@ -483,7 +483,7 @@
 							// Only one item is allowed
 							else {
 								var fields = $(ml_source_input).find('.instance'),
-									preview = $(ml_source_input).find('.preview');
+										preview = $(ml_source_input).find('.preview');
 
 								// Add the fields if they don't exist
 								if (!fields.find('input').length) {
@@ -553,8 +553,8 @@
 
 				function addFieldItem(data) {
 					var item_length = $(ml_source_input).find('input[name*="[name]"]').length,
-						fields = $(ml_source_input).find('.instance'),
-						preview = $(ml_source_input).find('.preview');
+							fields = $(ml_source_input).find('.instance'),
+							preview = $(ml_source_input).find('.preview');
 
 					// There's no preview, so there is no attached item
 					if (!preview.length) {
