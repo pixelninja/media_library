@@ -106,3 +106,6 @@ Now, when clicking the image or media icon within the editor, there will be a fi
 
 - Add minimum/maximum file validation to multi mode
 - Check if a file is in use before permanently deleting it.
+- Add a 'select all' checkbox on Multi Select fields
+- Add ability to create directories?
+- Update current directory/subdirectory navigation with more elegant and intuitive breadcrumb system that is always visible
