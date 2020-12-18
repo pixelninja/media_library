@@ -95,10 +95,10 @@
 			}
 
 			// If there are directories, show a toggle button
-			if ($directory_increment > 0) {
-				$toggle_dirs = new XMLElement('div', null, array('class' => 'ml-toggle-directories ml-collapsed'));
-				$this->fieldset->appendChild($toggle_dirs);
-			}
+			// if ($directory_increment > 0) {
+			// 	$toggle_dirs = new XMLElement('div', null, array('class' => 'ml-toggle-directories ml-collapsed'));
+			// 	$this->fieldset->appendChild($toggle_dirs);
+			// }
 
 			// If there are directories or a back button, show a divider between the files and directories
 			if ($directory_increment > 0 || (isset($subfolder) && $subfolder !== '')) {

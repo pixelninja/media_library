@@ -375,9 +375,9 @@ form.media-library {
 	cursor: pointer;
 
 	transition: all 200ms ease-out;
-}
+/*}*/
 
-.ml-subdirectory.expanded {
+/*.ml-subdirectory.expanded {*/
 	height: 30px;
 	margin: 0.5rem 0;
 }
@@ -402,7 +402,7 @@ form.media-library {
 	line-height: 30px;
 }
 
-.ml-toggle-directories {
+/*.ml-toggle-directories {
 	width: 130px;
 
 	line-height: 30px;
@@ -417,7 +417,7 @@ form.media-library {
 
 .ml-toggle-directories.expanded:after {
 	content: '- Hide Directories';
-}
+}*/
 /* @end */
 
 /*
