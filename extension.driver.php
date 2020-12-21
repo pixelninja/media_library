@@ -285,15 +285,15 @@ Class extension_media_library extends Extension{
 
 		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/clipboard.min.js', 665);
 		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/sortable.min.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-edit.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-preview.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-exif-orientation.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-crop.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-resize.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-transform.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-validate-size.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-file-validate-size.js', 665);
-		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond.min.js', 666);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-edit.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-preview.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-exif-orientation.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-crop.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-resize.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-transform.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-validate-size.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-file-validate-size.js', 665);
+		$page->addScriptToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond.min.js', 666);
 		if (file_exists(DOCROOT . '/doka/doka.min.js')) {
 			$page->addScriptToHead(URL . '/doka/doka.min.js', 667);
 		}
@@ -304,9 +304,9 @@ Class extension_media_library extends Extension{
 		if (file_exists(DOCROOT . '/doka/doka.min.css')) {
 			$page->addStylesheetToHead(URL . '/doka/doka.min.css', 'screen', 666);
 		}
-		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond.css', 'screen', 665);
-		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-edit.css', 'screen', 666);
-		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond-plugin-image-preview.css', 'screen', 666);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond.css', 'screen', 665);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-edit.css', 'screen', 666);
+		$page->addStylesheetToHead(URL . '/extensions/media_library/assets/vendor/filepond/filepond-plugin-image-preview.css', 'screen', 666);
 	}
 
 	/*-------------------------------------------------------------------------

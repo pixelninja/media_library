@@ -191,12 +191,13 @@
 			events : function () {
 				// Array of valid mime types used later
 				var image_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'],
-					video_types = ['mp4', 'webm'],
-					audio_types = ['mp3'];
+						video_types = ['mp4', 'webm'],
+						audio_types = ['mp3'];
 
 				/*
 				 *	Go forward or backwards a directory
 				 */
+				// Set up the base URL 
 				var base_url = Symphony.Context.get('root') + '/symphony/extension/media_library/library/?folder=';
 
 				// Make sure 'enter' doesn't fire submission
@@ -209,7 +210,7 @@
 				$('.ml-filter-files').off('keyup');
 				$('.ml-filter-files').on('keyup', function (e) {
 					var self = $(this),
-						value = self.val().toLowerCase();
+							value = self.val().toLowerCase();
 
 					if (value.length < 3) {
 						if ($('.ml-files').hasClass('filtered')) {
@@ -224,50 +225,27 @@
 					$('p.name[data-lower*="' + value + '"], p.size[data-mime*="' + value + '"], a.tags[data-tags*="' + value + '"], a.alts[data-alts*="' + value + '"]').closest('.ml-file').show();
 				});
 
-				// Toggle directories
-				$('.ml-toggle-directories').off('click');
-				$('.ml-toggle-directories').on('click', function () {
-					var self = $(this);
-
-					self.prevAll('.ml-subdirectory').toggleClass('expanded');
-					self.toggleClass('expanded');
-				});
-
 				// Backwards
-				$('.ml-directory-back').off('click');
-				$('.ml-directory-back').on('click', function (e) {
+				$('.ml-breadcrumbs a').off('click');
+				$('.ml-breadcrumbs a').on('click', function () {
 					var self = $(this),
-						// The handle to append, which is the full folder path minus the last folder
-						handle = ml_folder_path.replace(ml_folder_path.substring(ml_folder_path.lastIndexOf('/')), '');
+							url = self.attr('href');
 
-					if ($('.ml-lightbox').length) {
-						// clipboard.destroy();
-						loadMediaPage(base_url + handle);
-					}
-					else {
-						window.location.href = base_url + handle;
-					}
+					if ($('.ml-lightbox').length) loadMediaPage(url);
+					else window.location.href = url;
 
 					return false;
 				});
 
 				// Forwards
-				$('.ml-subdirectory').off('click');
-				$('.ml-subdirectory').on('click', function () {
+				$('.ml-breadcrumbs select').off('change');
+				$('.ml-breadcrumbs select').on('change', function () {
 					var self = $(this),
-						// The handle of the folder
-						handle = self.data('handle');
+							option = self.find('option:selected'),
+							url = option.val();
 
-					// If there is an existing folder path, add it to the new handle
-					if (ml_folder_path) handle = ml_folder_path + '/' + handle;
-
-					if ($('.ml-lightbox').length) {
-						// clipboard.destroy();
-						loadMediaPage(base_url + handle);
-					}
-					else {
-						window.location.href = base_url + handle;
-					}
+					if ($('.ml-lightbox').length) loadMediaPage(url);
+					else window.location.href = url;
 
 					return false;
 				});

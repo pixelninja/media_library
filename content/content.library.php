@@ -3,6 +3,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	Class ContentExtensionMedia_LibraryLibrary extends AdministrationPage {
+		private $breadcrumbs = null;
 		private $container = null;
 		private $fieldset = null;
 
@@ -42,7 +43,9 @@
 			 *	and the uploads file path
 			 */
 			$subfolder = $_GET['folder'];
-			$directory_path = DOCROOT . '/workspace/uploads/';
+			$root_url = SYMPHONY_URL . '/extension/media_library/library/';
+			$root_path = DOCROOT . '/workspace/uploads/';
+			$directory_path = $root_path;
 
 			/*
 			 *	Make sure the folder exists and is writable
@@ -58,56 +61,77 @@
 			}
 
 			/*
-			 *	Add a back button if we're within a subfolder
+			 *	We're within subfolders, so update the directory path to include them
 			 */
 			if (isset($subfolder) && $subfolder !== '') {
-				// We're within subfolders, so update the directory path to include them
 				$directory_path = $directory_path . $subfolder . '/';
-
-				$backcontainer = new XMLElement('div', null, array('class' => 'ml-directory-back'));
-				$back = new XMLElement('p', __('Back'));
-				$backcontainer->appendChild($back);
-				$this->fieldset->appendChild($backcontainer);
 			}
 
 			/*
-			 *	Add each directory
+			 *	Use glob function to filter only directories
 			 */
-			// Use glob function to filter only directories
 			$directories = glob($directory_path . '*', GLOB_ONLYDIR);
-			// Empty value we will increment with each directory for tracking total number of directories
-			$directory_increment = 0;
 
-			foreach($directories as $directory) {
-				// Add directory container
-				$this->container = new XMLElement('div', null, array('class' => 'ml-subdirectory', 'data-handle' => basename($directory)));
 
-				// Increment the directory counter
-				$directory_increment++;
+			/*
+			 *	Container for the breadcrumbs and search field
+			 */
+			$header = new XMLElement('div', null, array('class' => 'ml-header'));
+			$this->fieldset->appendChild($header);
 
-				// Add in the directory info
-				// (just the name at the moment. What else should I display? File count?)
-				$name = new XMLElement('p', '<strong>' . basename($directory) . '</strong>');
+			/*
+			 *	Set up breadcrumb container
+			 */
+			$this->breadcrumbs = new XMLElement('div', null, array('class' => 'ml-breadcrumbs'));
+			$header->appendChild($this->breadcrumbs);
+			// Add uploads/ as root direction
+			$rootBreadcrumb = new XMLElement('a', 'Uploads', array('class' => (!isset($subfolder)) ? 'button selected' : 'button', 'href' => $root_url));
+			$this->breadcrumbs->appendChild($rootBreadcrumb);
 
-				// Attach to the page
-				$this->container->appendChild($name);
-				$this->fieldset->appendChild($this->container);
+			// Add all parent folders as links
+			if (isset($subfolder) && is_array(preg_split('#/#', $subfolder))) {
+				$subfolder_path = '?folder=';
+
+				foreach (preg_split('#/#', $subfolder) as $key => $folder) {
+					// Store the name for the anchor text
+					$name = $folder;
+					// Add a slash if not the first folder
+					if ($key > 0) $folder = '/' . $folder;
+					// Add to the folder path so the anchor is correct
+					$subfolder_path .= $folder;
+
+					// Disable the button if it's the current folder (which should always be the last one)
+					$class = ($subfolder_path === '?folder=' . $subfolder) ? 'button selected' : 'button';
+
+					// Add to the breadcrumb
+					$breadcrumb = new XMLElement('a', $name, array('class' => $class, 'href' => $root_url . $subfolder_path));
+					$this->breadcrumbs->appendChild($breadcrumb);
+				}
 			}
 
-			// If there are directories, show a toggle button
-			// if ($directory_increment > 0) {
-			// 	$toggle_dirs = new XMLElement('div', null, array('class' => 'ml-toggle-directories ml-collapsed'));
-			// 	$this->fieldset->appendChild($toggle_dirs);
-			// }
+			// Add child directories as a selectbox
+			if (!empty($directories)) {
+				// The base select element with an empty first option
+				$forward_directories = new XMLElement('select', null, array('class' => ''));
+				$base_options = new XMLElement('option', 'Go to ...', array('value' => '0'));
 
-			// If there are directories or a back button, show a divider between the files and directories
-			if ($directory_increment > 0 || (isset($subfolder) && $subfolder !== '')) {
-				$divider = new XMLElement('div', null, array('class' => 'ml-divider'));
-				$this->fieldset->appendChild($divider);
+				$forward_directories->appendChild($base_options);
+				$this->breadcrumbs->appendChild($forward_directories);
+
+				// Add each child folder as an option element
+				// var_dump($subfolder); exit;
+				foreach($directories as $directory) {
+					$this_directory_path = (isset($subfolder)) ? $root_url . '?folder=' . $subfolder . '/' . basename($directory) : $root_url . '?folder=' . basename($directory);
+					$this_directory = new XMLElement('option', basename($directory), array('value' => $this_directory_path));
+					$forward_directories->appendChild($this_directory);
+				}
 			}
 
+			/*
+			 *	Add a search input
+			 */
 			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name or tags'));
-			$this->fieldset->appendChild($filter_input);
+			$header->appendChild($filter_input);
 
 			/*
 			 *	Preview the files
@@ -145,9 +169,6 @@
 			$fileextension = $fileinfo['extension'];
 			$filesrc = str_replace(DOCROOT, URL, $file);
 
-			// Add the icon container
-			$icon = new XMLElement('span', null, array('class' => 'icon-'.$fileinfo['extension']));
-
 			// Add file name
 			$name = new XMLElement('p', $filename, array('class' => 'name', 'data-lower' => strtolower($filename)));
 
@@ -162,10 +183,10 @@
 				$dimensions = new XMLElement('p', $imagedimensions[0] . 'x' . $imagedimensions[1] . 'px', array('class' => 'size'));
 			}
 
-			// Add tag icon
+			// Add tag
 			$tags = new XMLElement('a', 'Tags', array('class' => 'tags', 'href' => str_replace(URL, '', $filesrc)));
 
-			// Add alt icon
+			// Add alt
 			$alts = new XMLElement('a', 'Alt', array('class' => 'alts', 'href' => str_replace(URL, '', $filesrc)));
 
 			// Add a preview link to certain file types
@@ -197,7 +218,6 @@
 
 			// Append all the data to the page
 			$div = new XMLElement('div');
-			$div->appendChild($icon);
 			$div->appendChild($name);
 			$div->appendChild($size);
 			$div->appendChild($dimensions);
