@@ -14,6 +14,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="3.0" date="2020-12-21" min="2.7.x">
+			- BREAKING CHANGE: Restructure the output into nodes instead of attributes. This was getting too large and unreadable, and nodes are easier to deal with within xslt
+		</release>
 		<release version="2.2" date="2020-12-21" min="2.7.x">
 			- Re-work the subdirectories into a breadcrumb for easier visualisation and navigation
 		</release>

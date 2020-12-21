@@ -4,6 +4,8 @@ This extension aims to be a one stop shop for asset management with Symphony CMS
 
 This also comes packaged with a field to replace the default upload field, where files can be uploaded or selected and attached directly to entries.
 
+**NOTE: If you are upgrading from a version lower than 3.0, this is a breaking change. File data is output as nodes not attributes. Please check the debug carefully and update your xslt to match.**
+
 ## Installation
 
 - Upload the `/media_library` folder to your Symphony `/extensions` folder.

@@ -554,26 +554,37 @@
 
 			for($i = 0, $ii = count($data['value']); $i < $ii; $i++) {
 				$value = new XMLElement('item');
-				$value->setAttribute('name', General::sanitize($data['name'][$i]));
 				$value->setAttribute('mime', $data['mime'][$i]);
 				$value->setAttribute('size', $data['size'][$i]);
 				$value->setAttribute('unit', $data['unit'][$i]);
 				if ($data['width'][$i] !== null) $value->setAttribute('width', $data['width'][$i]);
 				if ($data['height'][$i] !== null) $value->setAttribute('height', $data['height'][$i]);
 
-				// If content's of tag has been retrieved, and there is a match to this image, add a tags attribute
-				if ($tag_json && !empty($tag_json[$data['value'][$i]])) {
-					$value->setAttribute('tags', $tag_json[$data['value'][$i]]);
-				}
-
-				// If content's of alt has been retrieved, and there is a match to this image, add a alt attribute
+				// If content's of alt has been retrieved, and there is a match to this image, add an alt node
 				if ($alts_json && !empty($alts_json[$data['value'][$i]])) {
-					$value->setAttribute('alt', $alts_json[$data['value'][$i]]);
+					$alts = new XMLElement('alt', $alts_json[$data['value'][$i]]);
+					$value->appendChild($alts);
 				}
 
-				$value->setValue(
-					General::sanitize($data['value'][$i])
-				);
+				$name = new XMLElement('name', General::sanitize($data['name'][$i]));
+				$filepath = new XMLElement('filepath', General::sanitize($data['value'][$i]));
+				$jitfilepath = new XMLElement('jit-filepath', str_replace('/workspace', '', General::sanitize($data['value'][$i])));
+				$value->appendChild($name);
+				$value->appendChild($filepath);
+				$value->appendChild($jitfilepath);
+
+				// If content's of tag has been retrieved, and there is a match to this image, add a tags node
+				if ($tag_json && !empty($tag_json[$data['value'][$i]])) {
+					$tags = new XMLElement('tags');
+					$value->appendChild($tags);
+
+					// Add each tag as a node
+					$tags_array = explode(',', $tag_json[$data['value'][$i]]);
+
+					foreach ($tags_array as $key => $tag) {
+						$tags->appendChild(new XMLElement('item', $tag));
+					}
+				}
 
 				$field->appendChild($value);
 			}
