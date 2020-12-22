@@ -8,6 +8,8 @@
 		private $fieldset = null;
 
 		public function view() {
+			$root_url = SYMPHONY_URL . '/extension/media_library/library/';
+			$root_path = DOCROOT . '/workspace/uploads/';
 
 			/*
 			 *	Some config
@@ -23,7 +25,8 @@
 			 *	Trigger button for uploading a file
 			 */
 			$actions = new XMLElement('div', null, array('class' => 'actions'));
-			$actions->appendChild(new XMLElement('button', __('Upload File'), array('class' => 'button trigger-upload')));
+			$actions->appendChild(new XMLElement('button', __('Create Folder'), array('class' => 'button ml-trigger-directory')));
+			$actions->appendChild(new XMLElement('button', __('Upload File'), array('class' => 'button ml-trigger-upload')));
 
 			$this->Context->appendChild($actions);
 
@@ -36,6 +39,29 @@
 			if (isset($file_to_delete) && file_exists($file_to_delete)) {
 				// Bye bye
 				unlink($file_to_delete);
+				exit;
+			}
+
+			/*
+			 *	Are we creating a folder?
+			 */
+			// Store the file path
+			$folder_to_create = $_GET['mkdir'];
+			// Make sure the folder doesn't already exist
+			if (isset($folder_to_create)) {
+				if (!file_exists($root_path . General::createHandle($folder_to_create))) {
+					if (!mkdir($root_path . General::createHandle($folder_to_create), 0755, true)) {
+						echo 'error';
+					}
+					else {
+						echo 'success';
+					}
+				}
+				else {
+					echo 'already exists';
+				}
+
+				exit;
 			}
 
 			/*
@@ -43,8 +69,6 @@
 			 *	and the uploads file path
 			 */
 			$subfolder = $_GET['folder'];
-			$root_url = SYMPHONY_URL . '/extension/media_library/library/';
-			$root_path = DOCROOT . '/workspace/uploads/';
 			$directory_path = $root_path;
 
 			/*

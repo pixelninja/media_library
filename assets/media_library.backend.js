@@ -10,7 +10,7 @@
 		 *	Having a drop down is a bit of overkill, so let's make it a single clickable item
 		 */
 		var ml_menu_item = $('#nav a[href$="/extension/media_library/library/"]'),
-			ml_menu_group = ml_menu_item.parents('li:last');
+				ml_menu_group = ml_menu_item.parents('li:last');
 
 		// Check if the nav item actually exists, some extensions strip this out (e.g Entry Relationship FIeld)
 		if (!ml_menu_group.length) {
@@ -585,10 +585,53 @@
 				}
 
 				/*
+				 *	Add a directory
+				 */
+				$('.ml-trigger-directory').off('click');
+				$('.ml-trigger-directory').on('click', function (e) {
+					e.preventDefault();
+
+					let location;
+					// Prompt user for a folder name
+					const dir_name = prompt('What would you like to name your new folder? (Letters and numbers only)', 'new-folder');
+
+					if (dir_name !== null && dir_name !== "") {
+						location = (ml_folder_path) ? ml_folder_path + '/' + dir_name : dir_name;
+					}
+					else {
+						return false;
+					}
+
+					let href = Symphony.Context.get('symphony') + '/extension/media_library/library/?mkdir=' + location;
+
+					var req = fetch(href).then(function (response) {
+						return response.text();
+					})
+					.then(function (data) {
+						if (data === 'already exists') {
+							alert('The folder you are trying to create already exists. Please choose a different name');
+						}
+						else if (data === 'error') {
+							alert('There was an error trying to create your folder. Please try again or contact support.');
+						}
+						else if (data === 'success') {
+							loadMediaPage(Symphony.Context.get('symphony') + '/extension/media_library/library/?folder=' + location);
+						}
+					})
+					.catch(function (err) {
+						// There was an error
+						console.warn('Something went wrong.', err);
+						alert('Something went wrong. Try again.');
+					});
+
+					return false;
+				});
+
+				/*
 				 *	Expand/hide the drag/drop dropzone
 				 */
-				$('.trigger-upload').off('click');
-				$('.trigger-upload').on('click', function (e) {
+				$('.ml-trigger-upload').off('click');
+				$('.ml-trigger-upload').on('click', function (e) {
 					e.preventDefault();
 
 					var self = $(this),
