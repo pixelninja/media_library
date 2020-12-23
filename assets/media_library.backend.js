@@ -132,6 +132,13 @@
 
 						if (localStorage.getItem('allow-multiple') === 'yes') {
 							lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
+
+							lightbox.find('.ml-header').after(`
+								<div class="ml-select-all">
+									<!--<a href="#" class="button">Attach selected file(s)</a>-->
+									<label for="ml-select-all">Select all files</label>
+									<input type="checkbox" id="ml-select-all" name="select-all-files" />
+							`);
 						}
 						else {
 							lightbox.find('.ml-file .copy').text('Select file');
@@ -402,6 +409,51 @@
 
 					return false;
 				});
+
+				/*
+				 *	Toggle all files for selection
+				 */
+				$('.ml-select-all input').off('change');
+				$('.ml-select-all input').on('change', function (e) {
+					e.preventDefault();
+
+					let state = ($(this).is(':checked')) ? true : false;
+
+					if (state) {
+						$(this).closest('fieldset').find('.ml-file:visible input[name="select-files"]').prop('checked', true);
+					}
+					else {
+						$(this).closest('fieldset').find('.ml-file:visible input[name="select-files"]').prop('checked', false);
+					}
+
+					return false;
+				});
+
+				// Update the select all toggle when interacting with individual checkbox
+				$('.ml-file input[name="select-files"]').off('change');
+				$('.ml-file input[name="select-files"]').on('change', function (e) {
+					e.preventDefault();
+
+					if ($('.ml-file input[name="select-files"]:checked').length < $('.ml-file input[name="select-files"]').length) {
+						$('.ml-select-all input').prop('checked', false);
+					}
+					else {
+						$('.ml-select-all input').prop('checked', true);
+					}
+
+					return false;
+				});
+
+				// Pse
+				// $('.ml-select-all .button').off('click');
+				// $('.ml-select-all .button').on('click', function (e) {
+				// 	e.preventDefault();
+				// 	console.log('asd');
+				// 	console.log($('.ml-file .select-file').first());
+				// 	$('.ml-file .select-file').first().trigger('click');
+
+				// 	return false;
+				// });
 
 				/*
 				 *	Copy the URL for a file

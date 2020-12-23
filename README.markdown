@@ -4,7 +4,11 @@ This extension aims to be a one stop shop for asset management with Symphony CMS
 
 This also comes packaged with a field to replace the default upload field, where files can be uploaded or selected and attached directly to entries.
 
-**NOTE: If you are upgrading from a version lower than 3.0, this is a breaking change. File data is output as nodes not attributes. Please check the debug carefully and update your xslt to match.**
+### Upgrade Notes
+
+#### 3.0
+
+If you are upgrading from a version lower than 3.0, this is a breaking change. File data is now output as nodes when previously they were attributes. Please check the debug carefully and update your xslt to match.**
 
 ## Installation
 
@@ -18,8 +22,6 @@ The `json/tags.json` file needs to be writable in order to attach tags to files.
 The `json/alts.json` file needs to be writable in order to attach alt attributes to files. 
 
 **Note that any extension updates will most likely clear the JSON files of any data. Always back these up first.**
-
-It is recommended then that this extension not be added as a submodule, and when you need to update replace all files/folders except the json folder.
 
 ## How to use
 
