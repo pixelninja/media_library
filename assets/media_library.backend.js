@@ -861,7 +861,7 @@
 					if (typeof Doka === 'object') {
 						html = `
 							<div class="media_library-droparea">
-								<div class="media_library-droparea_toggle">
+								<!--<div class="media_library-droparea_toggle">
 									<p>
 										<label for="droparea_toggle">Single Image</label>
 										<i>Manipulate and upload a single image</i>
@@ -872,14 +872,24 @@
 										<label for="droparea_toggle">Multi file</label>
 										<i>Upload multiple files of any format at a time</i>
 									</p>
-								</div>
+								</div>-->
 
 								<div class="media_library-droparea_columns">
 									<div class="media_library-droparea_column">
+										<p>
+											<label for="droparea_toggle">Single Image</label>
+											<i>Manipulate and upload a single image</i>
+										</p>
+
 										<input type="file" class="fireDoka" name="doka" />
 									</div>
 
 									<div class="media_library-droparea_column">
+										<p>
+											<label for="droparea_toggle">Multi file</label>
+											<i>Upload multiple files of any format at a time</i>
+										</p>
+
 										<input type="file" class="fireFilepond" name="filepond" />
 									</div>
 								</div>
