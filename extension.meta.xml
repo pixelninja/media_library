@@ -14,6 +14,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="3.2" date="2021-01-13" min="2.7.x">
+			- Better 'Select All' UI, with ability to toggle all at once
+		</release>
 		<release version="3.1" date="2020-12-23" min="2.7.x">
 			- Add ability to create directories
 		</release>

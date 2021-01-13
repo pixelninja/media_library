@@ -154,7 +154,7 @@
 			/*
 			 *	Add a search input
 			 */
-			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name or tags'));
+			$filter_input = new XMLElement('input', null, array('class' => 'ml-filter-files', 'placeholder' => 'Start typing to filter by name, tags or alt'));
 			$header->appendChild($filter_input);
 
 			/*

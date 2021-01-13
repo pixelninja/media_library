@@ -445,15 +445,15 @@
 				});
 
 				// Pse
-				// $('.ml-select-all .button').off('click');
-				// $('.ml-select-all .button').on('click', function (e) {
-				// 	e.preventDefault();
-				// 	console.log('asd');
-				// 	console.log($('.ml-file .select-file').first());
-				// 	$('.ml-file .select-file').first().trigger('click');
+				$('.ml-select-all .button').off('click');
+				$('.ml-select-all .button').on('click', function (e) {
+					e.preventDefault();
 
-				// 	return false;
-				// });
+					addFieldFiles($('.ml-file .select-file').first());
+					closeLightbox();
+
+					return false;
+				});
 
 				/*
 				 *	Copy the URL for a file
@@ -466,7 +466,6 @@
 							ml_source_input(
 								$(trigger).data('src'), {
 									alt: ($(trigger).closest('.ml-file').find('.alts[data-alts]').length) ? $(trigger).closest('.ml-file').find('.alts[data-alts]').data('alts') : $(trigger).closest('.ml-file').find('.name').text()
-									// $(trigger).closest('.ml-file').find('.name').text()
 								}
 							);
 
@@ -476,94 +475,7 @@
 						}
 						// If we are using the media library field, then add the data to the fields
 						else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
-							var meta = $(trigger).nextAll('.meta'),
-									data = {
-										name : $(trigger).closest('.ml-file').find('.name').text(),
-										src : $(trigger).data('src'),
-										mime : meta.data('mime'),
-										size : meta.data('size'),
-										dimensions : meta.data('dimensions') || false
-									};
-
-							// If multiple is allowed, then we need to add to it rather than replace it
-							if ($(ml_source_input).data('allow-multiple') === 'yes') {
-								// If multiple have been selected then we need to loop over them and add all files
-								if ($(trigger).closest('.ml-files').find('input[name="select-files"]:checked').length) {
-									var inputs = $(trigger).closest('.ml-files').find('input[name="select-files"]:checked');
-
-									inputs.each(function (i, e) {
-										var this_data = {
-											name : $(e).closest('.ml-file').find('.name').text(),
-											src : $(e).prev('.select-file').data('src'),
-											mime : $(e).nextAll('.meta').data('mime'),
-											size : $(e).nextAll('.meta').data('size'),
-											dimensions : $(e).nextAll('.meta').data('dimensions') || false
-										};
-
-										setTimeout(function() {
-											addFieldItem(this_data);
-										}, 100 * i);
-									});
-								}
-								// Otherwise just add the one
-								else {
-									addFieldItem(data);
-								}
-							}
-							// Only one item is allowed
-							else {
-								var fields = $(ml_source_input).find('.instance'),
-										preview = $(ml_source_input).find('.preview');
-
-								// Add the fields if they don't exist
-								if (!fields.find('input').length) {
-									fields.append(`
-										<input name="fields[${fields.data('name')}][0][value]" />
-										<input name="fields[${fields.data('name')}][0][name]" />
-										<input name="fields[${fields.data('name')}][0][mime]" />
-										<input name="fields[${fields.data('name')}][0][size]" />
-										<input name="fields[${fields.data('name')}][0][unit]" />
-										<input name="fields[${fields.data('name')}][0][width]" />
-										<input name="fields[${fields.data('name')}][0][height]" />
-									`);
-								}
-
-								// Update the values
-								fields.find('input[name*="[name]"]').val(data.name);
-								fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
-								fields.find('input[name*="[mime]"]').val(data.mime);
-								fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
-								fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
-
-								if (data.dimensions) {
-									fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
-									fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
-								}
-								else {
-									fields.find('input[name*="[width]"]').val('');
-									fields.find('input[name*="[height]"]').val('');	
-								}
-
-								// Remove any existing previews
-								$(ml_source_input).find('.preview').remove();
-
-								// Add the new preview
-								$(ml_source_input).find('.clear').before(`<div class="preview"><div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a></div></div>`);
-
-								if (image_types.includes(data.mime)) {
-									$(ml_source_input).find('.item').addClass('image').prepend(`<img src="${data.src}" />`);
-								}
-								else if (video_types.includes(data.mime)) {
-									$(ml_source_input).find('.item').addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
-								}
-								else if (audio_types.includes(data.mime)) {
-									$(ml_source_input).find('.item').addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
-								}
-								else if (data.mime !== undefined ) {
-									$(ml_source_input).find('.item').addClass('other');
-								}
-							}
-
+							addFieldFiles(trigger);
 							closeLightbox();
 
 							return false;
@@ -580,6 +492,96 @@
 						return $(trigger).data('src');
 					}
 				});
+
+				function addFieldFiles(trigger) {
+					var meta = $(trigger).nextAll('.meta'),
+							data = {
+								name : $(trigger).closest('.ml-file').find('.name').text(),
+								src : $(trigger).data('src'),
+								mime : meta.data('mime'),
+								size : meta.data('size'),
+								dimensions : meta.data('dimensions') || false
+							};
+
+					// If multiple is allowed, then we need to add to it rather than replace it
+					if ($(ml_source_input).data('allow-multiple') === 'yes') {
+						// If multiple have been selected then we need to loop over them and add all files
+						if ($(trigger).closest('.ml-files').find('input[name="select-files"]:checked').length) {
+							var inputs = $(trigger).closest('.ml-files').find('input[name="select-files"]:checked');
+
+							inputs.each(function (i, e) {
+								var this_data = {
+									name : $(e).closest('.ml-file').find('.name').text(),
+									src : $(e).prev('.select-file').data('src'),
+									mime : $(e).nextAll('.meta').data('mime'),
+									size : $(e).nextAll('.meta').data('size'),
+									dimensions : $(e).nextAll('.meta').data('dimensions') || false
+								};
+
+								setTimeout(function() {
+									addFieldItem(this_data);
+								}, 100 * i);
+							});
+						}
+						// Otherwise just add the one
+						else {
+							addFieldItem(data);
+						}
+					}
+					// Only one item is allowed
+					else {
+						var fields = $(ml_source_input).find('.instance'),
+								preview = $(ml_source_input).find('.preview');
+
+						// Add the fields if they don't exist
+						if (!fields.find('input').length) {
+							fields.append(`
+								<input name="fields[${fields.data('name')}][0][value]" />
+								<input name="fields[${fields.data('name')}][0][name]" />
+								<input name="fields[${fields.data('name')}][0][mime]" />
+								<input name="fields[${fields.data('name')}][0][size]" />
+								<input name="fields[${fields.data('name')}][0][unit]" />
+								<input name="fields[${fields.data('name')}][0][width]" />
+								<input name="fields[${fields.data('name')}][0][height]" />
+							`);
+						}
+
+						// Update the values
+						fields.find('input[name*="[name]"]').val(data.name);
+						fields.find('input[name*="[value]"]').val(data.src.split(Symphony.Context.get('root'))[1]);
+						fields.find('input[name*="[mime]"]').val(data.mime);
+						fields.find('input[name*="[size]"]').val(data.size.split(' ')[0]);
+						fields.find('input[name*="[unit]"]').val(data.size.split(' ')[1].toLowerCase());
+
+						if (data.dimensions) {
+							fields.find('input[name*="[width]"]').val(data.dimensions.split('x')[0]);
+							fields.find('input[name*="[height]"]').val(data.dimensions.split('x')[1].replace('p', ''));
+						}
+						else {
+							fields.find('input[name*="[width]"]').val('');
+							fields.find('input[name*="[height]"]').val('');	
+						}
+
+						// Remove any existing previews
+						$(ml_source_input).find('.preview').remove();
+
+						// Add the new preview
+						$(ml_source_input).find('.clear').before(`<div class="preview"><div class="item"><p><strong>${data.name}</strong>${data.mime}</p><a class="view" href="${data.src}">View</a></div></div>`);
+
+						if (image_types.includes(data.mime)) {
+							$(ml_source_input).find('.item').addClass('image').prepend(`<img src="${data.src}" />`);
+						}
+						else if (video_types.includes(data.mime)) {
+							$(ml_source_input).find('.item').addClass('video').prepend(`<video src="${data.src}" autoplay loop muted />`);
+						}
+						else if (audio_types.includes(data.mime)) {
+							$(ml_source_input).find('.item').addClass('audio').prepend(`<audio src="${data.src}" controls  />`);
+						}
+						else if (data.mime !== undefined ) {
+							$(ml_source_input).find('.item').addClass('other');
+						}
+					}
+				}
 
 				function addFieldItem(data) {
 					var item_length = $(ml_source_input).find('input[name*="[name]"]').length,
