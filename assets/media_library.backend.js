@@ -130,7 +130,7 @@
 					if (localStorage.getItem('add-to-field') === 'yes') {
 						lightbox.find('.ml-file .copy').addClass('select-file');
 
-						if (localStorage.getItem('allow-multiple') === 'yes') {
+						if (localStorage.getItem('allow-multiple') === 'yes' && lightbox.find('.ml-file').length > 1) {
 							lightbox.find('.ml-file .copy').text('Select file(s)').after('<input type="checkbox" name="select-files" />')
 
 							lightbox.find('.ml-header').after(`
