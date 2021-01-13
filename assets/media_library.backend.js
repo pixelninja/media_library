@@ -135,7 +135,7 @@
 
 							lightbox.find('.ml-header').after(`
 								<div class="ml-select-all">
-									<!--<a href="#" class="button">Attach selected file(s)</a>-->
+									<a href="#" class="button">Attach selected file(s)</a>
 									<label for="ml-select-all">Select all files</label>
 									<input type="checkbox" id="ml-select-all" name="select-all-files" />
 							`);
@@ -465,14 +465,14 @@
 						if ($(trigger).hasClass('add-to-editor') && typeof ml_source_input === 'function') {
 							ml_source_input(
 								$(trigger).data('src'), {
-									alt: $(trigger).closest('.ml-file').find('.name').text()
+									alt: ($(trigger).closest('.ml-file').find('.alts[data-alts]').length) ? $(trigger).closest('.ml-file').find('.alts[data-alts]').data('alts') : $(trigger).closest('.ml-file').find('.name').text()
+									// $(trigger).closest('.ml-file').find('.name').text()
 								}
 							);
 
 							closeLightbox();
 
 							return $(trigger).data('src');
-							// return false;
 						}
 						// If we are using the media library field, then add the data to the fields
 						else if ($(trigger).hasClass('select-file') && $(ml_source_input).is('div')) {
